@@ -34,8 +34,16 @@ alpha_cen_pos_ang = np.arctan(alpha_cen_sep_vec[0] / alpha_cen_sep_vec[1])
 #
 # So @peter has said that only stars within ten arcseconds of the science 
 # target are likely to matter (23/11/2022). 
+#
+# So the spectral information is not yet ready to be integrated into 
+# the model (23/11/2022). The ideal case in my mind is that we are 
+# able to model using the Spectrum <=> Filter pair of interacting 
+# parts. I would like to test the sensitivity of the model to the 
+# wavelengths and weights that are passed into the system. 
 
-alpha_cen_spectra = 
+tol_filt_min = 595e-09
+tol_filt_max = 695e-09
+tol_filt_wavels = np.linspace(tol_folt_min, tol_filt_max, 10) 
 
 alpha_centuari = dl.BinarySource(
     position = np.array([0., 0.]), 
@@ -43,4 +51,11 @@ alpha_centuari = dl.BinarySource(
     separation = np.array(alpha_cen_sep * np.pi / 180),
     position_angle = alpha_cen_pos_ang,
     contrast = np.array(alpha_cen_con),
-    spectrum = )
+    wavelengths = tol_filt_wavels)
+
+
+aperture_diameter = 0.12
+arcsec_per_pixel = 0.375
+pixel_scale_out = dl.utils.arcseconds_to_radians(arcsec_per_pixel)
+det_pix = 2048
+wave_front_pix = 1024
