@@ -1,5 +1,5 @@
 import dLux as dl
-
+import jax.numpy as np 
 
 alpha_cen_a_ra = 219.902540961
 alpha_cen_a_dec = -60.832666145
@@ -9,9 +9,9 @@ alpha_cen_b_ra = 219.902540961
 alpha_cen_b_dec = -60.833410210
 alpha_cen_b_gmag = 18.16
 
-alpha_cen_c_ra = 217.42856090
-alpha_cen_c_dec = -62.679188079
-alpha_cen_c_gmag = 20.75
+alpha_cen_ra = (alpha_cen_a_ra + alpha_cen_b_ra) / 2.
+alpha_cen_dec = (alpha_cen_a_dec + alpha_cen_b_dec) / 2.
+alpha_cen_contrast = np.exp(-0.4 * (alpha_cen_a_gmag - alpha_cen_b_gmag))
 
 # So I can calculate the flux ratios of the stars using the formula 
 # 
@@ -26,6 +26,11 @@ alpha_cen_c_gmag = 20.75
 #       each memeber separately. This is a behaviour that needs to be 
 #       investigated. I want to use the midpoint of chord connecting 
 #       Alpha Centuari A and B as the center of the two arcminute search. 
+#
+# So @peter has said that only stars within ten arcseconds of the science 
+# target are likely to matter (23/11/2022). 
 
+print(alpha_cen_ra)
+print(alpha_cen_dec)
 
-alpha_centuari = dl.BinarySource(position=(0., 0.), )
+#alpha_centuari = dl.BinarySource(position=(0., 0.), )

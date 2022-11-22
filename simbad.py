@@ -1,2 +1,0 @@
-from astroquery import Simbad
-
