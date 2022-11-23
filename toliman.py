@@ -53,9 +53,14 @@ alpha_centuari = dl.BinarySource(
     contrast = np.array(alpha_cen_con),
     wavelengths = tol_filt_wavels)
 
+# TODO: Add the background stars. I wonder if long term we are going to 
+#       care about their spectra as well. I imagine that this is the 
+#       case. This means that I will need to hunt down the relevant spectra. 
+#       This is something that I will want to do in a way that is automated. 
+#       We need to have all this information so we cam wprk out what level 
+#       of detail can be pruned. This s confusing actually. Should I move 
+#       this stuff into my notes file? Probably. 
 
-aperture_diameter = 0.12
-arcsec_per_pixel = 0.375
-pixel_scale_out = dl.utils.arcseconds_to_radians(arcsec_per_pixel)
-det_pix = 2048
-wave_front_pix = 1024
+# This is just examining the mask. There are two of them and one is 
+# labelled as ".._sidelobes" so I want to check what the difference is. 
+
