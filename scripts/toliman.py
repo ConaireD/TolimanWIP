@@ -1,5 +1,8 @@
 import dLux as dl
 import jax.numpy as np 
+import jax.config as config
+
+config.update("jax_enable_x64", True)
 
 alpha_cen_a_ra = 219.902540961 # degrees
 alpha_cen_a_dec = -60.833410210 # degrees
@@ -15,7 +18,7 @@ alpha_cen_ra = (alpha_cen_a_ra + alpha_cen_b_ra) / 2.
 alpha_cen_dec = (alpha_cen_a_dec + alpha_cen_b_dec) / 2.
 alpha_cen_con = np.exp(-0.4 * (alpha_cen_a_gmag - alpha_cen_b_gmag))
 alpha_cen_sep_vec = alpha_cen_a_pos - alpha_cen_b_pos 
-alpha_cen_sep = np.abs(alpha_cen_sep_vec)
+alpha_cen_sep = np.linalg.norm(alpha_cen_sep_vec)
 alpha_cen_pos_ang = np.arctan(alpha_cen_sep_vec[0] / alpha_cen_sep_vec[1])
 
 # So I can calculate the flux ratios of the stars using the formula 
@@ -43,7 +46,7 @@ alpha_cen_pos_ang = np.arctan(alpha_cen_sep_vec[0] / alpha_cen_sep_vec[1])
 
 tol_filt_min = 595e-09
 tol_filt_max = 695e-09
-tol_filt_wavels = np.linspace(tol_folt_min, tol_filt_max, 10) 
+tol_filt_wavels = np.linspace(tol_filt_min, tol_filt_max, 10) 
 
 alpha_centuari = dl.BinarySource(
     position = np.array([0., 0.]), 
@@ -64,3 +67,5 @@ alpha_centuari = dl.BinarySource(
 # This is just examining the mask. There are two of them and one is 
 # labelled as ".._sidelobes" so I want to check what the difference is. 
 
+print(alpha_cen_ra)
+print(alpha_cen_dec)
