@@ -18,6 +18,7 @@ WHERE
 
 alpha_cen_ra = 219.902540961
 alpha_cen_dec = -60.8330381775
+alpha_cen_cur = (alpha_cen_ra, alpha_cen_dec)
 window_width = 6. / 60.
 radius = 2. / 60.
 alpha_cen_prop_mot_ra = -3608
@@ -26,6 +27,8 @@ alpha_cen_delta_ra = - alpha_cen_prop_mot_ra * .05 / 3600.
 alpha_cen_delta_dec = - alpha_cen_prop_mot_dec * .05 / 3600.
 alpha_cen_orig_ra = alpha_cen_ra - alpha_cen_delta_ra
 alpha_cen_orig_dec = alpha_cen_dec - alpha_cen_delta_dec
+alpha_cen_orig = (alpha_cen_orig_ra, alpha_cen_orig_dec)
+alpha_cen_delta = (alpha_cen_delta_ra, alpha_cen_delta_dec)
 
 stars = Gaia.launch_job(
     conical_query.format(
@@ -42,15 +45,7 @@ alpha = (mag - max_mag) / mag.ptp()
 
 axes = plt.axes()
 axes.scatter(ra, dec, alpha=alpha + 1.)
-axes.add_patch(patch.Circle((alpha_cen_ra, alpha_cen_dec), radius=0.01, color="red"))
+axes.add_patch(patch.Circle(alpha_cen_cur, radius=0.01, color="red"))
 axes.set_aspect(1 / axes.get_data_ratio())
-axes.arrow(alpha_cen_orig_ra, alpha_cen_orig_dec, alpha_cen_delta_ra, alpha_cen_delta_dec, color="pink")
-
+axes.arrow(*alpha_cen_orig, *alpha_cen_delta, color="pink")
 plt.show()
-exit()
-
-for ra in range(-2, 3):
-    for dec in range(-2, 3):
-        ra_centre = alpha_cen_ra + ra * radius
-        dec_centre = alpha_cen_dec + dec * radius
-        axes.add_patch(patch.Circle((ra_centre, dec_centre), radius=radius, fill=None))
