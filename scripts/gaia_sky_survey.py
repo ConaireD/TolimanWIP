@@ -5,6 +5,8 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import itertools as it
 
+mpl.rcParams["text.usetex"] = True
+
 conical_query = """
 SELECT
     phot_g_mean_mag AS mag
@@ -31,6 +33,19 @@ with Pool(16) as pool:
     centres = it.product(range(-2, 3), range(-2, 3))
     mags = pool.starmap(plot_tile_hist, centres)
 
-for ra in range(-2, 3):
-    for dec in range(-2, 3):
-        
+max_size = max([mag.size for mag in mags])
+
+for ra in range(5):
+    for dec in range(5):
+        stars = mags[ra + 5 * dec]
+        axes[ra][dec].hist(stars, color="black")
+        axes[ra][dec].set_title(stars.size)
+        axes[ra][dec].set_facecolor((stars.size / max_size, 0, 0))
+
+for i in range(5):
+    axes[i][0].set_ylabel("{:.2f}".format((i - 2) * 2))
+    axes[4][i].set_xlabel("{:.2f}".format((i - 2) * 2))
+
+figure.supxlabel("Displacement (arcmin)")
+figure.supylabel("Displacement (arcmin)")
+plt.show()
