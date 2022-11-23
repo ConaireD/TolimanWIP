@@ -67,5 +67,23 @@ alpha_centuari = dl.BinarySource(
 # This is just examining the mask. There are two of them and one is 
 # labelled as ".._sidelobes" so I want to check what the difference is. 
 
-print(alpha_cen_ra)
-print(alpha_cen_dec)
+toliman = dl.models.toliman()    
+
+aperture_diameter = np.asarray(aperture_diameter, dtype=float)
+    layers = [dLux.optics.CreateWavefront(wavefront_npixels,
+                                          aperture_diameter,
+                                          wavefront_type="Angular")]
+
+    layers += [dLux.optics.CompoundAperture(aperture_diameter/2,
+                                occulter_radii=secondary_mirror_diameter/2)]
+
+    zernike_basis = dLux.utils.zernike_basis(nzernike + 3,
+                                             wavefront_npixels,
+                                             outside=0.)[3:]
+        layers += [dLux.ApplyBasisOPD(zernike_basis, zernike_coefficients)]
+
+layers += [dLux.NormaliseWavefront()]
+
+    layers += [dLux.AngularMFT(detector_npixels,
+                    dLux.utils.arcseconds_to_radians(detector_pixel_size))]
+
