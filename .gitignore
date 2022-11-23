@@ -1,2 +1,4 @@
 datasheets/*
 component_manuals/*
+*.swp
+*/*.swp
