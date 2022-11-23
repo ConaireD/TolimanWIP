@@ -22,7 +22,7 @@ window_width = 2. / 60.
 
 figure, axes = plt.subplots(5, 5, sharex=True, sharey=True)
 
-def collect(ra: int, dec: int) -> None:
+def plot_tile_hist(ra: int, dec: int) -> None:
     ra_centre = alpha_cen_ra + ra * window_width
     dec_centre = alpha_cen_dec + dec * window_width
     region = Gaia.launch_job(conical_query.format(
