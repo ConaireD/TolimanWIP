@@ -60,3 +60,5 @@ axes.set_xlabel("phot_g_mean_mag")
 axes.set_ylabel("count")
 axes.set_title("Histogram of Magnitudes in the G Band")
 plt.show()
+
+
