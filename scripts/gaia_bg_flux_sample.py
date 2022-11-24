@@ -42,7 +42,7 @@ bg_stars_rel_flux_crop = bg_stars_flux_crop / alpha_cen_flux
 with open("datasheets/bg_stars.csv", "w") as sheet:
     sheet.write("ra,dec,rel_flux\n")
     for row in np.arange(sample_len):
-        sheet.write(f"{bg_stars_ra_crop},")
-        sheet.write(f"{bg_stars_dec_crop},")
-        sheet.write(f"{bg_stars_rel_flux_crop}\n")
+        sheet.write(f"{bg_stars_ra_crop[row]},")
+        sheet.write(f"{bg_stars_dec_crop[row]},")
+        sheet.write(f"{bg_stars_rel_flux_crop[row]}\n")
     
