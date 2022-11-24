@@ -67,4 +67,4 @@ alpha_centuari = dl.BinarySource(
 # This is just examining the mask. There are two of them and one is 
 # labelled as ".._sidelobes" so I want to check what the difference is. 
 
-spider = dl.Spider
+spider = dl.Spidr
