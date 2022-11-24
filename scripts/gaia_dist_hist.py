@@ -18,13 +18,17 @@ WHERE
 
 alpha_cen_ra = 219.902540961
 alpha_cen_dec = -60.8330381775
+alpha_cen_ra_simbad = 219.873833 
+alpha_cen_dec_simbad = -60.8322219
+alpha_cen_simbad = (alpha_cen_ra_simbad, alpha_cen_dec_simbad)
 alpha_cen_cur = (alpha_cen_ra, alpha_cen_dec)
 window_width = 6. / 60.
 radius = 2. / 60.
+duration = 10.
 alpha_cen_prop_mot_ra = -3608
 alpha_cen_prop_mot_dec = 686
-alpha_cen_delta_ra = - alpha_cen_prop_mot_ra * .05 / 3600.
-alpha_cen_delta_dec = - alpha_cen_prop_mot_dec * .05 / 3600.
+alpha_cen_delta_ra = - alpha_cen_prop_mot_ra * duration / 3600000.
+alpha_cen_delta_dec = - alpha_cen_prop_mot_dec * duration / 3600000.
 alpha_cen_orig_ra = alpha_cen_ra - alpha_cen_delta_ra
 alpha_cen_orig_dec = alpha_cen_dec - alpha_cen_delta_dec
 alpha_cen_orig = (alpha_cen_orig_ra, alpha_cen_orig_dec)
@@ -46,6 +50,8 @@ alpha = (mag - max_mag) / mag.ptp()
 axes = plt.axes()
 axes.scatter(ra, dec, alpha=alpha + 1.)
 axes.add_patch(patch.Circle(alpha_cen_cur, radius=0.01, color="red"))
+axes.add_patch(patch.Circle(alpha_cen_simbad, radius=0.01, color="red"))
 axes.set_aspect(1 / axes.get_data_ratio())
 axes.arrow(*alpha_cen_orig, *alpha_cen_delta, color="pink")
+axes.add_patch(patch.Circle((alpha_cen_ra + .05, alpha_cen_dec - .05), radius=2./60., fill=None, color="red"))
 plt.show()
