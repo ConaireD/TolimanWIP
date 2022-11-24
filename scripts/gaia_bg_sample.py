@@ -40,9 +40,6 @@ bg_stars_mag_crop = bg_stars_mag[in_range]
 bg_stars_mag_no_nan_crop = np.where(np.isnan(bg_stars_mag_crop), np.nanmax(bg_stars_mag_crop), bg_stars_mag_crop)
 alpha_crop = (bg_stars_mag_no_nan_crop - bg_stars_mag_no_nan_crop.min()) / bg_stars_mag_no_nan_crop.ptp()
 
-bg_stars_mag_no_nan = np.where(np.isnan(bg_stars_mag), np.nanmax(bg_stars_mag), bg_stars_mag)
-alpha = (bg_stars_mag_no_nan - bg_stars_mag_no_nan.min()) / bg_stars_mag_no_nan.ptp()
-
 fig = plt.figure(constrained_layout=True)
 axes = fig.add_gridspec(top=0.75, right=0.75).subplots()
 axes.set(aspect=1)
@@ -53,12 +50,3 @@ axes_hist_x.hist(bg_stars_ra_crop)
 axes_hist_y.hist(bg_stars_dec_crop, orientation="horizontal")
 plt.show()
 
-fig = plt.figure(constrained_layout=True)
-axes = fig.add_gridspec(top=0.75, right=0.75).subplots()
-axes.set(aspect=1)
-axes_hist_x = axes.inset_axes([0, 1.05, 1, 0.25])
-axes_hist_y = axes.inset_axes([1.05, 0, 0.25, 1])
-axes.scatter(bg_stars_ra, bg_stars_dec, alpha=alpha)
-axes_hist_x.hist(bg_stars_ra)
-axes_hist_y.hist(bg_stars_dec, orientation="horizontal")
-plt.show()
