@@ -1,5 +1,6 @@
 use std::fs::File;
 use std::io::Error;
+use std::io::BufReader;
 
 fn main()
 {
@@ -11,5 +12,11 @@ fn main()
     }
 
     let file_name: &String = &args[1];
-	let ipynb: Result<File, Error> = File::open(file_name);
+	let ipynbd = File::open(file_name);
+	let buf_ipynb = BufReader::new(ipynb);
+
+	for line in buf_ipynb.lines() 
+	{
+		println!(line);
+	}
 }
