@@ -67,4 +67,22 @@ alpha_centuari = dl.BinarySource(
 # This is just examining the mask. There are two of them and one is 
 # labelled as ".._sidelobes" so I want to check what the difference is. 
 
-spider = dl.Spidr
+spider = dl.Spider(
+    x_offset: float = 0.,
+    y_offset: float = 0., 
+    number_of_struts: int = 3., 
+    width_of_struts: float = .05, 
+    rotation: float = 0.,
+    softening: bool = False
+)
+aperture = dl.AnnularAperture(
+   x_offset: float = 0.,
+   y_offset: float = 0.,
+   rmin: float = .05,
+   rmax: float = .13,
+   softening: bool = False,
+   occulting: bool = False
+)
+toliman_aperture = dl.CompoundAperture(spider, aperture)
+
+aperture = toliman_aperture._aperture()
