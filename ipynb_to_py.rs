@@ -1,3 +1,6 @@
+use std::fs::File;
+use std::io::Error;
+
 fn main()
 {
     let args: Vec<String> = std::env::args().collect();
@@ -8,9 +11,5 @@ fn main()
     }
 
     let file_name: &String = &args[1];
- 
-    let ipynb: String = std::fs::read_to_string(file_name)
-        .expect("File not found!");
-
-	let _ipynb: File = std::io::File::open(file_name);
+	let ipynb: Result<File, Error> = File::open(file_name);
 }
