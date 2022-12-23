@@ -170,6 +170,7 @@ def plot_pupil_with_aberrations(pupil: float, aberrations: float) -> None:
 jax.config.update("jax_enable_x64", True)
 
 mask: float = np.load('../component_models/sidelobes.npy')
+npix: int = 1024
 
 central_wavelength: float = (595. + 695.) / 2.
 aperture_diameter: float = .13
@@ -183,34 +184,41 @@ shape: int = 5
 nolls: list = np.arange(2, shape + 2, dtype=int)
 coeffs: list = 1e-8 * jax.random.normal(jax.random.PRNGKey(0), (shape,))
 
-aberrations: object = dl.AberratedAperture(
-    nolls, 
-    coeffs, 
-    dl.CircularAperture(aperture_diameter / 2.)
+alpha_centauri: object = dl.BinarySource(
+    position = [0., 0.],
+    flux = 1.,
+    contrast = 2.,
+    separation = dl.utils.arcseconds_to_radians(2.),
+    position_angle = 0.,
+    wavelengths = wavelengths
 )
 
-pupil: object = dl.CompoundAperture([
-    dl.UniformSpider(number_of_struts, width_of_struts),
-    dl.AnnularAperture(aperture_diameter / 2., secondary_mirror_diameter / 2.)
-])
+sky: object = dl.Scene([alpha_centauri])
 
-diffractive_pupil: object = dl.AddOPD(mask)
+toliman: object = dl.Optics(
+    layers = [
+        dl.CreateWavefront(npix, aperture_diameter), 
+        dl.CompoundAperture(
+            [
+                dl.UniformSpider(
+                    number_of_struts, 
+                    width_of_struts
+                ),
+                dl.AnnularAperture(
+                    aperture_diameter / 2., 
+                    secondary_mirror_diameter / 2.
+                )
+            ]
+        ), 
+        dl.AberratedAperture(
+            nolls, 
+            coeffs, 
+            dl.CircularAperture(aperture_diameter / 2.)
+        ), 
+        dl.AddOPD(mask)
+    ]
+)
 
-zernike_layer = dl.ApplyBasisOPD(basis, coeffs)
-osys = dl.utils.toliman(mask.shape[0], det_npix, detector_pixel_size=r2a(pixel_scale_out), extra_layers=[dl.AddOPD(mask), zernike_layer])"
-def make_image(params, osys):
-    zernikes = 'ApplyBasisOPD.coefficients'
-    position = [a2r(params[0]), a2r(params[1])]
-    separation = a2r(params[2])
-    position_angle = params[3]
-    zernike_params = 2e-8*params[4:]
-    osys = osys.set(zernikes, zernike_params)
-
-    
-    source = dl.BinarySource(position , flux, separation, position_angle, wavelengths = wavelengths)
-    image = osys.model(source=source)
-    image /= np.sum(image)
-    return image
 
 @eqx.filter_jit
 def compute_loss(params, osys, input_image):
@@ -345,14 +353,3 @@ for i in range(num_images):
     plt.yscale('log')
     plt.show()"
 print(np.std(np.abs(estimated_sep - separation_vec)))
-
-# time for 32 8m53s for 100
-# time for 64 31m39s for 30
-
-# note following table 32 bit had 100 iters, 64 had 30"
-| Offset | STD x32   | STD x64   | STDx32 with zerns |
-|--------|-----------|-----------|-------------------|
-| 1%     | 3.676e-06 | 2.424e-06 | 4.094e-06         |
-| 5%     | 7.752e-06 | 5.765e-06 | 6.007e-06         |
-| 10%    | 1.035e-05 |    n/a    | 7.397e-06         |
-| 25%    | 0.0678    |    n/a    | 0.392             |"
