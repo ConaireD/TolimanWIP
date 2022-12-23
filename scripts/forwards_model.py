@@ -9,16 +9,12 @@ import jax
 
 from jax import grad
 from tqdm.notebook import tqdm
-from IPython.display import clear_output
 
-jax.default_backend()\n"
-# NOTE: THIS NOTEBOOK IS RUNNING 32-bit
-This **greatly** increases computation time as GPUs prefer 32-bit, however this means flux **must** be limited to a maximum of 1e12 photons"
-#jax.config.update(\"jax_enable_x64\", True)
+jax.config.update("jax_enable_x64", True)
 r2a = dl.utils.radians_to_arcseconds
-a2r = dl.utils.arcseconds_to_radians"
-mask = np.load('TolimanMask_sidelobes.npy')"
-# Generate mask and basic modelling parmaters
+a2r = dl.utils.arcseconds_to_radians
+
+mask = np.load('../component_models/sidelobes.npy')
 
 central_wav = (595+695)/2
 wavels = 1e-9 * np.linspace(595, 695, 10) # Wavelengths
@@ -33,8 +29,28 @@ position = np.array([0.0,0.0])
 flux = 1
 separation = dl.utils.arcseconds_to_radians(8.0)
 position_angle = np.pi/2
-wavelengths = wavels\n"
-# Zernike Paramaters
+wavelengths = wavels
+
+aperture_diameter: float = .13,
+secondary_mirror_diameter: float = .032,
+detector_pixel_size: float = .375,
+
+# +
+# Created the aberrations on the aperture. 
+
+shape: int = 5
+nolls: list = np.arange(1, shape + 1, dtype=int)
+coeffs: list = 1e-8 * jax.random.normal(jax.random.PRNGKey(0), (shape,))
+# -
+
+aberrations: object = dl.AberratedAperture(
+    nolls, 
+    coeffs, 
+    dl.CircularAperture(aperture_diameter)
+)
+
+
+
 basis = dl.utils.zernike_basis(10, wf_npix, outside=0.)[3:] #tip/tilt/piston not here (already simulated)
 coeffs = 2e-8*jax.random.normal(jax.random.PRNGKey(0), [len(basis)])
 
