@@ -63,7 +63,7 @@ def plot_basis(basis: float, /, shape: tuple = None) -> None:
         axis.axis("off")
     
     for vec in range(number_of_vecs):
-        vec_cmap = axes.flat[vec].imshow(
+        vec_cmap: object = axes.flat[vec].imshow(
             basis[vec][:, ::-1], # Image coordinates
             vmin = min_of_basis, 
             vmax = max_of_basis
@@ -117,6 +117,36 @@ pupil: object = dl.CompoundAperture([
 ])
 
 pupil_arr: float = pupil.get_aperture(wf_npix, aperture_diameter)
+
+
+def plot_pupil(pupil: float) -> None:
+    """
+    """
+    import matplotlib as mpl
+    import matplotlib.pyplot as plt
+
+    mpl.rcParams["text.usetex"]: bool = True
+    mpl.rcParams["image.cmap"]: str = "Greys"
+
+    width_in_inches: int = 4
+
+    fig: object = plt.figure(figsize = (width_in_inches, width_in_inches))
+
+    image_axes: object = fig.add_axes([0., 0., .9, .9])
+    image_cmap: object = image_axes.imshow(pupil_arr[:, ::-1], vmin = 0., vmax = 1.)
+
+    image_axes.set_xticks([])
+    image_axes.set_yticks([])
+    image_axes.axis("off")
+
+    cbar_axes: object = fig.add_axes([.95, 0., .05, .9])
+    cbar: object = fig.colorbar(im_cmap, cax=cbar_axes)
+
+    cbar.ax.tick_params(labelsize = 20)
+    cbar.outline.set_visible(False)
+    
+    return None
+
 
 basis_vecs: float = aberrations.get_basis(wf_npix, aperture_diameter)
 
