@@ -185,17 +185,13 @@ shape: int = 5
 nolls: list = np.arange(2, shape + 2, dtype=int)
 coeffs: list = 1e-8 * jax.random.normal(jax.random.PRNGKey(0), (shape,))
 
-sky: object = dl.Scene(
-    [
-        dl.BinarySource( # alpha centauri
-            position = [0., 0.],
-            flux = 1.,
-            contrast = 2.,
-            separation = dl.utils.arcseconds_to_radians(2.),
-            position_angle = 0.,
-            wavelengths = wavelengths
-        )
-    ]
+alpha_centauri: object = dl.BinarySource( # alpha centauri
+    position = [0., 0.],
+    flux = 1.,
+    contrast = 2.,
+    separation = dl.utils.arcseconds_to_radians(2.),
+    position_angle = 0.,
+    wavelengths = wavelengths
 )
 
 toliman: object = dl.Optics(
@@ -234,6 +230,15 @@ toliman: object = dl.Optics(
         )
     ]
 )
+
+model: object = dl.Instrument(
+    optics = toliman,
+    sources = [alpha_centauri]
+)
+
+comp_mod: callable = jax.jit(model.model)
+
+psf: float = comp_mod()
 
 
 @eqx.filter_jit
