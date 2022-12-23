@@ -109,14 +109,14 @@ def plot_pupil(pupil: float) -> None:
     fig: object = plt.figure(figsize = (width_in_inches, width_in_inches))
 
     image_axes: object = fig.add_axes([0., 0., .9, .9])
-    image_cmap: object = image_axes.imshow(pupil_arr[:, ::-1], vmin = 0., vmax = 1.)
+    image_cmap: object = image_axes.imshow(pupil[:, ::-1], vmin = 0., vmax = 1.)
 
     image_axes.set_xticks([])
     image_axes.set_yticks([])
     image_axes.axis("off")
 
     cbar_axes: object = fig.add_axes([.95, 0., .05, .9])
-    cbar: object = fig.colorbar(im_cmap, cax=cbar_axes)
+    cbar: object = fig.colorbar(image_cmap, cax=cbar_axes)
 
     cbar.ax.tick_params(labelsize = 20)
     cbar.outline.set_visible(False)
@@ -125,6 +125,16 @@ def plot_pupil(pupil: float) -> None:
 
 
 def plot_pupil_with_aberrations(pupil: float, aberrations: float) -> None:
+    """
+    Plot a pupil that has aberrations.
+    
+    Parameters:
+    -----------
+    pupil: float
+        The (nearly)-binary array representing the pupil.
+    aberrations: float
+        The optical path differences. 
+    """
     import matplotlib as mpl
     import matplotlib.pyplot as plt
     
@@ -183,6 +193,8 @@ pupil: object = dl.CompoundAperture([
     dl.UniformSpider(number_of_struts, width_of_struts),
     dl.AnnularAperture(aperture_diameter / 2., secondary_mirror_diameter / 2.)
 ])
+
+diffractive_pupil: object = dl.AddOPD(mask)
 
 zernike_layer = dl.ApplyBasisOPD(basis, coeffs)
 osys = dl.utils.toliman(mask.shape[0], det_npix, detector_pixel_size=r2a(pixel_scale_out), extra_layers=[dl.AddOPD(mask), zernike_layer])"
