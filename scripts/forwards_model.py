@@ -21,6 +21,8 @@ wavels = 1e-9 * np.linspace(595, 695, 10) # Wavelengths
 aperture_diameter = 0.12
 arcsec_per_pixel = 0.375
 pixel_scale_out = dl.utils.arcseconds_to_radians(arcsec_per_pixel)
+
+
 det_npix = 100# 2048
 wf_npix = 1024
 
@@ -46,9 +48,22 @@ coeffs: list = 1e-8 * jax.random.normal(jax.random.PRNGKey(0), (shape,))
 aberrations: object = dl.AberratedAperture(
     nolls, 
     coeffs, 
-    dl.CircularAperture(aperture_diameter)
+    dl.CircularAperture(aperture_diameter / 2.)
 )
 
+basis_vecs: float = aberrations.get_basis(wf_npix, aperture_diameter)
+
+
+class Array(object):
+    def __getitem__(self, *args) -> None:
+        return
+
+
+Array = Array()
+
+
+def plot_basis(basis: Array[float]) -> None:
+    return
 
 
 basis = dl.utils.zernike_basis(10, wf_npix, outside=0.)[3:] #tip/tilt/piston not here (already simulated)
