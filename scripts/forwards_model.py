@@ -171,6 +171,7 @@ jax.config.update("jax_enable_x64", True)
 
 mask: float = np.load('../component_models/sidelobes.npy')
 npix: int = 1024
+detector_npix: int = 100
 
 central_wavelength: float = (595. + 695.) / 2.
 aperture_diameter: float = .13
@@ -184,20 +185,26 @@ shape: int = 5
 nolls: list = np.arange(2, shape + 2, dtype=int)
 coeffs: list = 1e-8 * jax.random.normal(jax.random.PRNGKey(0), (shape,))
 
-alpha_centauri: object = dl.BinarySource(
-    position = [0., 0.],
-    flux = 1.,
-    contrast = 2.,
-    separation = dl.utils.arcseconds_to_radians(2.),
-    position_angle = 0.,
-    wavelengths = wavelengths
+sky: object = dl.Scene(
+    [
+        dl.BinarySource( # alpha centauri
+            position = [0., 0.],
+            flux = 1.,
+            contrast = 2.,
+            separation = dl.utils.arcseconds_to_radians(2.),
+            position_angle = 0.,
+            wavelengths = wavelengths
+        )
+    ]
 )
-
-sky: object = dl.Scene([alpha_centauri])
 
 toliman: object = dl.Optics(
     layers = [
-        dl.CreateWavefront(npix, aperture_diameter), 
+        dl.CreateWavefront(
+            npix, 
+            aperture_diameter,
+            wavefront_type = "Angular"
+        ), 
         dl.CompoundAperture(
             [
                 dl.UniformSpider(
@@ -213,9 +220,18 @@ toliman: object = dl.Optics(
         dl.AberratedAperture(
             nolls, 
             coeffs, 
-            dl.CircularAperture(aperture_diameter / 2.)
+            dl.CircularAperture(
+                aperture_diameter / 2.
+            )
         ), 
-        dl.AddOPD(mask)
+        dl.AddOPD(
+            mask
+        ),
+        dl.NormaliseWavefront(),
+        dl.AngularMFT(
+            detector_npix,
+            dl.utils.arcseconds_to_radians(detector_pixel_size)
+        )
     ]
 )
 
