@@ -1,5 +1,5 @@
 use std::fs::File;
-use std::io::{BufReader, Error, BufRead};
+use std::io::{BufReader, Error, BufRead, Write};
 
 
 fn rename_ipynb_to_py(file_name: &String) -> String {
@@ -32,7 +32,7 @@ fn main() -> Result<(), Error> {
 		}
 
 		if in_source_block {
-			
+			write!(py, "{}", _line);
 		}
 
 		if _line.ends_with("]") && in_source_block {
