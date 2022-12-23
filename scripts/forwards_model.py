@@ -51,21 +51,23 @@ def plot_basis(basis: float, /, shape: tuple = None) -> None:
     height: int = rows * inches_per_row
     
     min_of_basis: float = basis.min()
-    max_of_basis: float = basis.max(
-    fig = plt.figure(figsize = (width * height))
+    max_of_basis: float = basis.max()
+    
+    fig = plt.figure(figsize = (width, height))
     axes = fig.subplots(rows, cols)
     
+    for axis in axes.flat:
+        axis.set_xticks([])
+        axis.set_yticks([])
+        axis.axis("off")
+    
     for vec in range(number_of_vecs):
-        vec_cmap = axes[vec].imshow(
+        vec_cmap = axes.flat[vec].imshow(
             basis[vec][:, ::-1], # Image coordinates
             vmin = min_of_basis, 
             vmax = max_of_basis
         )
         
-        axes[vec].set_xticks([])
-        axes[vec].set_yticks([])
-        axes[vec].axis("off")
-    
     fig.subplots_adjust(
         left = 0, 
         right = 1.,
@@ -87,8 +89,6 @@ def plot_basis(basis: float, /, shape: tuple = None) -> None:
 
 
 jax.config.update("jax_enable_x64", True)
-r2a = dl.utils.radians_to_arcseconds
-a2r = dl.utils.arcseconds_to_radians
 
 mask = np.load('../component_models/sidelobes.npy')
 
@@ -109,17 +109,14 @@ separation = dl.utils.arcseconds_to_radians(8.0)
 position_angle = np.pi/2
 wavelengths = wavels
 
-aperture_diameter: float = .13,
-secondary_mirror_diameter: float = .032,
-detector_pixel_size: float = .375,
+aperture_diameter: float = .13
+secondary_mirror_diameter: float = .032
+detector_pixel_size: float = .375
 
-# +
 # Created the aberrations on the aperture. 
-
 shape: int = 5
 nolls: list = np.arange(2, shape + 2, dtype=int)
 coeffs: list = 1e-8 * jax.random.normal(jax.random.PRNGKey(0), (shape,))
-# -
 
 aberrations: object = dl.AberratedAperture(
     nolls, 
@@ -129,10 +126,7 @@ aberrations: object = dl.AberratedAperture(
 
 basis_vecs: float = aberrations.get_basis(wf_npix, aperture_diameter)
 
-plot_basis(basis_vecs, (2, 3))
-
-basis = dl.utils.zernike_basis(10, wf_npix, outside=0.)[3:] #tip/tilt/piston not here (already simulated)
-coeffs = 2e-8*jax.random.normal(jax.random.PRNGKey(0), [len(basis)])
+plot_basis(basis_vecs)
 
 zernike_layer = dl.ApplyBasisOPD(basis, coeffs)
 osys = dl.utils.toliman(mask.shape[0], det_npix, detector_pixel_size=r2a(pixel_scale_out), extra_layers=[dl.AddOPD(mask), zernike_layer])"
