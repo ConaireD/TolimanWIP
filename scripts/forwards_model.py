@@ -6,9 +6,7 @@ import os
 import optax
 import dLux as dl
 import jax
-
-from jax import grad
-from tqdm.notebook import tqdm
+import tqdm.notebook as tqdm
 
 
 def plot_basis(basis: float, /, shape: tuple = None) -> None:
@@ -33,6 +31,9 @@ def plot_basis(basis: float, /, shape: tuple = None) -> None:
     inches_per_col: int = 3
     inches_per_row: int = 3
     
+    # TODO: Implement for odd cases using subfigures to pull 
+    #       out the first basis vec into its own centred 
+    #       of the same size as the others. 
     if not shape:
         if number_of_vecs % 2 == 0: # is even
             rows: int = 2
@@ -90,28 +91,14 @@ def plot_basis(basis: float, /, shape: tuple = None) -> None:
 
 jax.config.update("jax_enable_x64", True)
 
-mask = np.load('../component_models/sidelobes.npy')
+mask: float = np.load('../component_models/sidelobes.npy')
 
-central_wav = (595+695)/2
-wavels = 1e-9 * np.linspace(595, 695, 10) # Wavelengths
-aperture_diameter = 0.12
-arcsec_per_pixel = 0.375
-pixel_scale_out = dl.utils.arcseconds_to_radians(arcsec_per_pixel)
-
-
-det_npix = 100# 2048
-wf_npix = 1024
-
-
-position = np.array([0.0,0.0])
-flux = 1
-separation = dl.utils.arcseconds_to_radians(8.0)
-position_angle = np.pi/2
-wavelengths = wavels
-
+central_wavelength: float = (595. + 695.) / 2.
 aperture_diameter: float = .13
 secondary_mirror_diameter: float = .032
 detector_pixel_size: float = .375
+width_of_struts: float = .01
+number_of_struts: int = 3
 
 # Created the aberrations on the aperture. 
 shape: int = 5
@@ -124,9 +111,18 @@ aberrations: object = dl.AberratedAperture(
     dl.CircularAperture(aperture_diameter / 2.)
 )
 
+pupil: object = dl.CompoundAperture([
+    dl.UniformSpider(number_of_struts, width_of_struts),
+    dl.AnnularAperture(aperture_diameter / 2., secondary_mirror_diameter / 2.)
+])
+
+pupil_arr: float = pupil.get_aperture(wf_npix, aperture_diameter)
+
 basis_vecs: float = aberrations.get_basis(wf_npix, aperture_diameter)
 
 plot_basis(basis_vecs)
+
+
 
 zernike_layer = dl.ApplyBasisOPD(basis, coeffs)
 osys = dl.utils.toliman(mask.shape[0], det_npix, detector_pixel_size=r2a(pixel_scale_out), extra_layers=[dl.AddOPD(mask), zernike_layer])"
