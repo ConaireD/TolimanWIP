@@ -41,7 +41,7 @@ detector_pixel_size: float = .375,
 # Created the aberrations on the aperture. 
 
 shape: int = 5
-nolls: list = np.arange(1, shape + 1, dtype=int)
+nolls: list = np.arange(2, shape + 2, dtype=int)
 coeffs: list = 1e-8 * jax.random.normal(jax.random.PRNGKey(0), (shape,))
 # -
 
@@ -54,17 +54,63 @@ aberrations: object = dl.AberratedAperture(
 basis_vecs: float = aberrations.get_basis(wf_npix, aperture_diameter)
 
 
-class Array(object):
-    def __getitem__(self, *args) -> None:
-        return
+def plot_basis(basis: float) -> None:
+    import matplotlib as mpl
+    import matplotlib.pyplot as plt
+    
+    mpl.rcParams["image.cmap"] = "seismic"
+    mpl.rcParams["text.usetex"] = True
+    
+    number_of_vecs: int = basis.shape[0]
+    inches_per_col: int = 3
+    inches_per_row: int = 3
+    
+    cols: int = number_of_vecs
+    rows: int = 1
+    width: int = cols * inches_per_col
+    height: int = rows * inches_per_row
+    
+    min_of_basis: float = basis.min()
+    max_of_basis: float = basis.max()
+    
+    fig = plt.figure(figsize = (width, height))
+    axes = fig.subplots(1, cols)
+    
+    for vec in range(number_of_vecs):
+        vec_cmap = axes[vec].imshow(
+            basis[vec][:, ::-1], # Image coordinates
+            vmin = min_of_basis, 
+            vmax = max_of_basis
+        )
+        
+        axes[vec].set_xticks([])
+        axes[vec].set_yticks([])
+        axes[vec].axis("off")
+    
+    fig.subplots_adjust(
+        left = 0, 
+        right = 1.,
+        bottom = .15
+    )
+    
+    col_bar_axis: object = fig.add_axes([0., 0., 1., .08])
+        
+    col_bar: object = fig.colorbar(
+        vec_cmap, 
+        cax = col_bar_axis, 
+        orientation = "horizontal"
+    )
+    
+    col_bar.ax.tick_params(labelsize = 20)
+    col_bar.ax.spines['top'].set_visible(False)
+    col_bar.ax.spines['right'].set_visible(False)
+    col_bar.ax.spines['bottom'].set_visible(False)
+    col_bar.ax.spines['left'].set_visible(False)
+    
+    return None
 
 
-Array = Array()
-
-
-def plot_basis(basis: Array[float]) -> None:
-    return
-
+plot_basis(basis_vecs)
 
 basis = dl.utils.zernike_basis(10, wf_npix, outside=0.)[3:] #tip/tilt/piston not here (already simulated)
 coeffs = 2e-8*jax.random.normal(jax.random.PRNGKey(0), [len(basis)])
