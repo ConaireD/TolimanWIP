@@ -124,6 +124,39 @@ def plot_pupil(pupil: float) -> None:
     return None
 
 
+def plot_pupil_with_aberrations(pupil: float, aberrations: float) -> None:
+    import matplotlib as mpl
+    import matplotlib.pyplot as plt
+    
+    mpl.rcParams["text.usetex"]: bool = True
+    mpl.rcParams["image.cmap"]: str = "seismic"
+    
+    max_displacement: float = np.max(np.abs(aberrations))
+    aberrated_pupil: float = pupil * aberrations.sum(axis = 0)
+    width_in_inches: int = 4
+
+    fig: object = plt.figure(figsize = (width_in_inches, width_in_inches))
+
+    image_axes: object = fig.add_axes([0., 0., .9, .9])
+    image_cmap: object = image_axes.imshow(
+        aberrated_pupil[:, ::-1],
+        vmin = - max_displacement,
+        vmax = max_displacement
+    )
+
+    image_axes.set_xticks([])
+    image_axes.set_yticks([])
+    image_axes.axis("off")
+
+    cbar_axes: object = fig.add_axes([.95, 0., .05, .9])
+    cbar: object = fig.colorbar(image_cmap, cax=cbar_axes)
+
+    cbar.ax.tick_params(labelsize = 20)
+    cbar.outline.set_visible(False)
+    
+    return None 
+
+
 jax.config.update("jax_enable_x64", True)
 
 mask: float = np.load('../component_models/sidelobes.npy')
@@ -150,14 +183,6 @@ pupil: object = dl.CompoundAperture([
     dl.UniformSpider(number_of_struts, width_of_struts),
     dl.AnnularAperture(aperture_diameter / 2., secondary_mirror_diameter / 2.)
 ])
-
-pupil_arr: float = pupil.get_aperture(wf_npix, aperture_diameter)
-
-basis_vecs: float = aberrations.get_basis(wf_npix, aperture_diameter)
-
-plot_basis(basis_vecs)
-
-
 
 zernike_layer = dl.ApplyBasisOPD(basis, coeffs)
 osys = dl.utils.toliman(mask.shape[0], det_npix, detector_pixel_size=r2a(pixel_scale_out), extra_layers=[dl.AddOPD(mask), zernike_layer])"
