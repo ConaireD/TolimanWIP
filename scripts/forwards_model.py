@@ -10,6 +10,82 @@ import jax
 from jax import grad
 from tqdm.notebook import tqdm
 
+
+def plot_basis(basis: float, /, shape: tuple = None) -> None:
+    """
+    Plot a set of polynomial vectors that comprise a
+    basis. 
+    
+    Parameters:
+    -----------
+    basis: tensor[float]
+        The basis vectors arranged as (nvecs, npix, npix).
+    rows: tuple[int]
+        The number of rows and cols in the plotting grid.
+    """
+    import matplotlib as mpl
+    import matplotlib.pyplot as plt
+    
+    mpl.rcParams["image.cmap"] = "seismic"
+    mpl.rcParams["text.usetex"] = True
+    
+    number_of_vecs: int = basis.shape[0]
+    inches_per_col: int = 3
+    inches_per_row: int = 3
+    
+    if not shape:
+        if number_of_vecs % 2 == 0: # is even
+            rows: int = 2
+            cols: int = number_of_vecs // 2
+        else:
+            rows: int = 1
+            cols: int = number_of_vecs
+    else:
+        rows: int = shape[0]
+        cols: int = shape[1]
+    
+    if number_of_vecs > rows * cols:
+        raise ValueError("Not enough subplots were provided.")
+        
+    width: int = cols * inches_per_col
+    height: int = rows * inches_per_row
+    
+    min_of_basis: float = basis.min()
+    max_of_basis: float = basis.max(
+    fig = plt.figure(figsize = (width * height))
+    axes = fig.subplots(rows, cols)
+    
+    for vec in range(number_of_vecs):
+        vec_cmap = axes[vec].imshow(
+            basis[vec][:, ::-1], # Image coordinates
+            vmin = min_of_basis, 
+            vmax = max_of_basis
+        )
+        
+        axes[vec].set_xticks([])
+        axes[vec].set_yticks([])
+        axes[vec].axis("off")
+    
+    fig.subplots_adjust(
+        left = 0, 
+        right = 1.,
+        bottom = .15
+    )
+    
+    col_bar_axis: object = fig.add_axes([0., 0., 1., .08])
+        
+    col_bar: object = fig.colorbar(
+        vec_cmap, 
+        cax = col_bar_axis, 
+        orientation = "horizontal"
+    )
+    
+    col_bar.ax.tick_params(labelsize = 20)
+    col_bar.outline.set_visible(False)
+    
+    return None
+
+
 jax.config.update("jax_enable_x64", True)
 r2a = dl.utils.radians_to_arcseconds
 a2r = dl.utils.arcseconds_to_radians
@@ -53,64 +129,7 @@ aberrations: object = dl.AberratedAperture(
 
 basis_vecs: float = aberrations.get_basis(wf_npix, aperture_diameter)
 
-
-def plot_basis(basis: float) -> None:
-    import matplotlib as mpl
-    import matplotlib.pyplot as plt
-    
-    mpl.rcParams["image.cmap"] = "seismic"
-    mpl.rcParams["text.usetex"] = True
-    
-    number_of_vecs: int = basis.shape[0]
-    inches_per_col: int = 3
-    inches_per_row: int = 3
-    
-    cols: int = number_of_vecs
-    rows: int = 1
-    width: int = cols * inches_per_col
-    height: int = rows * inches_per_row
-    
-    min_of_basis: float = basis.min()
-    max_of_basis: float = basis.max()
-    
-    fig = plt.figure(figsize = (width, height))
-    axes = fig.subplots(1, cols)
-    
-    for vec in range(number_of_vecs):
-        vec_cmap = axes[vec].imshow(
-            basis[vec][:, ::-1], # Image coordinates
-            vmin = min_of_basis, 
-            vmax = max_of_basis
-        )
-        
-        axes[vec].set_xticks([])
-        axes[vec].set_yticks([])
-        axes[vec].axis("off")
-    
-    fig.subplots_adjust(
-        left = 0, 
-        right = 1.,
-        bottom = .15
-    )
-    
-    col_bar_axis: object = fig.add_axes([0., 0., 1., .08])
-        
-    col_bar: object = fig.colorbar(
-        vec_cmap, 
-        cax = col_bar_axis, 
-        orientation = "horizontal"
-    )
-    
-    col_bar.ax.tick_params(labelsize = 20)
-    col_bar.ax.spines['top'].set_visible(False)
-    col_bar.ax.spines['right'].set_visible(False)
-    col_bar.ax.spines['bottom'].set_visible(False)
-    col_bar.ax.spines['left'].set_visible(False)
-    
-    return None
-
-
-plot_basis(basis_vecs)
+plot_basis(basis_vecs, (2, 3))
 
 basis = dl.utils.zernike_basis(10, wf_npix, outside=0.)[3:] #tip/tilt/piston not here (already simulated)
 coeffs = 2e-8*jax.random.normal(jax.random.PRNGKey(0), [len(basis)])
