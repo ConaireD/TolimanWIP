@@ -27,16 +27,18 @@ fn main() -> Result<(), Error> {
 		let _line: &str = line.as_ref().unwrap();
 		
 		if _line.ends_with("]") && in_source_block {
-			println!("{}", _line);
 			in_source_block = false;
 		}
-			
+	
 		if in_source_block {
-			write!(py, "{}\n", _line);
+			let __line: &str = _line
+				.trim()
+				.trim_end_matches("\\n\",")
+				.trim_start_matches("\"");
+			write!(py, "{}\n", __line);
 		}
 			
 		if _line.contains("\"source\": [") {
-			println!("{}", _line);
 			in_source_block = true;
 		}
 	}
