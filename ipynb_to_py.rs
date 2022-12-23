@@ -17,13 +17,22 @@ fn main() -> Result<(), Error> {
 	let buf_ipynb: BufReader<File> = BufReader::new(ipynb);
 
 	for line in buf_ipynb.lines() {
-		match line {
-			Ok(line_str) => println!("{}", line_str),
-			Err(err) => println!("{}", err)
+		let mut in_source_block: bool = false;
+		let _line: &str = line.as_ref().unwrap();
+		
+		if _line.contains("\"source\": [") {
+			println!("{}", _line);
+			in_source_block = true;
 		}
-		// if line.contains("soruce: [") {
-			// println!("{}", line?);
-		// }
+
+		if in_source_block {
+			
+		}
+
+		if in_source_block && _line.ends_with("]") {
+			println!("{}", _line);
+		}
+		
 	}
 
 	return Ok(());
