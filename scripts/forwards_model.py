@@ -91,7 +91,7 @@ zern_coeff_mat = jax.random.normal(key, (len(basis), num_images)) #scale is appl
 plt.figure()
 plt.scatter(position_vec[:,0], position_vec[:,1], alpha = 0.5)
 plt.title('position')
- 
+
 plt.figure()
 plt.hist(separation_vec[0,:], bins = 15)
 plt.title('separation')
@@ -99,7 +99,7 @@ plt.title('separation')
 plt.figure()
 plt.hist(angle_vec[0,:], bins = 15)
 plt.title('angle')"
-%%time
+# %%time
 start_learning_rate = 4.5e-2
 max_iter = 200
 
