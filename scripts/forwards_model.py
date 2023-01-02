@@ -191,7 +191,7 @@ alpha_centauri: object = dl.BinarySource( # alpha centauri
     contrast = 2.,
     separation = dl.utils.arcseconds_to_radians(2.),
     position_angle = 0.,
-    wavelengths = wavelengths
+    wavelengths = np.linspace(595., 695., 10, endpoint=True)
 )
 
 toliman: object = dl.Optics(
