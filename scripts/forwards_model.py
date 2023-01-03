@@ -236,22 +236,9 @@ model: object = dl.Instrument(
     sources = [alpha_centauri]
 )
 
-annular_aperture
+annular_aperture: object = toliman.layers['CompoundAperture'].apertures['AnnularAperture']
 
-coords_func: callable = toliman.layers['CompoundAperture'].apertures['AnnularAperture']._coordinates
-
-width: float = 2.
-npix: int = 128
-coords: float = dl.utils.get_pixel_coordinates(npix, width / npix)
-
-# %%timeit
-coords_func(coords).block_until_ready()
-
-jitted_coords_func: callable = jax.jit(coords_func)
-_: float = jitted_coords_func(coords)
-
-# %%timeit
-jitted_coords_func(coords).block_until_ready()
+coords_func: callable = annular_aperture._coordinates
 
 _: float = model.model()
 
