@@ -236,9 +236,14 @@ model: object = dl.Instrument(
     sources = [alpha_centauri]
 )
 
-comp_mod: callable = jax.jit(model.model)
+comp_mod: callable = model.model
 
-psf: float = comp_mod()
+_: float = comp_mod()
+
+import jax.profiler
+
+with jax.profiler.trace("/tmp/jax-trace", create_perfetto_link=True):
+    psf: float = comp_mod().block_until_ready()
 
 
 @eqx.filter_jit
