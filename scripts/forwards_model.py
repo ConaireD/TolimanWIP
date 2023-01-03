@@ -236,14 +236,29 @@ model: object = dl.Instrument(
     sources = [alpha_centauri]
 )
 
-comp_mod: callable = model.model
+annular_aperture
 
-_: float = comp_mod()
+coords_func: callable = toliman.layers['CompoundAperture'].apertures['AnnularAperture']._coordinates
+
+width: float = 2.
+npix: int = 128
+coords: float = dl.utils.get_pixel_coordinates(npix, width / npix)
+
+# %%timeit
+coords_func(coords).block_until_ready()
+
+jitted_coords_func: callable = jax.jit(coords_func)
+_: float = jitted_coords_func(coords)
+
+# %%timeit
+jitted_coords_func(coords).block_until_ready()
+
+_: float = model.model()
 
 import jax.profiler
 
 with jax.profiler.trace("/tmp/jax-trace", create_perfetto_link=True):
-    psf: float = comp_mod().block_until_ready()
+    psf: float = model.model().block_until_ready()
 
 
 @eqx.filter_jit
