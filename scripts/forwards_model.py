@@ -240,32 +240,17 @@ annular_aperture: object = toliman.layers['CompoundAperture'].apertures['Annular
 
 coords_func: callable = annular_aperture._coordinates
 
+with jax.profiler.trace("tmp/jax-trace", create_perfetto_link=True):
+    model.model().block_until_ready()
+
+# %%time
 _: float = model.model()
 
-# +
-x: float = jax.numpy.arange(100, dtype=float)
-y: int = 4
-
-jax.make_jaxpr(jax.lax.integer_pow)(x, y)
-# -
+model_func: callable = jax.jit(model.model)
+_: float = model_func()
 
 # %%timeit
-
-
-# %%timeit 
-x ** 4.
-
-# %%timeit
-x ** 4
-
-# %%timeit 
-jax.lax.integer_pow(x, 4)
-
-# %%timeit
-np.power(x, 4)
-
-with jax.profiler.trace("/tmp/jax-trace", create_perfetto_link=True):
-    psf: float = model.model().block_until_ready()
+model_func()
 
 
 @eqx.filter_jit
