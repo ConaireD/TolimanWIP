@@ -242,7 +242,27 @@ coords_func: callable = annular_aperture._coordinates
 
 _: float = model.model()
 
-import jax.profiler
+x: float = jax.numpy.arange(100, dtype=float)
+y: int = 4
+
+
+def pow_method_1(x, y):
+    jax.lax.pow(x, 4.)
+
+# %%timeit
+
+
+# %%timeit 
+x ** 4.
+
+# %%timeit
+x ** 4
+
+# %%timeit 
+jax.lax.integer_pow(x, 4)
+
+# %%timeit
+np.power(x, 4)
 
 with jax.profiler.trace("/tmp/jax-trace", create_perfetto_link=True):
     psf: float = model.model().block_until_ready()
