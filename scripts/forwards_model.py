@@ -242,12 +242,12 @@ coords_func: callable = annular_aperture._coordinates
 
 _: float = model.model()
 
+# +
 x: float = jax.numpy.arange(100, dtype=float)
 y: int = 4
 
-
-def pow_method_1(x, y):
-    jax.lax.pow(x, 4.)
+jax.make_jaxpr(jax.lax.integer_pow)(x, y)
+# -
 
 # %%timeit
 
