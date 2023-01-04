@@ -237,13 +237,41 @@ model: object = dl.Instrument(
 )
 
 annular_aperture: object = toliman.layers['CompoundAperture'].apertures['AnnularAperture']
+propagator: object = toliman.layers["AngularMFT"]
+wavefront: object = dl.AngularWavefront(
+    wavelength = 545., 
+    pixel_scale = aperture_diameter / npix, 
+    amplitude = np.ones((1, npix, npix), dtype=float), 
+    phase = np.zeros((1, npix, npix), dtype=float), 
+    plane_type = dl.PlaneType.Pupil)
 
-coords_func: callable = annular_aperture._coordinates
+plot_pupil(annular_aperture._aperture(coords))
+
+# %%timeit
+annular_aperture._aperture(coords)
+
+jit_ann_ap: callable = jax.jit(annular_aperture._aperture)
+ap_im: float = jit_ann_ap(coords)
+
+# %%timeit
+jit_ann_ap(coords)
+
+prop
+
+# %%timeit
+propagator.propagate(wavefront)
+
+jit_prop
+
+jit_propagator: callable = jax.jit(propagator.__call__)
+
+AngularWavefefront
+
+# %%time
 
 with jax.profiler.trace("tmp/jax-trace", create_perfetto_link=True):
     model.model().block_until_ready()
 
-# %%time
 _: float = model.model()
 
 model_func: callable = jax.jit(model.model)

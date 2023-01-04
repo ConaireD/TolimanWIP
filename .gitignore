@@ -2,3 +2,5 @@ datasheets/*
 component_manuals/*
 *.swp
 */*.swp
+scripts/tmp
+*.ipynb_checkpoints
