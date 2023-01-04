@@ -236,38 +236,43 @@ model: object = dl.Instrument(
     sources = [alpha_centauri]
 )
 
-annular_aperture: object = toliman.layers['CompoundAperture'].apertures['AnnularAperture']
-propagator: object = toliman.layers["AngularMFT"]
+# +
+annular_aperture: object = dl.AnnularAperture(
+    aperture_diameter / 2., 
+    secondary_mirror_diameter / 2.
+)
+    
+propagator: object = dl.AngularMFT(
+    detector_npix,
+    dl.utils.arcseconds_to_radians(detector_pixel_size)
+)
+    
 wavefront: object = dl.AngularWavefront(
     wavelength = 545., 
     pixel_scale = aperture_diameter / npix, 
     amplitude = np.ones((1, npix, npix), dtype=float), 
     phase = np.zeros((1, npix, npix), dtype=float), 
-    plane_type = dl.PlaneType.Pupil)
+    plane_type = dl.PlaneType.Pupil
+)
+# -
 
-plot_pupil(annular_aperture._aperture(coords))
+with jax.profiler
+annular_aperture(wavefront)
+
+jit_ann_ap: callable = jax.jit(annular_aperture.__call__)
+ap_im: float = jit_ann_ap(wavefront)
 
 # %%timeit
-annular_aperture._aperture(coords)
-
-jit_ann_ap: callable = jax.jit(annular_aperture._aperture)
-ap_im: float = jit_ann_ap(coords)
-
-# %%timeit
-jit_ann_ap(coords)
-
-prop
+jit_ann_ap(wavefront)
 
 # %%timeit
 propagator.propagate(wavefront)
 
-jit_prop
-
 jit_propagator: callable = jax.jit(propagator.__call__)
+prop_wav: object = jit_propagator(wavefront)
 
-AngularWavefefront
-
-# %%time
+# %%timeit
+jit_propagator(wavefront)
 
 with jax.profiler.trace("tmp/jax-trace", create_perfetto_link=True):
     model.model().block_until_ready()
