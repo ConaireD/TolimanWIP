@@ -259,8 +259,31 @@ wavefront: object = dl.AngularWavefront(
 with jax.profiler.trace("tmp/jax-trace", create_perfetto_link=True):
     annular_aperture(wavefront)
 
+wave_coords: float = wavefront.pixel_coordinates
+
+# %%timeit
+ann_ap_coords: float = annular_aperture._coordinates(wave_coords)
+
+jit_ann_ap_coords: callable = jax.jit(annular_aperture._coordinates)
+_: float = jit_ann_ap_coords(wave_coords)
+
+# %%timeit
+jit_ann_ap_coords(wave_coords).block_until_ready()
+
 jit_ann_ap: callable = jax.jit(annular_aperture.__call__)
 ap_im: float = jit_ann_ap(wavefront)
+
+jit_soft_ann_ap: callable = jax.jit(annular_aperture._soft_edged)
+_: float = jit_soft_ann_ap(wave_coords)
+
+# %%timeit
+jit_soft_ann_ap(wave_coords).block_until_ready()
+
+jit_hard_ann_ap: callable = jax.jit(annular_aperture._hard_edged)
+_: float = jit_hard_ann_ap(wave_coords)
+
+# %%timeit
+jit_hard_ann_ap(wave_coords).block_until_ready()
 
 # %%timeit
 jit_ann_ap(wavefront).block_until_ready()
