@@ -256,23 +256,23 @@ wavefront: object = dl.AngularWavefront(
 )
 # -
 
-with jax.profiler
-annular_aperture(wavefront)
+with jax.profiler.trace("tmp/jax-trace", create_perfetto_link=True):
+    annular_aperture(wavefront)
 
 jit_ann_ap: callable = jax.jit(annular_aperture.__call__)
 ap_im: float = jit_ann_ap(wavefront)
 
 # %%timeit
-jit_ann_ap(wavefront)
+jit_ann_ap(wavefront).block_until_ready()
 
 # %%timeit
-propagator.propagate(wavefront)
+propagator.propagate(wavefront).block_until_ready()
 
 jit_propagator: callable = jax.jit(propagator.__call__)
 prop_wav: object = jit_propagator(wavefront)
 
 # %%timeit
-jit_propagator(wavefront)
+jit_propagator(wavefront).block_until_ready()
 
 with jax.profiler.trace("tmp/jax-trace", create_perfetto_link=True):
     model.model().block_until_ready()
