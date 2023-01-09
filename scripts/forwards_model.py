@@ -183,7 +183,7 @@ number_of_struts: int = 3
 # Created the aberrations on the aperture. 
 shape: int = 5
 nolls: list = np.arange(2, shape + 2, dtype=int)
-coeffs: list = 1e-8 * jax.random.normal(jax.random.PRNGKey(0), (shape,))
+coeffs: list = 0. * jax.random.normal(jax.random.PRNGKey(0), (shape,))
 
 alpha_centauri: object = dl.BinarySource( # alpha centauri
     position = [0., 0.],
@@ -194,47 +194,68 @@ alpha_centauri: object = dl.BinarySource( # alpha centauri
     wavelengths = np.linspace(595., 695., 10, endpoint=True)
 )
 
-toliman: object = dl.Optics(
-    layers = [
-        dl.CreateWavefront(
-            npix, 
-            aperture_diameter,
-            wavefront_type = "Angular"
-        ), 
-        dl.CompoundAperture(
-            [
-                dl.UniformSpider(
-                    number_of_struts, 
-                    width_of_struts
-                ),
-                dl.AnnularAperture(
-                    aperture_diameter / 2., 
-                    secondary_mirror_diameter / 2.
-                )
-            ]
-        ), 
-        dl.AberratedAperture(
-            nolls, 
-            coeffs, 
-            dl.CircularAperture(
-                aperture_diameter / 2.
-            )
-        ), 
-        dl.AddOPD(
-            mask
+wavefront_factory: object = dl.CreateWavefront(
+    npix, 
+    aperture_diameter,
+    wavefront_type = "Angular"
+)
+
+toliman_pupil: object = dl.CompoundAperture(
+    [
+        dl.UniformSpider(
+            number_of_struts, 
+            width_of_struts
         ),
-        dl.NormaliseWavefront(),
-        dl.AngularMFT(
-            detector_npix,
-            dl.utils.arcseconds_to_radians(detector_pixel_size)
+        dl.AnnularAperture(
+            aperture_diameter / 2., 
+            secondary_mirror_diameter / 2.
         )
     ]
 )
+
+toliman_aberrations: object = dl.AberratedAperture(
+     nolls, 
+     coeffs, 
+     dl.CircularAperture(
+         aperture_diameter / 2.
+     )
+ )
+
+toliman_mask: object = dl.AddOPD(mask)
+toliman_power: object = dl.NormaliseWavefront()
+
+toliman_body: object = dl.AngularMFT(
+    detector_npix,
+    dl.utils.arcseconds_to_radians(detector_pixel_size)
+)
+
+toliman: object = dl.Optics(
+    layers = [
+        wavefront_factory,
+        toliman_pupil,
+        toliman_aberrations,
+        toliman_mask,
+        toliman_power,
+        toliman_body
+    ]
+)
+
+wavefront: object = wavefront_factory(None, {"offset": np.asarray([0., 0.]), "wavelength": 550e-09}, False)
+
+ccoords: float = wavefront.pixel_coordinates
+
+plot_pupil(toliman_pupil._aperture(ccoords))
 
 model: object = dl.Instrument(
     optics = toliman,
     sources = [alpha_centauri]
 )
+
+psf: float = model.model()
+
+fig: object = plt.figure(figsize=(4, 4))
+axes: object = fig.add_axes([0., 0., 1., 1.])
+cmap: object = axes.imshow(psf, cmap=plt.cm.inferno)
 
 
 @eqx.filter_jit
