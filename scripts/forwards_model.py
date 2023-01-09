@@ -200,26 +200,35 @@ wavefront_factory: object = dl.CreateWavefront(
     wavefront_type = "Angular"
 )
 
-toliman_pupil: object = dl.CompoundAperture(
+toliman_pupil: object = dl.StaticAperture(
+    dl.CompoundAperture(
     [
-        dl.UniformSpider(
-            number_of_struts, 
-            width_of_struts
-        ),
-        dl.AnnularAperture(
-            aperture_diameter / 2., 
-            secondary_mirror_diameter / 2.
-        )
-    ]
+            dl.UniformSpider(
+                number_of_struts, 
+                width_of_struts
+            ),
+            dl.AnnularAperture(
+                aperture_diameter / 2., 
+                secondary_mirror_diameter / 2.
+            )
+        ]
+    ),
+    npixels = npix,
+    pixel_scale = aperture_diameter / npix
 )
 
-toliman_aberrations: object = dl.AberratedAperture(
-     nolls, 
-     coeffs, 
-     dl.CircularAperture(
-         aperture_diameter / 2.
-     )
- )
+toliman_aberrations: object = dl.StaticAberratedAperture(
+    dl.AberratedAperture(
+         nolls, 
+         coeffs, 
+         dl.CircularAperture(
+             aperture_diameter / 2.
+         )
+    ),
+    coefficients = coeffs,
+    npixels = npix,
+    pixel_scale = aperture_diameter / npix
+)
 
 toliman_mask: object = dl.AddOPD(mask)
 toliman_power: object = dl.NormaliseWavefront()
@@ -227,11 +236,6 @@ toliman_power: object = dl.NormaliseWavefront()
 toliman_body: object = dl.AngularMFT(
     detector_npix,
     dl.utils.arcseconds_to_radians(detector_pixel_size)
-)
-
-model: object = dl.Instrument(
-    optics = toliman,
-    sources = [alpha_centauri]
 )
 
 toliman: object = dl.Optics(
@@ -245,8 +249,16 @@ toliman: object = dl.Optics(
     ]
 )
 
+model: object = dl.Instrument(
+    optics = toliman,
+    sources = [alpha_centauri]
+)
+
 comp_model: callable = jax.jit(model.model)
-psf: float = model.model()
+psf: float = comp_model()
+
+# %%timeit
+comp_model()
 
 
 def plot_psf(psf: float) -> fig:
@@ -259,18 +271,20 @@ def plot_psf(psf: float) -> fig:
     _: None = cbar.outline.set_visible(False)
 
 
-@eqx.filter_jit
-@eqx.filter_value_and_grad
-def loss(data: float, model: float):
-    forward_model: float = model.model()
-    return (forward_model - data) ** 2
-
 def apply_photon_noise(image, seed = 0):
     key = jax.random.PRNGKey(seed)
     image_noisy = jax.random.poisson(key = key,lam = image)
     image_noisy /= 1e5  # needed so next line doesn't cause underflow (?) errors for high fluxes
     image_noisy /= np.sum(image_noisy)
     return image_noisy
+
+
+@eqx.filter_jit
+@eqx.filter_value_and_grad
+def loss(data: float, model: float):
+    forward_model: float = model.model()
+    return (forward_model - data) ** 2
+
 
 
 key = jax.random.PRNGKey(0)
