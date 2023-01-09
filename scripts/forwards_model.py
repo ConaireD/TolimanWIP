@@ -229,18 +229,23 @@ toliman_body: object = dl.AngularMFT(
     dl.utils.arcseconds_to_radians(detector_pixel_size)
 )
 
+circular_ap: object = dl.CircularAperture(aperture_diameter / 2.)
+
 toliman: object = dl.Optics(
     layers = [
         wavefront_factory,
+        circular_ap,
         # toliman_pupil,
         # toliman_aberrations,
-        toliman_mask,
-        toliman_power,
-        toliman_body
+        # toliman_mask,
+        # toliman_power,
+        # toliman_body
     ]
 )
 
 wavefront: object = wavefront_factory(None, {"offset": np.asarray([0., 0.]), "wavelength": 550e-09}, False)
+
+wavefront.phase
 
 model: object = dl.Instrument(
     optics = toliman,
@@ -250,36 +255,25 @@ model: object = dl.Instrument(
 psf: float = model.model()
 
 fig: object = plt.figure(figsize=(4, 4))
-axes: object = fig.add_axes([0., 0., 1., 1.])
-cmap: object = axes.imshow(psf)
+axes: object = fig.add_axes([0., 0., .95, .95])
+caxes: object = fig.add_axes([.95, 0., .05, .95])
+cmap: object = axes.imshow(psf, cmap=plt.cm.inferno)
+cbar: object = fig.colorbar(cmap, cax=caxes)
 
 
 @eqx.filter_jit
-def compute_loss(params, osys, input_image):
-    zernikes = 'ApplyBasisOPD.coefficients'
-    image_params = params[:4]
-    zernike_params = 2e-8*params[4:]
-    osys = osys.set(zernikes, zernike_params)
-    
-    fmodel_image = make_image(params, osys)
-    noise = np.sqrt(input_image)  # does this actually do anything?
-    residual = (input_image - fmodel_image)/noise
-    
-    chi2 = np.sum(residual**2)
-    return chi2
-
-def apply_photon_noise(image, seed = 0):
-    key = jax.random.PRNGKey(seed)
-    image_noisy = jax.random.poisson(key = key,lam = image)
-    return image_noisy
+@eqx.filter_value_and_grad
+def loss(data: float, model: float):
+    forward_model: float = model.model()
+    return (forward_model - data) ** 2
 
 def apply_photon_noise(image, seed = 0):
     key = jax.random.PRNGKey(seed)
     image_noisy = jax.random.poisson(key = key,lam = image)
     image_noisy /= 1e5  # needed so next line doesn't cause underflow (?) errors for high fluxes
     image_noisy /= np.sum(image_noisy)
-    return image_noisy"
-num_images = 100
+    return image_noisy
+
 
 key = jax.random.PRNGKey(0)
 position_vec = 0.05*jax.random.normal(key, (num_images,2))
