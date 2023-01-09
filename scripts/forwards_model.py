@@ -245,13 +245,18 @@ toliman: object = dl.Optics(
     ]
 )
 
+comp_model: callable = jax.jit(model.model)
 psf: float = model.model()
 
-fig: object = plt.figure(figsize=(4, 4))
-axes: object = fig.add_axes([0., 0., .95, .95])
-caxes: object = fig.add_axes([.95, 0., .05, .95])
-cmap: object = axes.imshow(psf, cmap=plt.cm.inferno)
-cbar: object = fig.colorbar(cmap, cax=caxes)
+
+def plot_psf(psf: float) -> fig:
+    fig: object = plt.figure(figsize=(4, 4))
+    axes: object = fig.add_axes([0., 0., .95, .95])
+    _: list = axes.axis("off")
+    caxes: object = fig.add_axes([.95, 0., .05, .95])
+    cmap: object = axes.imshow(psf, cmap=plt.cm.inferno)
+    cbar: object = fig.colorbar(cmap, cax=caxes)
+    _: None = cbar.outline.set_visible(False)
 
 
 @eqx.filter_jit
