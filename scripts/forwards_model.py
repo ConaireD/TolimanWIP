@@ -232,8 +232,8 @@ toliman_body: object = dl.AngularMFT(
 toliman: object = dl.Optics(
     layers = [
         wavefront_factory,
-        toliman_pupil,
-        toliman_aberrations,
+        # toliman_pupil,
+        # toliman_aberrations,
         toliman_mask,
         toliman_power,
         toliman_body
@@ -241,10 +241,6 @@ toliman: object = dl.Optics(
 )
 
 wavefront: object = wavefront_factory(None, {"offset": np.asarray([0., 0.]), "wavelength": 550e-09}, False)
-
-ccoords: float = wavefront.pixel_coordinates
-
-plot_pupil(toliman_pupil._aperture(ccoords))
 
 model: object = dl.Instrument(
     optics = toliman,
@@ -255,7 +251,7 @@ psf: float = model.model()
 
 fig: object = plt.figure(figsize=(4, 4))
 axes: object = fig.add_axes([0., 0., 1., 1.])
-cmap: object = axes.imshow(psf, cmap=plt.cm.inferno)
+cmap: object = axes.imshow(psf)
 
 
 @eqx.filter_jit
