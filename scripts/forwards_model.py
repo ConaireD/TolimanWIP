@@ -183,7 +183,7 @@ number_of_struts: int = 3
 # Created the aberrations on the aperture. 
 shape: int = 5
 nolls: list = np.arange(2, shape + 2, dtype=int)
-coeffs: list = 0. * jax.random.normal(jax.random.PRNGKey(0), (shape,))
+coeffs: list = 1e-08 * jax.random.normal(jax.random.PRNGKey(0), (shape,))
 
 alpha_centauri: object = dl.BinarySource( # alpha centauri
     position = [0., 0.],
@@ -229,26 +229,20 @@ toliman_body: object = dl.AngularMFT(
     dl.utils.arcseconds_to_radians(detector_pixel_size)
 )
 
-circular_ap: object = dl.CircularAperture(aperture_diameter / 2.)
+model: object = dl.Instrument(
+    optics = toliman,
+    sources = [alpha_centauri]
+)
 
 toliman: object = dl.Optics(
     layers = [
         wavefront_factory,
-        # toliman_pupil,
-        # toliman_aberrations,
-        # toliman_mask,
-        # toliman_power,
+        toliman_pupil,
+        toliman_aberrations,
+        toliman_mask,
+        toliman_power,
         toliman_body
     ]
-)
-
-wavefront: object = wavefront_factory(None, {"offset": np.asarray([0., 0.]), "wavelength": 550e-09}, False)
-
-wavefront.phase
-
-model: object = dl.Instrument(
-    optics = toliman,
-    sources = [alpha_centauri]
 )
 
 psf: float = model.model()
