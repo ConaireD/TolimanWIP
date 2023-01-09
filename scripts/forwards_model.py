@@ -189,9 +189,9 @@ alpha_centauri: object = dl.BinarySource( # alpha centauri
     position = [0., 0.],
     flux = 1.,
     contrast = 2.,
-    separation = dl.utils.arcseconds_to_radians(2.),
+    separation = dl.utils.arcseconds_to_radians(8.),
     position_angle = 0.,
-    wavelengths = np.linspace(595., 695., 10, endpoint=True)
+    wavelengths = 1e-09 * np.linspace(595., 695., 10, endpoint=True)
 )
 
 wavefront_factory: object = dl.CreateWavefront(
@@ -234,12 +234,11 @@ circular_ap: object = dl.CircularAperture(aperture_diameter / 2.)
 toliman: object = dl.Optics(
     layers = [
         wavefront_factory,
-        circular_ap,
         # toliman_pupil,
         # toliman_aberrations,
         # toliman_mask,
         # toliman_power,
-        # toliman_body
+        toliman_body
     ]
 )
 
