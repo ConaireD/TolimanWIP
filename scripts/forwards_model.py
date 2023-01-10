@@ -258,6 +258,9 @@ comp_model: callable = jax.jit(model.model)
 psf: float = comp_model()
 
 # %%timeit
+model.model()
+
+# %%timeit
 comp_model()
 
 
