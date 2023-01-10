@@ -231,7 +231,7 @@ toliman_aberrations: object = dl.StaticAberratedAperture(
 )
 
 toliman_mask: object = dl.AddOPD(mask)
-toliman_power: object = dl.NormaliseWavefront()
+normalise: object = dl.NormaliseWavefront()
 
 toliman_body: object = dl.AngularMFT(
     detector_npix,
@@ -244,8 +244,9 @@ toliman: object = dl.Optics(
         toliman_pupil,
         toliman_aberrations,
         toliman_mask,
-        toliman_power,
-        toliman_body
+        normalise,
+        toliman_body,
+        normalise
     ]
 )
 
@@ -257,11 +258,8 @@ model: object = dl.Instrument(
 comp_model: callable = jax.jit(model.model)
 psf: float = comp_model()
 
-# %%timeit
-comp_model()
 
-
-def plot_psf(psf: float) -> fig:
+def plot_psf(psf: float) -> None:
     fig: object = plt.figure(figsize=(4, 4))
     axes: object = fig.add_axes([0., 0., .95, .95])
     _: list = axes.axis("off")
@@ -271,12 +269,9 @@ def plot_psf(psf: float) -> fig:
     _: None = cbar.outline.set_visible(False)
 
 
-def apply_photon_noise(image, seed = 0):
+def pixel_response(psf: float, seed: int = 0) -> float:
     key = jax.random.PRNGKey(seed)
-    image_noisy = jax.random.poisson(key = key,lam = image)
-    image_noisy /= 1e5  # needed so next line doesn't cause underflow (?) errors for high fluxes
-    image_noisy /= np.sum(image_noisy)
-    return image_noisy
+    return jax.random.poisson(key, 1e6 * psf)
 
 
 @eqx.filter_jit
@@ -285,7 +280,19 @@ def loss(data: float, model: float):
     forward_model: float = model.model()
     return (forward_model - data) ** 2
 
+def normalise(arr: float) -> float:
+    return (arr - arr.min()) / (arr.max() - arr.min())
 
+
+plot_psf(normalise(psf))
+
+# Why did I choose this value of lambda.
+nphotons: float = 1e9
+photon_noise: float = psf.mean() * jax.random.poisson(jax.random.PRNGKey(0), lam=1., shape=psf.shape)
+
+plot_psf(psf + photon_noise)
+
+help(jax.random.poisson)
 
 key = jax.random.PRNGKey(0)
 position_vec = 0.05*jax.random.normal(key, (num_images,2))
