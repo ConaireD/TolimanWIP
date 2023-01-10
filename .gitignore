@@ -4,3 +4,4 @@ component_manuals/*
 */*.swp
 scripts/tmp
 *.ipynb_checkpoints
+*/*.ipynb_checkpoints
