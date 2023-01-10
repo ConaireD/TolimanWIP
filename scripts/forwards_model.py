@@ -187,7 +187,7 @@ coeffs: list = 1e-08 * jax.random.normal(jax.random.PRNGKey(0), (shape,))
 
 alpha_centauri: object = dl.BinarySource( # alpha centauri
     position = [0., 0.],
-    flux = 1.,
+    flux = 1e6,
     contrast = 2.,
     separation = dl.utils.arcseconds_to_radians(8.),
     position_angle = 0.,
@@ -259,6 +259,30 @@ comp_model: callable = jax.jit(model.model)
 psf: float = comp_model()
 
 
+def pixel_response(psf: float, threshold: float, seed: int = 1) -> float:
+    key: object = jax.random.PRNGKey(seed)
+    shape: tuple = psf.shape
+    return + threshold * jr.normal(key, shape)
+
+
+def photon_noise(psf: float, seed: int = 0) -> float:
+    key = jax.random.PRNGKey(seed)
+    return jax.random.poisson(key, psf)
+
+
+def latent_detector_noise(psf: float, seed: int = 0) -> float:
+    key: object = jax.random.PRNGKey(seed)
+    return jax.random.normal(key, psf.shape)
+
+
+toliman_photon_noise: float = pixel_response(psf)
+mean_latent_noise: float = 100. # Why this number?
+toliman_latent_noise: float = mean_latent_noise * latent_detector_noise(psf)
+toliman_image: float = toliman_photon_noise + toliman_latent_noise
+
+plot_psf(toliman_image)
+
+
 def plot_psf(psf: float) -> None:
     fig: object = plt.figure(figsize=(4, 4))
     axes: object = fig.add_axes([0., 0., .95, .95])
@@ -269,30 +293,11 @@ def plot_psf(psf: float) -> None:
     _: None = cbar.outline.set_visible(False)
 
 
-def pixel_response(psf: float, seed: int = 0) -> float:
-    key = jax.random.PRNGKey(seed)
-    return jax.random.poisson(key, 1e6 * psf)
-
-
 @eqx.filter_jit
 @eqx.filter_value_and_grad
 def loss(data: float, model: float):
     forward_model: float = model.model()
     return (forward_model - data) ** 2
-
-def normalise(arr: float) -> float:
-    return (arr - arr.min()) / (arr.max() - arr.min())
-
-
-plot_psf(normalise(psf))
-
-# Why did I choose this value of lambda.
-nphotons: float = 1e9
-photon_noise: float = psf.mean() * jax.random.poisson(jax.random.PRNGKey(0), lam=1., shape=psf.shape)
-
-plot_psf(psf + photon_noise)
-
-help(jax.random.poisson)
 
 key = jax.random.PRNGKey(0)
 position_vec = 0.05*jax.random.normal(key, (num_images,2))
