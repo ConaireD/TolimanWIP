@@ -1,5 +1,6 @@
 datasheets/*
 component_manuals/*
+component_models/*
 *.swp
 */*.swp
 scripts/tmp
