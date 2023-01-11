@@ -23,7 +23,7 @@ def downsample(arr: float, m: int) -> float:
     dim_one: float = arr.reshape((n * out, m)).sum(1).reshape(n, out).T
     dim_two: float = dim_one.reshape((out * out, m)).sum(1).reshape(out, out).T
     
-    return dim_two
+    return dim_two / m / m
 
 
 mask: float = downsample(np.load('../component_models/sidelobes.npy'), 4)
@@ -149,121 +149,7 @@ def latent_detector_noise(shape: float, seed: int = 0) -> float:
 
 toliman_photon_noise: float = photon_noise(psf)
 mean_latent_noise: float = 100. # Why this number?
-toliman_latent_noise: float = mean_latent_noise * latent_detector_noise(psf)
+toliman_latent_noise: float = mean_latent_noise * latent_detector_noise(psf.shape)
 toliman_image: float = toliman_photon_noise + toliman_latent_noise
 
 _: None = plots.plot_im_with_cax_on_fig(toliman_image, plt.figure(figsize=(6, 6)))
-
-
-@eqx.filter_jit
-@eqx.filter_value_and_grad
-def loss(data: float, model: float):
-    forward_model: float = model.model()
-    return (forward_model - data) ** 2
-
-key = jax.random.PRNGKey(0)
-position_vec = 0.05*jax.random.normal(key, (num_images,2))
-separation_vec = 8 + 0.1*jax.random.normal(key, (1, num_images))
-angle_vec = np.pi/2 + 0.02*jax.random.normal(key, (1,num_images))
-
-zern_coeff_mat = jax.random.normal(key, (len(basis), num_images)) #scale is applied later
-
-plt.figure()
-plt.scatter(position_vec[:,0], position_vec[:,1], alpha = 0.5)
-plt.title('position')
-
-plt.figure()
-plt.hist(separation_vec[0,:], bins = 15)
-plt.title('separation')
-
-plt.figure()
-plt.hist(angle_vec[0,:], bins = 15)
-plt.title('angle')"
-# %%time
-start_learning_rate = 4.5e-2
-max_iter = 200
-
-opt = optax.rmsprop(learning_rate=start_learning_rate)
-flux = 1e12
-gtol = 5e-5
-
-estimated_pos_x = np.zeros(num_images)
-estimated_pos_y = np.zeros(num_images)
-estimated_sep   = np.zeros(num_images)
-estimated_ang   = np.zeros(num_images)
-
-zernikes = 'ApplyBasisOPD.coefficients'
-
-plt.ion()
-for i in range(num_images):
-    # Define true/target params
-    true_image_params = np.array([position_vec[i,0], position_vec[i,1], separation_vec[0,i], angle_vec[0,i]])
-    true_zernike_params = zern_coeff_mat[:,i]
-    true_params = np.concatenate((true_image_params, true_zernike_params))
-    
-    osys = osys.set(zernikes, true_zernike_params)
-    # Create target image
-    target_image = apply_photon_noise(make_image(true_params, osys)*flux)
-    
-    # Default starting params
-    params = 1.1*true_params
-    opt = optax.inject_hyperparams(optax.adam)(learning_rate=start_learning_rate)
-    opt_state = opt.init(params)
-    #model_osys = osys.set(zernikes, coeffs_init*1.05)
-    
-    # Do gradient descent
-    lr = start_learning_rate
-    for j in tqdm(range(max_iter)):
-        grads = jax.grad(compute_loss)(params, osys, target_image)
-        
-        overall_gtol = np.sum(np.abs(grads))
-        
-        if overall_gtol < gtol:
-            clear_output(wait=True)
-            print('Gtol satisfied')
-            break
-        opt_state.hyperparams['learning_rate'] = lr
-        updates, opt_state = opt.update(grads, opt_state)
-        params = optax.apply_updates(params, updates)
-        #model_osys = optax.apply_updates(model_osys, updates)
-        #print(params/true_params)
-        if j == max_iter - 1:
-            clear_output(wait=True)
-            print('Maximum iterations hit')
-        
-    estimated_params = params
-    
-    estimated_pos_x = estimated_pos_x.at[i].set(estimated_params[0])
-    estimated_pos_y = estimated_pos_y.at[i].set(estimated_params[1])
-    estimated_sep   = estimated_sep.at[i].set(estimated_params[2])
-    estimated_ang   = estimated_ang.at[i].set(estimated_params[3])
-    
-    # Make plots
-    
-    print('Iteration: {}/{}'.format(i+1,num_images))
-    plt.figure(figsize = (10,8))
-    plt.subplot(2,2,1)
-    plt.plot(np.abs(estimated_pos_x - position_vec[:,0])[:i+1], 'x')
-    plt.hlines(np.mean(np.abs(estimated_pos_x - position_vec[:,0])[:i+1]), 0, i+1, ls = '--', color = 'black')
-    plt.title('absolute x pos error')
-    plt.yscale('log')
-
-    plt.subplot(2,2,2)
-    plt.plot(np.abs(estimated_pos_y - position_vec[:,1])[:i+1], 'x')
-    plt.hlines(np.mean(np.abs(estimated_pos_y - position_vec[:,1])[:i+1]), 0, i+1, ls = '--', color = 'black')
-    plt.title('absolute y pos error')
-    plt.yscale('log')
-
-    plt.subplot(2,2,3)
-    plt.plot(np.abs(estimated_sep - separation_vec)[0,:i+1], 'x')
-    plt.hlines(np.mean(np.abs(estimated_sep - separation_vec)[0,:i+1]), 0, i+1, ls = '--', color = 'black')
-    plt.title('absolute seperation error')
-    plt.yscale('log')
-
-    plt.subplot(2,2,4)
-    plt.plot(np.abs(estimated_ang - angle_vec)[0,:i+1], 'x')
-    plt.hlines(np.mean(np.abs(estimated_ang - angle_vec)[0,:i+1]), 0, i+1, ls = '--', color = 'black')
-    plt.title('absolute angle error')
-    plt.yscale('log')
-    plt.show()"
-print(np.std(np.abs(estimated_sep - separation_vec)))
