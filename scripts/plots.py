@@ -1,3 +1,24 @@
+import matplotlib as mpl 
+import matplotlib.pyplot as plt
+
+
+def _plot_im_with_cax_on_fig(image: float, fig: object, cm: object = plt.cm.inferno) -> object:
+    axes: object = fig.add_axes([0., 0., .95, .95])
+    _: list = axes.axis("off")
+    caxes: object = fig.add_axes([.95, 0., .05, .95])
+    cmap: object = axes.imshow(image, cmap=cm)
+    cbar: object = fig.colorbar(cmap, cax=caxes)
+    _: None = cbar.outline.set_visible(False)
+    return fig
+
+
+import jax 
+
+image: float = jax.random.normal(jax.random.PRNGKey(0), (256, 256))
+fig: object = plt.figure(figsize=(4, 4))
+sub_fig: object = fig.subfigures(2, 1)
+
+
 def plot_basis(basis: float, /, shape: tuple = None) -> None:
     """
     Plot a set of polynomial vectors that comprise a
@@ -156,16 +177,3 @@ def plot_pupil_with_aberrations(pupil: float, aberrations: float) -> None:
     return None 
 
 
-def plot_psf(psf: float) -> None:
-    import matplotlib as mpl
-    import matplotlib.pyplot as plt
-     
-    mpl.rcParams["text.usetex"]: bool = True
-    
-    fig: object = plt.figure(figsize=(4, 4))
-    axes: object = fig.add_axes([0., 0., .95, .95])
-    _: list = axes.axis("off")
-    caxes: object = fig.add_axes([.95, 0., .05, .95])
-    cmap: object = axes.imshow(psf, cmap=plt.cm.inferno)
-    cbar: object = fig.colorbar(cmap, cax=caxes)
-    _: None = cbar.outline.set_visible(False)
