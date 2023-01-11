@@ -15,20 +15,27 @@ mask: float = np.load('../component_models/sidelobes.npy')
 npix: int = 256
 detector_npix: int = 100
 
-chunk: int = 16
 
-
-def chunk_m_m(arr: float, m: int) -> float:
+def downsample_by_m(arr: float, m: int) -> float:
     size: tuple = arr.shape[0]
     n: int = int(size / m)
-    tiled: list = []
-    for i in range(n - 1):
-        for j in range(n - 1):
-            tiled.append(arr[(i * m):((i + 1) * m), (j * m):((j + 1) * m)])
-    return tiled
+    rows: list = []
+    for i in range(n):
+        cols: list = []
+        for j in range(n):
+            cols.append(np.mean(arr[(i * m):((i + 1) * m), (j * m):((j + 1) * m)]))
+        rows.append(np.stack(cols))
+    image: float = np.stack(rows)
+    return image
 
 
-test: list = chunk_m_m(mask, 256)
+mask_: float = downsample_by_m(mask, 4)
+
+plt.imshow(mask_)
+
+mask_.shape
+
+_: None = plots.plot_im_with_cax_on_fig(mask, fig=plt.figure(figsize=(4, 4)))
 
 central_wavelength: float = (595. + 695.) / 2.
 aperture_diameter: float = .13
