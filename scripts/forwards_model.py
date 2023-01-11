@@ -12,29 +12,21 @@ import functools
 
 jax.config.update("jax_enable_x64", True)
 
-mask: float = np.load('../component_models/sidelobes.npy')
 npix: int = 256
-detector_npix: int = 100
+detector_npix: int = 128
 
 
 def downsample(arr: float, m: int) -> float:
-    size_in = arr.shape[0]
-    size_out = size_in // m
+    n: int = arr.shape[0]
+    out: int = n // m
 
-    # Downsample first dimension
-    arr = arr.reshape((size_in*size_out, m)).sum(1)
-    arr = arr.reshape(size_in, size_out).T
-
-    # Downsample second dimension
-    arr = arr.reshape((size_out*size_out, m)).sum(1)
-    arr = arr.reshape(size_out, size_out).T
-    return arr
+    dim_one: float = arr.reshape((n * out, m)).sum(1).reshape(n, out).T
+    dim_two: float = dim_one.reshape((out * out, m)).sum(1).reshape(out, out).T
+    
+    return dim_two
 
 
-# %%timeit
-downsample(mask, 4)
-
-_: None = plots.plot_im_with_cax_on_fig(mask, fig=plt.figure(figsize=(4, 4)))
+mask: float = downsample(np.load('../component_models/sidelobes.npy'), 4)
 
 central_wavelength: float = (595. + 695.) / 2.
 aperture_diameter: float = .13
@@ -135,13 +127,14 @@ toliman_detector: object = dl.Detector(
 model: object = dl.Instrument(
     optics = toliman,
     sources = [alpha_centauri],
-#     detector = toliman_detector
+    detector = toliman_detector
 )
 
 comp_model: callable = jax.jit(model.model)
 
 psf: float = comp_model()
 
+_: None = plots.plot_im_with_cax_on_fig(psf, plt.figure(figsize=(6, 6)))
 
 
 def photon_noise(psf: float, seed: int = 0) -> float:
