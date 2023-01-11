@@ -1,23 +1,15 @@
-# +
 import jax.numpy as np
-import matplotlib.pyplot as plt
 import jax
 import equinox as eqx
-import os
-import optax
 import dLux as dl
-import jax
-import tqdm.notebook as tqdm
-import plots
 import functools
-from jax.scipy import optimize
 
 jax.config.update("jax_enable_x64", True)
 
 npix: int = 256
 detector_npix: int = 128
 
-def downsample(arr: float, m: int) -> float:
+def _downsample(arr: float, m: int) -> float:
     n: int = arr.shape[0]
     out: int = n // m
 
