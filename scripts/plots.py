@@ -1,7 +1,7 @@
 import matplotlib as mpl 
 import matplotlib.pyplot as plt
-import itertools
-import operator
+
+mpl.rcParams["text.usetex"] = True
 
 
 def plot_im_on_fig(image: float, fig: object, cm: object = plt.cm.inferno) -> (object, object):

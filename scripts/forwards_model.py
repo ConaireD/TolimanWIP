@@ -7,11 +7,12 @@ import optax
 import dLux as dl
 import jax
 import tqdm.notebook as tqdm
+import plots
 
 jax.config.update("jax_enable_x64", True)
 
 mask: float = np.load('../component_models/sidelobes.npy')
-npix: int = 1024
+npix: int = 256
 detector_npix: int = 100
 
 central_wavelength: float = (595. + 695.) / 2.
@@ -91,21 +92,35 @@ toliman: object = dl.Optics(
     ]
 )
 
+
+def pixel_response(shape: float, threshold: float, seed: int = 1) -> float:
+    key: object = jax.random.PRNGKey(seed)
+    return 1. + threshold * jax.random.normal(key, shape)
+
+
+# +
+toliman_jitter: object = dl.ApplyJitter(2.)
+toliman_saturation: object = dl.ApplySaturation(2500.)
+    
+toliman_pixel_response: object = dl.ApplyPixelResponse(
+    pixel_response((detector_npix, detector_npix), .05)
+)
+
+toliman_detector: object = dl.Detector(
+    [toliman_pixel_response, toliman_jitter, toliman_saturation]
+)
+# -
+
 model: object = dl.Instrument(
     optics = toliman,
-    sources = [alpha_centauri]
+    sources = [alpha_centauri],
+#     detector = toliman_detector
 )
 
 comp_model: callable = jax.jit(model.model)
+
 psf: float = comp_model()
 
-plot_psf(psf)
-
-
-def pixel_response(psf: float, threshold: float, seed: int = 1) -> float:
-    key: object = jax.random.PRNGKey(seed)
-    shape: tuple = psf.shape
-    return + threshold * jr.normal(key, shape)
 
 
 def photon_noise(psf: float, seed: int = 0) -> float:
@@ -113,18 +128,17 @@ def photon_noise(psf: float, seed: int = 0) -> float:
     return jax.random.poisson(key, psf)
 
 
-def latent_detector_noise(psf: float, seed: int = 0) -> float:
+def latent_detector_noise(shape: float, seed: int = 0) -> float:
     key: object = jax.random.PRNGKey(seed)
-    return jax.random.normal(key, psf.shape)
+    return jax.random.normal(key, shape)
 
 
-toliman_photon_noise: float = pixel_response(psf)
+toliman_photon_noise: float = photon_noise(psf)
 mean_latent_noise: float = 100. # Why this number?
 toliman_latent_noise: float = mean_latent_noise * latent_detector_noise(psf)
 toliman_image: float = toliman_photon_noise + toliman_latent_noise
 
-plot_psf(toliman_image)
-
+_: None = plots.plot_im_with_cax_on_fig(toliman_image, plt.figure(figsize=(6, 6)))
 
 
 @eqx.filter_jit
