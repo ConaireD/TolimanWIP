@@ -29,6 +29,9 @@ def downsample_by_m(arr: float, m: int) -> float:
     return image
 
 
+
+jax.ops.segment_sum()
+
 mask_: float = downsample_by_m(mask, 4)
 
 plt.imshow(mask_)
