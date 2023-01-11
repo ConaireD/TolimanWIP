@@ -17,37 +17,6 @@ npix: int = 256
 detector_npix: int = 100
 
 
-def downsample_by_m(arr: float, m: int) -> float:
-    size: tuple = arr.shape[0]
-    n: int = int(size / m)
-    rows: list = []
-    for i in range(n):
-        cols: list = []
-        for j in range(n):
-            cols.append(np.mean(arr[(i * m):((i + 1) * m), (j * m):((j + 1) * m)]))
-        rows.append(np.stack(cols))
-    image: float = np.stack(rows)
-    return image
-
-
-plt.imshow()
-
-
-def upsample_by_m(arr: float, m: int) -> float:
-    return np.repeat(np.repeat(arr, m, axis=0), m, axis=1)
-
-
-upsample_by_m(np.arange(16).reshape(4, 4), 4)
-
-
-def downsample_by_m(arr: float, m: int) -> float:
-    oversample: int = int(arr.shape[0] / m)
-    segment_ids: int = upsample_by_m(np.arange(m * m).reshape(m, m), oversample).astype(int)
-    arr: float = arr.reshape(-1)
-    segment_ids: int = segment_ids.reshape(-1)
-    return (jax.ops.segment_sum(arr, segment_ids) / (m * m)).reshape(m, m)
-
-
 def downsample(arr: float, m: int) -> float:
     size_in = arr.shape[0]
     size_out = size_in // m
@@ -64,26 +33,6 @@ def downsample(arr: float, m: int) -> float:
 
 # %%timeit
 downsample(mask, 4)
-
-# %%timeit
-downsample_by_m(mask, 256)
-
-plt.imshow()
-
-help(jax.ops.segment_sum)
-
-downsample_by_m(np.ones((16, 16)), 4).shape
-
-jax.lax.full_like
-
-
-
-# %time
-mask_: float = downsample_by_m(mask, 4).block_until_ready()
-
-plt.imshow(mask_)
-
-mask_.shape
 
 _: None = plots.plot_im_with_cax_on_fig(mask, fig=plt.figure(figsize=(4, 4)))
 
