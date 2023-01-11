@@ -9,6 +9,7 @@ import jax
 import tqdm.notebook as tqdm
 import plots
 import functools
+from jax.scipy import optimize
 
 jax.config.update("jax_enable_x64", True)
 
@@ -38,11 +39,11 @@ number_of_struts: int = 3
 # Created the aberrations on the aperture. 
 shape: int = 5
 nolls: list = np.arange(2, shape + 2, dtype=int)
-coeffs: list = 1e-08 * jax.random.normal(jax.random.PRNGKey(0), (shape,))
+true_coeffs: list = 1e-08 * jax.random.normal(jax.random.PRNGKey(0), (shape,))
 
 true_separation: float = dl.utils.arcseconds_to_radians(8.)
 true_position: float = np.array([0., 0.], dtype=float)
-true_flux: float = 1e6
+true_flux: float = 1.
 true_contrast: float = 2.
 true_position_angle: float = 0.
 
@@ -81,12 +82,12 @@ toliman_pupil: object = dl.StaticAperture(
 toliman_aberrations: object = dl.StaticAberratedAperture(
     dl.AberratedAperture(
          nolls, 
-         coeffs, 
+         true_coeffs, 
          dl.CircularAperture(
              aperture_diameter / 2.
          )
     ),
-    coefficients = coeffs,
+    coefficients = true_coeffs,
     npixels = npix,
     pixel_scale = aperture_diameter / npix
 )
@@ -148,34 +149,46 @@ def photon_noise(psf: float, seed: int = 0) -> float:
     return jax.random.poisson(key, psf)
 
 
-def latent_detector_noise(shape: float, seed: int = 0) -> float:
+def latent_detector_noise(scale: float, shape: float, seed: int = 0) -> float:
     key: object = jax.random.PRNGKey(seed)
-    return jax.random.normal(key, shape)
+    return scale * jax.random.normal(key, shape)
 
 
-toliman_photon_noise: float = photon_noise(psf)
-mean_latent_noise: float = 100. # Why this number?
-toliman_latent_noise: float = mean_latent_noise * latent_detector_noise(psf.shape)
+rescaling: float = 1e5
+
+toliman_photon_noise: float = photon_noise(rescaling * psf) / rescaling
+toliman_latent_noise: float = latent_detector_noise(1. / rescaling, psf.shape)
 toliman_image: float = toliman_photon_noise + toliman_latent_noise
 
 _: None = plots.plot_im_with_cax_on_fig(toliman_image, plt.figure(figsize=(6, 6)))
 
 
 @eqx.filter_jit
-def loss(separation: float, *args) -> float:
+def loss(values: float, *args) -> float:
     separation_path: str = "BinarySource.separation"
-    separation: float = separation.squeeze()
+    flux_path: str = "BinarySource.flux"
+    contrast_path: str = "BinrarySource.contrast"
+    separation: float = values[0]
+    flux: float = values[1]
     model, data = args
     simulation: float = model.set(separation_path, separation).model()
     return ((simulation - data) ** 2).sum()
 
 
+separation_path: str = "BinarySource.separation"
+flux_path: str = "BinarySource.flux"
+contrast_path: str = "BinrarySource.contrast"
+separation: float = values[0]
+flux: float = values[1]
+model, data = args
+simulation: float = model.set(separation_path, separation).model()
+
 initial_separation: float = np.array([dl.utils.arcseconds_to_radians(8.5)])
 
-from jax.scipy import optimize
+results: object = optimize.minimize(loss, initial_separation, (model, toliman_image), method = "BFGS")
 
-optimize.minimize(loss, initial_separation, (model, toliman_image), method = "BFGS")
+results.x
 
-help(optimize.minimize)
+true_separation
 
 
