@@ -1,8 +1,7 @@
-datasheets/*
-component_manuals/*
-component_models/*
 *.swp
 */*.swp
-scripts/tmp
+tmp
+*/tmp
+*/assets
 *.ipynb_checkpoints
 */*.ipynb_checkpoints
