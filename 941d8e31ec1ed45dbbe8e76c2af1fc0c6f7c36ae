@@ -1,0 +1,1 @@
+The plan is to bundle forwards model into a submodule of `dLux`. It will probably be it's own class.
