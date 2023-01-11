@@ -48,7 +48,27 @@ def downsample_by_m(arr: float, m: int) -> float:
     return (jax.ops.segment_sum(arr, segment_ids) / (m * m)).reshape(m, m)
 
 
-plt.imshow(downsample_by_m(mask, 256))
+def downsample(arr: float, m: int) -> float:
+    size_in = arr.shape[0]
+    size_out = size_in // m
+
+    # Downsample first dimension
+    arr = arr.reshape((size_in*size_out, m)).sum(1)
+    arr = arr.reshape(size_in, size_out).T
+
+    # Downsample second dimension
+    arr = arr.reshape((size_out*size_out, m)).sum(1)
+    arr = arr.reshape(size_out, size_out).T
+    return arr
+
+
+# %%timeit
+downsample(mask, 4)
+
+# %%timeit
+downsample_by_m(mask, 256)
+
+plt.imshow()
 
 help(jax.ops.segment_sum)
 
