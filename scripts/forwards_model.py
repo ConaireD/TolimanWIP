@@ -15,6 +15,29 @@ mask: float = np.load('../component_models/sidelobes.npy')
 npix: int = 256
 detector_npix: int = 100
 
+flat_mask: float = mask.reshape(256, 256, 4 * 4)
+
+
+
+mask[0:chunk, 0:chunk]
+
+# +
+fig: object = plt.figure(figsize=(8, 8))
+axes: object = fig.subplots(4, 4)
+
+for i in range(4):
+    for j in range(4):
+        axes[i][j].imshow(flat_mask[:, :, i * 256 + j])
+        axes[i][j].set_xticks([])
+        axes[i][j].set_yticks([])
+
+
+# -
+
+def manual_unflatten(flat_arr: float) -> float:
+    
+
+
 central_wavelength: float = (595. + 695.) / 2.
 aperture_diameter: float = .13
 secondary_mirror_diameter: float = .032
