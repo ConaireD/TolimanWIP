@@ -8,6 +8,7 @@ import dLux as dl
 import jax
 import tqdm.notebook as tqdm
 import plots
+import functools
 
 jax.config.update("jax_enable_x64", True)
 
@@ -16,7 +17,6 @@ npix: int = 256
 detector_npix: int = 100
 
 
-@functools
 def downsample_by_m(arr: float, m: int) -> float:
     size: tuple = arr.shape[0]
     n: int = int(size / m)
@@ -30,7 +30,6 @@ def downsample_by_m(arr: float, m: int) -> float:
     return image
 
 
-
 plt.imshow()
 
 
@@ -38,13 +37,29 @@ def upsample_by_m(arr: float, m: int) -> float:
     return np.repeat(np.repeat(arr, m, axis=0), m, axis=1)
 
 
-upsample_by_m(np.arange(16).reshape(4, 4), 256)
+upsample_by_m(np.arange(16).reshape(4, 4), 4)
+
+
+def downsample_by_m(arr: float, m: int) -> float:
+    oversample: int = int(arr.shape[0] / m)
+    segment_ids: int = upsample_by_m(np.arange(m * m).reshape(m, m), oversample).astype(int)
+    arr: float = arr.reshape(-1)
+    segment_ids: int = segment_ids.reshape(-1)
+    return (jax.ops.segment_sum(arr, segment_ids) / (m * m)).reshape(m, m)
+
+
+plt.imshow(downsample_by_m(mask, 256))
+
+help(jax.ops.segment_sum)
+
+downsample_by_m(np.ones((16, 16)), 4).shape
 
 jax.lax.full_like
 
-jax.ops.segment_sum()
 
-mask_: float = downsample_by_m(mask, 4)
+
+# %time
+mask_: float = downsample_by_m(mask, 4).block_until_ready()
 
 plt.imshow(mask_)
 
