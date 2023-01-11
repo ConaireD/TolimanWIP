@@ -16,6 +16,7 @@ npix: int = 256
 detector_npix: int = 100
 
 
+@functools
 def downsample_by_m(arr: float, m: int) -> float:
     size: tuple = arr.shape[0]
     n: int = int(size / m)
@@ -29,6 +30,17 @@ def downsample_by_m(arr: float, m: int) -> float:
     return image
 
 
+
+plt.imshow()
+
+
+def upsample_by_m(arr: float, m: int) -> float:
+    return np.repeat(np.repeat(arr, m, axis=0), m, axis=1)
+
+
+upsample_by_m(np.arange(16).reshape(4, 4), 256)
+
+jax.lax.full_like
 
 jax.ops.segment_sum()
 
