@@ -40,12 +40,18 @@ shape: int = 5
 nolls: list = np.arange(2, shape + 2, dtype=int)
 coeffs: list = 1e-08 * jax.random.normal(jax.random.PRNGKey(0), (shape,))
 
+true_separation: float = dl.utils.arcseconds_to_radians(8.)
+true_position: float = np.array([0., 0.], dtype=float)
+true_flux: float = 1e6
+true_contrast: float = 2.
+true_position_angle: float = 0.
+
 alpha_centauri: object = dl.BinarySource( # alpha centauri
-    position = [0., 0.],
-    flux = 1e6,
-    contrast = 2.,
-    separation = dl.utils.arcseconds_to_radians(8.),
-    position_angle = 0.,
+    position = true_position,
+    flux = true_flux,
+    contrast = true_contrast,
+    separation = true_separation,
+    position_angle = true_position_angle,
     wavelengths = 1e-09 * np.linspace(595., 695., 10, endpoint=True)
 )
 
@@ -153,3 +159,23 @@ toliman_latent_noise: float = mean_latent_noise * latent_detector_noise(psf.shap
 toliman_image: float = toliman_photon_noise + toliman_latent_noise
 
 _: None = plots.plot_im_with_cax_on_fig(toliman_image, plt.figure(figsize=(6, 6)))
+
+
+@eqx.filter_jit
+def loss(separation: float, *args) -> float:
+    separation_path: str = "BinarySource.separation"
+    separation: float = separation.squeeze()
+    model, data = args
+    simulation: float = model.set(separation_path, separation).model()
+    return ((simulation - data) ** 2).sum()
+
+
+initial_separation: float = np.array([dl.utils.arcseconds_to_radians(8.5)])
+
+from jax.scipy import optimize
+
+optimize.minimize(loss, initial_separation, (model, toliman_image), method = "BFGS")
+
+help(optimize.minimize)
+
+
