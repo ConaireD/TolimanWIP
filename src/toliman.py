@@ -4,7 +4,6 @@ import equinox as eqx
 import dLux as dl
 import functools
 
-jax.config.update("jax_enable_x64", True)
 
 def _downsample(arr: float, m: int) -> float:
     """
@@ -36,8 +35,15 @@ def _downsample(arr: float, m: int) -> float:
     
     return dim_two / m / m
 
-DEFAULT_PUPIL_NPIX: int = 256
-DEFAULT_DETECTOR_NPIX: int = 128
+
+def pixel_response(shape: float, threshold: float, seed: int = 1) -> float:
+    key: object = jax.random.PRNGKey(seed)
+    return 1. + threshold * jax.random.normal(key, shape)
+
+DEFUALT_PUPIL_NPIX: int = 256
+DEFUALT_DETECTOR_NPIX: int = 128
+DEFUALT_NUMBER_OF_ZERNIKES: int = 5
+
 TOLIMAN_PRIMARY_APERTURE_DIAMETER: float = .13
 TOLIMAN_SECONDARY_MIRROR_DIAMETER: float = .032
 TOLIMAN_DETECTOR_PIXEL_SIZE: float = .375
@@ -71,12 +77,14 @@ class Toliman(dl.Instrument):
 
     def __init__(
             self: object,
-            pixels_in_pupil: int = DEFAULT_PUPIL_NPIX,
-            pixels_on_detector: int = DEFAULT_DETECTOR_NPIX,
+            number_of_zernikes: int = DEFUALT_NUMBER_OF_ZERNIKES,
+            pixels_in_pupil: int = DEFUALT_PUPIL_NPIX,
+            pixels_on_detector: int = DEFUALT_DETECTOR_NPIX,
             path_to_mask: str = "assets/mask.npy",
             path_to_filter: str = "assets/filter.npy") -> object:
         """
         """
+        # Loading the mask.
         try:
             loaded_mask: float = np.load(path_to_mask)
             loaded_shape: tuple = loaded_mask.shape
@@ -100,13 +108,27 @@ class Toliman(dl.Instrument):
         except IOError as ioe:
             raise ValueError(MASK_IMPORT_ERR_MSG)
 
-        shape: int = 5
-        nolls: list = np.arange(2, shape + 2, dtype=int)
-        true_coeffs: list = 1e-08 * jax.random.normal(jax.random.PRNGKey(0), (shape,))
+        # Generating the Zernikes
+        nolls: list = np.arange(2, number_of_zernikes + 2, dtype=int)
+        seed: object = jax.random.PRNGKey(0)
+        coeffs: list = 1e-08 * jax.random.normal(seed, (number_of_zernikes,))
+
+        toliman_aberrations: object = dl.StaticAberratedAperture(
+            dl.AberratedAperture(
+                 nolls, 
+                 coeffs, 
+                 dl.CircularAperture(
+                     TOLIMAN_PRIMARY_APERTURE_DIAMETER / 2.
+                 )
+            ),
+            coefficients = coeffs,
+            npixels = pixels_in_pupil,
+            pixel_scale = TOLIMAN_PRIMARY_APERTURE_DIAMETER / pixels_in_pupil
+        )
 
         wavefront_factory: object = dl.CreateWavefront(
-            npix, 
-            aperture_diameter,
+            pixels_in_pupil, 
+            TOLIMAN_PRIMARY_APERTURE_DIAMETER,
             wavefront_type = "Angular"
         )
 
@@ -114,30 +136,17 @@ class Toliman(dl.Instrument):
             dl.CompoundAperture(
             [
                     dl.UniformSpider(
-                        number_of_struts, 
-                        width_of_struts
+                        TOLIMAN_NUMBER_OF_STRUTS, 
+                        TOLIMAN_WIDTH_OF_STRUTS
                     ),
                     dl.AnnularAperture(
-                        aperture_diameter / 2., 
-                        secondary_mirror_diameter / 2.
+                        TOLIMAN_PRIMARY_APERTURE_DIAMETER / 2., 
+                        TOLIMAN_SECONDARY_MIRROR_DIAMETER / 2.
                     )
                 ]
             ),
-            npixels = npix,
-            pixel_scale = aperture_diameter / npix
-        )
-
-        toliman_aberrations: object = dl.StaticAberratedAperture(
-            dl.AberratedAperture(
-                 nolls, 
-                 true_coeffs, 
-                 dl.CircularAperture(
-                     aperture_diameter / 2.
-                 )
-            ),
-            coefficients = true_coeffs,
-            npixels = npix,
-            pixel_scale = aperture_diameter / npix
+            npixels = pixels_in_pupil,
+            pixel_scale = TOLIMAN_PRIMARY_APERTURE_DIAMETER / pixels_in_pupil
         )
 
         toliman_mask: object = dl.AddOPD(mask)
@@ -145,7 +154,7 @@ class Toliman(dl.Instrument):
 
         toliman_body: object = dl.AngularMFT(
             detector_npix,
-            dl.utils.arcseconds_to_radians(detector_pixel_size)
+            dl.utils.arcseconds_to_radians(pixels_in_detector)
         )
 
         toliman: object = dl.Optics(
@@ -159,10 +168,6 @@ class Toliman(dl.Instrument):
                 normalise
             ]
         )
-
-        def pixel_response(shape: float, threshold: float, seed: int = 1) -> float:
-            key: object = jax.random.PRNGKey(seed)
-            return 1. + threshold * jax.random.normal(key, shape)
 
         toliman_jitter: object = dl.ApplyJitter(2.)
         toliman_saturation: object = dl.ApplySaturation(2500.)
