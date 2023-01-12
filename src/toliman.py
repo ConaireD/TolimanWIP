@@ -40,15 +40,19 @@ def pixel_response(shape: float, threshold: float, seed: int = 1) -> float:
     key: object = jax.random.PRNGKey(seed)
     return 1. + threshold * jax.random.normal(key, shape)
 
-DEFUALT_PUPIL_NPIX: int = 256
-DEFUALT_DETECTOR_NPIX: int = 128
-DEFUALT_NUMBER_OF_ZERNIKES: int = 5
+DEFAULT_PUPIL_NPIX: int = 256
+DEFAULT_DETECTOR_NPIX: int = 128
+DEFAULT_NUMBER_OF_ZERNIKES: int = 5
 
 TOLIMAN_PRIMARY_APERTURE_DIAMETER: float = .13
 TOLIMAN_SECONDARY_MIRROR_DIAMETER: float = .032
 TOLIMAN_DETECTOR_PIXEL_SIZE: float = .375
 TOLIMAN_WIDTH_OF_STRUTS: float = .01
 TOLIMAN_NUMBER_OF_STRUTS: int = 3
+
+DEFAULT_DETECTOR_JITTER: float = 2.
+DEFAULT_DETECTOR_SATURATION: float = 2500
+DEFAULT_DETECTOR_THRESHOLD: float = .05
 
 MASK_TOO_LARGE_ERR_MSG = """ 
 The mask you have loaded had a higher resolution than the pupil. 
@@ -77,11 +81,23 @@ use the feature as it is very slow and the zernike terms should
 be sufficient for most purposes.
 """
 
+DETECTOR_EMPTY_ERR_MSG = """
+You have provided no detector layers and not asked for any of the 
+defaults. This implies that the detector does not contain any 
+layers which is not a valid state. If you do not wish to model 
+any detector effects do not provide a detector in construction.
+"""
+
+DETECTOR_REPEATED_ERR_MSG = """
+You have provided a layer that is also a default layer. Make sure 
+that each type of detector is only provided once. 
+"""
+
 # TODO: I need to work out how to do the regularisation internally so 
 #       that the values which are returned are always correct. 
 # TODO: I need to make it so that the user can add and subtract layers
 #       as they wish. 
-class Toliman(dl.Optics):
+class TolimanOptics(dl.Optics):
     """
     """
 
@@ -90,14 +106,11 @@ class Toliman(dl.Optics):
             self: object,
             simulate_polish: bool = True,
             simulate_aberrations: bool = True,
-            simulate_jitter: bool = True,
-            simulate_pixel_response: bool = True,
-            simulate_
             operate_in_fresnel_mode: bool = False,
             operate_in_static_mode: bool = True,
-            number_of_zernikes: int = DEFUALT_NUMBER_OF_ZERNIKES,
-            pixels_in_pupil: int = DEFUALT_PUPIL_NPIX,
-            pixels_on_detector: int = DEFUALT_DETECTOR_NPIX,
+            number_of_zernikes: int = DEFAULT_NUMBER_OF_ZERNIKES,
+            pixels_in_pupil: int = DEFAULT_PUPIL_NPIX,
+            pixels_on_detector: int = DEFAULT_DETECTOR_NPIX,
             path_to_mask: str = "assets/mask.npy",
             path_to_filter: str = "assets/filter.npy",
             path_to_polish: str = "assets/polish.npy") -> object:
@@ -203,22 +216,59 @@ class Toliman(dl.Optics):
 
         super().__init__(layers = toliman_layers)
 
-        # Creating the default detector.
-        toliman_jitter: object = dl.ApplyJitter(2.)
-        toliman_saturation: object = dl.ApplySaturation(2500.)
+
+class TolimanDetector(dl.Detector):
+    """
+    """
+
+    def __init__(self: object, 
+            simulate_jitter: bool = True,
+            simulate_pixel_response: bool = True,
+            simulate_saturation: bool = True,
+            extra_detector_layers: list = []) -> object:
+        """
+        """
+        detector_layers: list = []
+
+        if simulate_jitter:
+            detector_layers.append(dl.ApplyJitter(DEFAULT_DETECTOR_JITTER))
+
+            # TODO: Make a contains instance function
+            if extra_detector_layers:
+                for layer in extra_detector_layers:
+                    if isinstance(layer, dl.ApplyJitter):
+                        raise ValueError(DETECTOR_REPEATED_ERR_MSG)
             
-        toliman_pixel_response: object = dl.ApplyPixelResponse(
-            pixel_response((detector_npix, detector_npix), .05)
-        )
+        if simulate_saturation:
+            detector_layers.append(
+                dl.ApplySaturation(
+                    DEFAULT_DETECTOR_SATURATION
+                )
+            )
 
-        toliman_detector: object = dl.Detector(
-            [toliman_pixel_response, toliman_jitter, toliman_saturation]
-        )
+            if extra_detector_layers:
+                for layer in extra_detector_layers:
+                    if isinstance(layer, dl.ApplySaturation):
+                        raise ValueError(DETECTOR_REPEATED_ERR_MSG)
+            
+        if simulate_pixel_response:
+            detector_layers.append(
+                dl.ApplyPixelResponse(
+                    pixel_response(
+                        (DEFAULT_DETECTOR_NPIX, DEFAULT_DETECTOR_NPIX), 
+                        DEFAULT_DETECTOR_THRESHOLD
+                    )
+                )
+            )
 
+            if extra_detector_layers:
+                for layer in extra_detector_layers:
+                    if isinstance(layer, dl.ApplyPixelResponse):
+                        raise ValueError(DETECTOR_REPEATED_ERR_MSG)
 
-        super().__init__(
-            optics = toliman,
-        )
+        detector_layers.extend(extra_detector_layers)
 
-
-
+        if detector_layers:
+            super().__init__(detector_layers)
+        else:
+            raise ValueError(DETECTOR_EMPTY_ERR_MSG)
