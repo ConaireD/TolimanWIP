@@ -300,6 +300,22 @@ class TolimanOptics(dl.Optics):
 
 
 def contains_instance(_list: list, _type: type) -> bool:
+    """
+    Check to see if a list constains an element of a certain 
+    type.
+
+    Parameters
+    ----------
+    _list: list
+        The list to search.
+    _type: type
+        The type to check for.
+
+    Returns
+    -------
+    contains: bool
+        True if _type was found else False.
+    """
     if _list:
         for _elem in _list:
             if isinstance(_elem, _type):
