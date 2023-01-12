@@ -11,6 +11,7 @@ dependencies = [
     "jax",
     "equinox",
     "dLux"
+    "pysynphot"
 ]
 
 [build-system]
