@@ -430,19 +430,38 @@ class TolimanDetector(dl.Detector, ExtendableModule):
         else:
             raise ValueError(DETECTOR_EMPTY_ERR_MSG)
 
-
+"primary_teff_A = 5790   #temp\n",
+   "primary_z_A = 0.2       #metallicity    - numbers from wikipedia\n",
+   "primary_logg_A = 4.3    #gravity\n",
+   "acenA = S.Icat('phoenix',primary_teff_A,primary_z_A,primary_logg_A)\n",
+   "specA = acenA.sample(wavs*1e10)\n",
+   "specA /= jnp.max(specA*bandpass)\n",
+   "weights_A = specA*bandpass\n",
+   "\n",
+   "primary_teff_B = 5260   #temp\n",
+   "primary_z_B = 0.23      #metallicty\n",
+   "primary_logg_B = 4.37   #gravity\n",
+   "acenB = S.Icat('phoenix',primary_teff_B,primary_z_B,primary_logg_B)\n",
+   "specB = acenB.sample(wavs*1e10)\n",
+   "specB /= jnp.max(specB*bandpass)\n",
+   "weights_B = specB*bandpass"
 class AlphaCentauri(dl.BinarySource):
     """
     """
-    def __init__(self: object) -> object:
+    def __init__(
+            self: object, 
+            spectrum: float = None) -> object:
         """
         """
+        if not spectrum:
+            
+
         super().__init__(
-            position = true_position,
-            flux = true_flux,
-            contrast = true_contrast,
-            separation = true_separation,
-            position_angle = true_position_angle,
+            position = ALPHA_CENTAURI_POSITION,
+            flux = ALPHA_CENTAURI_MEAN_FLUX,
+            contrast = ALPHA_CENTAURI_CONTRAST,
+            separation = ALPHA_CENTAURI_SEPARATION,
+            position_angle = ALPHA_CENTAURI_POSITION_ANGLE,
             wavelengths = 1e-09 * np.linspace(595., 695., 10, endpoint=True)
         )
 
