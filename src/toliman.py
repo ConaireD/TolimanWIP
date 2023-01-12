@@ -53,21 +53,6 @@ shape: int = 5
 nolls: list = np.arange(2, shape + 2, dtype=int)
 true_coeffs: list = 1e-08 * jax.random.normal(jax.random.PRNGKey(0), (shape,))
 
-true_separation: float = dl.utils.arcseconds_to_radians(8.)
-true_position: float = np.array([0., 0.], dtype=float)
-true_flux: float = 1.
-true_contrast: float = 2.
-true_position_angle: float = 0.
-
-alpha_centauri: object = dl.BinarySource( # alpha centauri
-    position = true_position,
-    flux = true_flux,
-    contrast = true_contrast,
-    separation = true_separation,
-    position_angle = true_position_angle,
-    wavelengths = 1e-09 * np.linspace(595., 695., 10, endpoint=True)
-)
-
 wavefront_factory: object = dl.CreateWavefront(
     npix, 
     aperture_diameter,
