@@ -1,9 +1,10 @@
 import jax.numpy as np
 import jax
-import equinox as eqx
 import dLux as dl
-import functools
 
+
+__author__ = "Jordan Dennis"
+__all__ = ["TolimanDetector", "TolimanOptics"]
 
 def _downsample(arr: float, m: int) -> float:
     """
@@ -81,6 +82,12 @@ use the feature as it is very slow and the zernike terms should
 be sufficient for most purposes.
 """
 
+POLISH_USE_ERR_MSG = """
+You have requested that the mirror polish be simulated this has 
+not yet been implemented although it is planned in an upcoming 
+release.
+"""
+
 DETECTOR_EMPTY_ERR_MSG = """
 You have provided no detector layers and not asked for any of the 
 defaults. This implies that the detector does not contain any 
@@ -99,6 +106,21 @@ that each type of detector is only provided once.
 #       as they wish. 
 class TolimanOptics(dl.Optics):
     """
+    Simulates the optical system of the TOLIMAN telescope. It is 
+    designed to occupy the `optics` kwarg of `dl.Instrument`. 
+    The `TolimanOptics` provides a default implementation that 
+    can be extended using the `.add` method. There are also 
+    several ways that the `TolimanOptics` can be initialised. 
+
+    Examples
+    --------
+    ```
+    >>> toliman_optics: object = TolimanOptics()
+    >>> toliman_optics: object = TolimanOptics(simulate_aberrations = False)
+    >>> toliman_optics: object = TolimanOptics(pixels_in_pupil = 1024)
+    ```
+    
+    For more options run `help(TolimanOptics.__init__)`.
     """
 
 
@@ -198,6 +220,9 @@ class TolimanOptics(dl.Optics):
             toliman_layers.append(toliman_aberrations)
 
         toliman_layers.append(dl.NormaliseWavefront())
+
+        if simulate_polish:
+            raise NotImplementedError()
 
         # Adding the propagator
         toliman_body: object
