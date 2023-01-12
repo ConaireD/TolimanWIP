@@ -50,11 +50,34 @@ class Toliman(dl.Instrument):
     """
 
 
-    def __init__(self: object) -> object:
+    def __init__(
+            self: object,
+            pixels_in_pupil: int = DEFAULT_PUPIL_NPIX,
+            pixels_on_detector: int = DEFAULT_DETECTOR_NPIX,
+            path_to_mask: str = "assets/mask.npy",
+            path_to_filter: str = "assets/filter.npy") -> object:
         """
         """
         try:
-            mask: float = _downsample(np.load('assets/mask.npy'), 4)
+            loaded_mask: float = np.load(path_to_mask)
+            loaded_shape: tuple = loaded_mask.shape
+            loaded_width: int = loaded_shape[0]
+            
+            if not loaded_width == pixels_in_pupil:
+                if loaded_width < pixels_in_pupil:
+                    raise NotImplementedError("The mask you have loaded " + \
+                        "had a higher resolution than the pupil. A method " + \
+                        "of resolving this has not yet been created. " + \
+                        "Either change the value of the " + \
+                        "`DEFAULT_PUPIL_NPIX` constant or use a different " + \
+                        "mask.")
+                if loaded_width % pixels_in_pupil == 0:
+                    downsample_by: int = loaded_width // pixels_in_pupil 
+                    mask: float = _downsample(loaded_mask, downsample_by)
+                else:
+                    raise ValueError("The mask provided could not be " + \
+                        "sampled onto the pupil.")
+            mask: float = _downsample(, 4)
         except IOError as ioe:
             raise ValueError("")
 
