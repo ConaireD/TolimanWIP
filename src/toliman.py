@@ -7,6 +7,31 @@ import equinox as eqx
 __author__ = "Jordan Dennis"
 __all__ = ["TolimanDetector", "TolimanOptics"]
 
+
+def _contains_instance(_list: list, _type: type) -> bool:
+    """
+    Check to see if a list constains an element of a certain 
+    type.
+
+    Parameters
+    ----------
+    _list: list
+        The list to search.
+    _type: type
+        The type to check for.
+
+    Returns
+    -------
+    contains: bool
+        True if _type was found else False.
+    """
+    if _list:
+        for _elem in _list:
+            if isinstance(_elem, _type):
+                return True
+    return False 
+
+
 def _downsample(arr: float, m: int) -> float:
     """
     Resample a square array by a factor of `m`. `
@@ -298,30 +323,6 @@ class TolimanOptics(dl.Optics):
 
         return eqx.tree_at(lambda x: x.layers, self, new_layers)
 
-
-def contains_instance(_list: list, _type: type) -> bool:
-    """
-    Check to see if a list constains an element of a certain 
-    type.
-
-    Parameters
-    ----------
-    _list: list
-        The list to search.
-    _type: type
-        The type to check for.
-
-    Returns
-    -------
-    contains: bool
-        True if _type was found else False.
-    """
-    if _list:
-        for _elem in _list:
-            if isinstance(_elem, _type):
-                return True
-    return False
-   
 
 class TolimanDetector(dl.Detector):
     """
