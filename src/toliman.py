@@ -126,6 +126,39 @@ You have provided a layer that is also a default layer. Make sure
 that each type of detector is only provided once. 
 """
 
+
+class ExtendableModule(object):
+    """
+    """
+    # TODO: Add a remove method
+    def insert(self: object, optic: object, index: int) -> object:
+        """
+        Add an additional layer to the optical system.
+
+        Parameters
+        ----------
+        optic: object 
+            A `dLux.OpticalLayer` to include in the model.
+        index: int
+            Where in the list of layers to add optic.
+
+
+        Returns
+        -------
+        toliman: TolimanOptics
+            A new `TolimanOptics` instance with the applied update. 
+        """
+        if not isinstance(optic, dl.OpticalLayer):
+            raise ValueError("Inserted optics must be optical layers.")
+
+        new_layers: list = self.layers.copy().insert(index, optic)
+
+        return eqx.tree_at(lambda x: x.layers, self, new_layers)
+
+
+
+
+
 # TODO: I need to work out how to do the regularisation internally so 
 #       that the values which are returned are always correct. 
 # TODO: I need to make it so that the user can add and subtract layers
@@ -278,7 +311,7 @@ class TolimanOptics(dl.Optics):
         toliman_layers.append(dl.NormaliseWavefront())
 
         if simulate_polish:
-            raise NotImplementedError()
+            raise NotImplementedError(POLISH_USE_ERR_MSG)
 
         # Adding the propagator
         toliman_body: object
@@ -296,32 +329,6 @@ class TolimanOptics(dl.Optics):
         toliman_layers.append(dl.NormaliseWavefront())
 
         super().__init__(layers = toliman_layers)
-
-
-    # TODO: Add a remove method
-    def insert(self: object, optic: object, index: int) -> object:
-        """
-        Add an additional layer to the optical system.
-
-        Parameters
-        ----------
-        optic: object 
-            A `dLux.OpticalLayer` to include in the model.
-        index: int
-            Where in the list of layers to add optic.
-
-
-        Returns
-        -------
-        toliman: TolimanOptics
-            A new `TolimanOptics` instance with the applied update. 
-        """
-        if not isinstance(optic, dl.OpticalLayer):
-            raise ValueError("Inserted optics must be optical layers.")
-
-        new_layers: list = self.layers.copy().insert(index, optic)
-
-        return eqx.tree_at(lambda x: x.layers, self, new_layers)
 
 
 class TolimanDetector(dl.Detector):
