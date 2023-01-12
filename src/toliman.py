@@ -317,6 +317,19 @@ class TolimanDetector(dl.Detector):
             simulate_saturation: bool = True,
             extra_detector_layers: list = []) -> object:
         """
+        Parameters
+        ----------
+        simulate_jitter: bool = True
+            True if jitter should be included in the simulation of the 
+            detector.
+        simulate_pixel_response: bool = True
+            True if a pixel response should be included in the simulation 
+            of the detector.
+        simulate_saturation: bool = True
+            True if staturation should be included in the simulation of 
+            the detector.
+        extra_detector_layers: list = []
+            Extra detector effects besides the default ones. 
         """
         detector_layers: list = []
 
