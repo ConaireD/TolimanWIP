@@ -87,6 +87,10 @@ ALPHA_CENTAURI_MEAN_FLUX: float = 1.
 ALPHA_CENTAURI_CONTRAST: float = 2.
 ALPHA_CENTAURI_POSITION_ANGLE: float = 0.
 
+ALPHA_CEN_A_SURFACE_TEMP: float = 5790.
+ALPHA_CEN_A_METALICITY: float = .2
+ALPHA_CEN_A_SURFACE_GRAV: float = 4.
+
 MASK_TOO_LARGE_ERR_MSG = """ 
 The mask you have loaded had a higher resolution than the pupil. 
 A method of resolving this has not yet been created. Either 
@@ -430,21 +434,14 @@ class TolimanDetector(dl.Detector, ExtendableModule):
         else:
             raise ValueError(DETECTOR_EMPTY_ERR_MSG)
 
-"primary_teff_A = 5790   #temp\n",
-   "primary_z_A = 0.2       #metallicity    - numbers from wikipedia\n",
-   "primary_logg_A = 4.3    #gravity\n",
-   "acenA = S.Icat('phoenix',primary_teff_A,primary_z_A,primary_logg_A)\n",
-   "specA = acenA.sample(wavs*1e10)\n",
-   "specA /= jnp.max(specA*bandpass)\n",
-   "weights_A = specA*bandpass\n",
-   "\n",
-   "primary_teff_B = 5260   #temp\n",
-   "primary_z_B = 0.23      #metallicty\n",
-   "primary_logg_B = 4.37   #gravity\n",
-   "acenB = S.Icat('phoenix',primary_teff_B,primary_z_B,primary_logg_B)\n",
-   "specB = acenB.sample(wavs*1e10)\n",
-   "specB /= jnp.max(specB*bandpass)\n",
-   "weights_B = specB*bandpass"
+acenA = S.Icat('phoenix',primary_teff_A,primary_z_A,primary_logg_A)
+
+ALPHA_CEN_B_SURFACE_TEMP: float = 5260.
+ALPHA_CEN_B_METALLICITY: float = .23
+ALPHA_CEN_B_SURFACE_GRAV: float = 4.37
+
+acenB = S.Icat('phoenix',primary_teff_B,primary_z_B,primary_logg_B)
+
 class AlphaCentauri(dl.BinarySource):
     """
     """
