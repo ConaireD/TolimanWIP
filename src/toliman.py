@@ -299,6 +299,14 @@ class TolimanOptics(dl.Optics):
         return eqx.tree_at(lambda x: x.layers, self, new_layers)
 
 
+def contains_instance(_list: list, _type: type) -> bool:
+    if _list:
+        for _elem in _list:
+            if isinstance(_elem, _type):
+                return True
+    return False
+   
+
 class TolimanDetector(dl.Detector):
     """
     A default implementation of a generic detector that is designed 
@@ -337,9 +345,6 @@ class TolimanDetector(dl.Detector):
             detector_layers.append(dl.ApplyJitter(DEFAULT_DETECTOR_JITTER))
 
             # TODO: Make a contains instance function
-            if extra_detector_layers:
-                for layer in extra_detector_layers:
-                    if isinstance(layer, dl.ApplyJitter):
                         raise ValueError(DETECTOR_REPEATED_ERR_MSG)
             
         if simulate_saturation:
