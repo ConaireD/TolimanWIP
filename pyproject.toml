@@ -1,2 +1,17 @@
+[project]
+name = "toliman"
+description = "A differential model of TOLIMAN telescope."
+version = "0.0.1"
+authors = [
+    {name = "Jordan Dennis", email = "jdenn105@gmail.com"},
+    {name = "Conaire Deagan"},
+    {name = "Louis Desdoigts"}
+]
+dependencies = [
+    "jax",
+    "equinox",
+    "dLux"
+]
+
 [build-system]
 requires = ["setuptools", "wheel"]
