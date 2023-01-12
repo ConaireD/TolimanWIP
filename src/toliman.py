@@ -81,6 +81,12 @@ DEFAULT_DETECTOR_JITTER: float = 2.
 DEFAULT_DETECTOR_SATURATION: float = 2500
 DEFAULT_DETECTOR_THRESHOLD: float = .05
 
+ALPHA_CENTAURI_SEPARATION: float = dl.utils.arcseconds_to_radians(8.)
+ALPHA_CENTAURI_POSITION: float = np.array([0., 0.], dtype=float)
+ALPHA_CENTAURI_MEAN_FLUX: float = 1.
+ALPHA_CENTAURI_CONTRAST: float = 2.
+ALPHA_CENTAURI_POSITION_ANGLE: float = 0.
+
 MASK_TOO_LARGE_ERR_MSG = """ 
 The mask you have loaded had a higher resolution than the pupil. 
 A method of resolving this has not yet been created. Either 
@@ -418,18 +424,18 @@ class TolimanDetector(dl.Detector, ExtendableModule):
             raise ValueError(DETECTOR_EMPTY_ERR_MSG)
 
 
-ALPHA_CENTAURI_SEPARATION: float = dl.utils.arcseconds_to_radians(8.)
-ALPHA_CENTAURI_POSITION: float = np.array([0., 0.], dtype=float)
-ALPHA_CENTAURI_MEAN_FLUX: float = 1.
-ALPHA_CENTAURI_CONTRAST: float = 2.
-ALPHA_CENTAURI_POSITION_ANGLE: float = 0.
-
-alpha_centauri: object = dl.BinarySource(
-    position = true_position,
-    flux = true_flux,
-    contrast = true_contrast,
-    separation = true_separation,
-    position_angle = true_position_angle,
-    wavelengths = 1e-09 * np.linspace(595., 695., 10, endpoint=True)
-)
+class AlphaCentauri(dl.BinarySource):
+    """
+    """
+    def __init__(self: object) -> object:
+        """
+        """
+        super().__init__(
+            position = true_position,
+            flux = true_flux,
+            contrast = true_contrast,
+            separation = true_separation,
+            position_angle = true_position_angle,
+            wavelengths = 1e-09 * np.linspace(595., 695., 10, endpoint=True)
+        )
 
