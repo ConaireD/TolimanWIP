@@ -53,7 +53,10 @@ class Toliman(dl.Instrument):
     def __init__(self: object) -> object:
         """
         """
-        mask: float = _downsample(np.load('assets/mask.npy'), 4)
+        try:
+            mask: float = _downsample(np.load('assets/mask.npy'), 4)
+        except IOError as ioe:
+            raise ValueError("")
 
         shape: int = 5
         nolls: list = np.arange(2, shape + 2, dtype=int)
