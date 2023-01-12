@@ -10,6 +10,27 @@ npix: int = 256
 detector_npix: int = 128
 
 def _downsample(arr: float, m: int) -> float:
+    """
+    Resample a square array by a factor of `m`. `
+
+    Parameters
+    ----------
+    arr: float
+        An `NxN` array.
+    m: float
+        The factor to downsample by so that the final shape is `(N/m)x(N/m)`.
+        This implies that `N % m == 0`.
+
+    Examples
+    --------
+    ```python 
+    >>> import jax.numpy as np
+    >>> up_arr: float = np.ones((1024, 1024), dtype=float)
+    >>> down_arr: float = _downsample(arr, 4)
+    >>> down_arr.shape
+    (256, 256)
+    ```
+    """
     n: int = arr.shape[0]
     out: int = n // m
 
