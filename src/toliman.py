@@ -133,9 +133,16 @@ that each type of detector is only provided once.
 """
 
 
-class ExtendableModule(object):
+class ExtendableModule(eqx.Module):
     """
+    This "interface" adds `.insert` and `.remove` methods to an 
+    `equinox` module. The interface is based of the interface of 
+    the default python list. This class is designed to be used in 
+    multiple inheritance with other classes and should not be used 
+    on it's own.
     """
+
+
     # TODO: Add a remove method
     def insert(self: object, optic: object, index: int) -> object:
         """
