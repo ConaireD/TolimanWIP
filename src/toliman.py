@@ -44,6 +44,25 @@ TOLIMAN_DETECTOR_PIXEL_SIZE: float = .375
 TOLIMAN_WIDTH_OF_STRUTS: float = .01
 TOLIMAN_NUMBER_OF_STRUTS: int = 3
 
+MASK_TOO_LARGE_ERR_MSG = """ 
+The mask you have loaded had a higher resolution than the pupil. 
+A method of resolving this has not yet been created. Either 
+change the value of the `DEFAULT_PUPIL_NPIX` constant or use a 
+different mask.
+"""
+
+MASK_SAMPLING_ERR_MSG = """
+The mask you have loaded could not be downsampled onto the pupil. 
+The shape of the mask was ({%i, %i}), but ({%i, %i}) was expected.
+Either change the value of the environment variable 
+`DEFAULT_PUPIL_NPIX` or use a different mask.
+"""
+
+MASK_IMPORT_ERR_MSG = """
+The file address that of the mask did not exist. Make suer that 
+you have a `.npy` representation of the phase mask available 
+and have provided the correct file address to the constructor.
+"""
 
 class Toliman(dl.Instrument):
     """
@@ -63,23 +82,23 @@ class Toliman(dl.Instrument):
             loaded_shape: tuple = loaded_mask.shape
             loaded_width: int = loaded_shape[0]
             
+            mask: float 
             if not loaded_width == pixels_in_pupil:
                 if loaded_width < pixels_in_pupil:
-                    raise NotImplementedError("The mask you have loaded " + \
-                        "had a higher resolution than the pupil. A method " + \
-                        "of resolving this has not yet been created. " + \
-                        "Either change the value of the " + \
-                        "`DEFAULT_PUPIL_NPIX` constant or use a different " + \
-                        "mask.")
+                    raise NotImplementedError(MASK_TOO_LARGE_ERR_MSG)
                 if loaded_width % pixels_in_pupil == 0:
                     downsample_by: int = loaded_width // pixels_in_pupil 
                     mask: float = _downsample(loaded_mask, downsample_by)
                 else:
-                    raise ValueError("The mask provided could not be " + \
-                        "sampled onto the pupil.")
-            mask: float = _downsample(, 4)
+                    raise ValueError(MASK_SAMPLING_ERR_MSG)
+            else: 
+                mask: float = loaded_mask
+
+            del loaded_mask
+            del loaded_shape
+            del loaded_width
         except IOError as ioe:
-            raise ValueError("")
+            raise ValueError(MASK_IMPORT_ERR_MSG)
 
         shape: int = 5
         nolls: list = np.arange(2, shape + 2, dtype=int)
