@@ -142,7 +142,6 @@ class ExtendableModule(object):
         index: int
             Where in the list of layers to add optic.
 
-
         Returns
         -------
         toliman: TolimanOptics
@@ -152,10 +151,28 @@ class ExtendableModule(object):
             raise ValueError("Inserted optics must be optical layers.")
 
         new_layers: list = self.layers.copy().insert(index, optic)
-
         return eqx.tree_at(lambda x: x.layers, self, new_layers)
 
 
+    def remove(self: object, index: int) -> object:
+        """
+        Take a layer from the optical system.
+
+        Parameters
+        ----------
+        index: int
+            Where in the list of layers to remove an optic.
+
+        Returns
+        -------
+        toliman: TolimanOptics
+            A new `TolimanOptics` instance with the applied update. 
+        """
+        if not isinstance(optic, dl.OpticalLayer):
+            raise ValueError("Inserted optics must be optical layers.")
+
+        new_layers: list = self.layers.copy().remove(optic)
+        return eqx.tree_at(lambda x: x.layers, self, new_layers)
 
 
 
