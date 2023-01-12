@@ -299,10 +299,16 @@ class TolimanOptics(dl.Optics):
         return eqx.tree_at(lambda x: x.layers, self, new_layers)
 
 
-
-
 class TolimanDetector(dl.Detector):
     """
+    A default implementation of a generic detector that is designed 
+    to be used with the `dLux.Instrument`. 
+
+    Examples
+    --------
+    ```py
+    >>> toliman_detector: object = TolimanDetector()
+    >>> toliman_detector: object = TolimanDetector(simulate_jitter = False)
     """
 
     def __init__(self: object, 
