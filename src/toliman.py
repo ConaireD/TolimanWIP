@@ -178,9 +178,7 @@ class ExtendableModule(object):
 
 # TODO: I need to work out how to do the regularisation internally so 
 #       that the values which are returned are always correct. 
-# TODO: I need to make it so that the user can add and subtract layers
-#       as they wish. 
-class TolimanOptics(dl.Optics):
+class TolimanOptics(dl.Optics, ExtendableModule):
     """
     Simulates the optical system of the TOLIMAN telescope. It is 
     designed to occupy the `optics` kwarg of `dl.Instrument`. 
@@ -348,7 +346,7 @@ class TolimanOptics(dl.Optics):
         super().__init__(layers = toliman_layers)
 
 
-class TolimanDetector(dl.Detector):
+class TolimanDetector(dl.Detector, ExtendableModule):
     """
     A default implementation of a generic detector that is designed 
     to be used with the `dLux.Instrument`. 
@@ -418,3 +416,20 @@ class TolimanDetector(dl.Detector):
             super().__init__(detector_layers)
         else:
             raise ValueError(DETECTOR_EMPTY_ERR_MSG)
+
+
+ALPHA_CENTAURI_SEPARATION: float = dl.utils.arcseconds_to_radians(8.)
+ALPHA_CENTAURI_POSITION: float = np.array([0., 0.], dtype=float)
+ALPHA_CENTAURI_MEAN_FLUX: float = 1.
+ALPHA_CENTAURI_CONTRAST: float = 2.
+ALPHA_CENTAURI_POSITION_ANGLE: float = 0.
+
+alpha_centauri: object = dl.BinarySource(
+    position = true_position,
+    flux = true_flux,
+    contrast = true_contrast,
+    separation = true_separation,
+    position_angle = true_position_angle,
+    wavelengths = 1e-09 * np.linspace(595., 695., 10, endpoint=True)
+)
+
