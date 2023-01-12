@@ -137,6 +137,36 @@ class TolimanOptics(dl.Optics):
             path_to_filter: str = "assets/filter.npy",
             path_to_polish: str = "assets/polish.npy") -> object:
         """
+        Parameters
+        ----------
+        simulate_polish: bool = True
+            True if a layer should be included simulating the polish
+            on the secondary mirror.
+        simulate_aberrations: bool = True
+            True if the aberrations should be included. 
+        operate_in_fresnel_mode: bool = False
+            True if the simulation should use Fresnel instead of 
+            Fourier optics.
+        operate_in_static_mode: bool = True
+            True if the pupil of the aperture should be modelled 
+            as static. This will improve performance so only change 
+            it if you want to learn a parameter of the aperture.
+        number_of_zernikes: int = DEFAULT_NUMBER_OF_ZERNIKES
+            The number of zernike polynomials that should be used 
+            to model the aberrations.
+        pixels_in_pupil: int = DEFAULT_PUPIL_NPIX
+            The number of pixels in the pupil plane.
+        pixels_on_detector: int = DEFAULT_DETECTOR_NPIX
+            The number of pixels in the detector plane.
+        path_to_mask: str = "assets/mask.npy"
+            The file location of a `.npy` file that contains an 
+            array representation o the mask. 
+        path_to_filter: str = "assets/filter.npy"
+            The file location of a `.npy` file that contains an
+            array representation og the filter. 
+        path_to_polish: str = "assets/polish.npy"
+            The file location of a `.npy` file that contains an 
+            array representation of the secondary mirror polish. 
         """
         toliman_layers: list = [
             dl.CreateWavefront(
