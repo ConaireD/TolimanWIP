@@ -70,20 +70,72 @@ you have a `.npy` representation of the phase mask available
 and have provided the correct file address to the constructor.
 """
 
-class Toliman(dl.Instrument):
+FRESNEL_USE_ERR_MSG = """
+You have request operation in Fresenl mode. This has not currently 
+been implemented. Once implemented it is not recommended that you 
+use the feature as it is very slow and the zernike terms should 
+be sufficient for most purposes.
+"""
+
+# TODO: I need to work out how to do the regularisation internally so 
+#       that the values which are returned are always correct. 
+# TODO: I need to make it so that the user can add and subtract layers
+#       as they wish. 
+class Toliman(dl.Optics):
     """
     """
 
 
     def __init__(
             self: object,
+            simulate_polish: bool = True,
+            simulate_aberrations: bool = True,
+            simulate_jitter: bool = True,
+            simulate_pixel_response: bool = True,
+            simulate_
+            operate_in_fresnel_mode: bool = False,
+            operate_in_static_mode: bool = True,
             number_of_zernikes: int = DEFUALT_NUMBER_OF_ZERNIKES,
             pixels_in_pupil: int = DEFUALT_PUPIL_NPIX,
             pixels_on_detector: int = DEFUALT_DETECTOR_NPIX,
             path_to_mask: str = "assets/mask.npy",
-            path_to_filter: str = "assets/filter.npy") -> object:
+            path_to_filter: str = "assets/filter.npy",
+            path_to_polish: str = "assets/polish.npy") -> object:
         """
         """
+        toliman_layers: list = [
+            dl.CreateWavefront(
+                pixels_in_pupil, 
+                TOLIMAN_PRIMARY_APERTURE_DIAMETER,
+                wavefront_type = "Angular"
+            )
+        ]
+
+        # Adding the pupil
+        dyn_toliman_pupil: object = dl.CompoundAperture(
+            [
+                dl.UniformSpider(
+                    TOLIMAN_NUMBER_OF_STRUTS, 
+                    TOLIMAN_WIDTH_OF_STRUTS
+                ),
+                dl.AnnularAperture(
+                    TOLIMAN_PRIMARY_APERTURE_DIAMETER / 2., 
+                    TOLIMAN_SECONDARY_MIRROR_DIAMETER / 2.
+                )
+            ]
+        )
+
+        if operate_in_static_mode:
+            static_toliman_pupil: object = dl.StaticAperture(
+                dyn_toliman_pupil,
+                npixels = pixels_in_pupil,
+                pixel_scale = TOLIMAN_PRIMARY_APERTURE_DIAMETER / pixels_in_pupil
+            )
+
+            toliman_layers.append(static_toliman_pupil)
+        else:
+            toliman_layers.append(dyn_toliman_pupil)
+
         # Loading the mask.
         try:
             loaded_mask: float = np.load(path_to_mask)
@@ -107,68 +159,51 @@ class Toliman(dl.Instrument):
             del loaded_width
         except IOError as ioe:
             raise ValueError(MASK_IMPORT_ERR_MSG)
+        
+        toliman_model.append(dl.AddOPD(mask))
 
         # Generating the Zernikes
-        nolls: list = np.arange(2, number_of_zernikes + 2, dtype=int)
-        seed: object = jax.random.PRNGKey(0)
-        coeffs: list = 1e-08 * jax.random.normal(seed, (number_of_zernikes,))
+        # TODO: Make zernike_coefficients a function
+        if simulate_aberrations:
+            nolls: list = np.arange(2, number_of_zernikes + 2, dtype=int)
+            seed: object = jax.random.PRNGKey(0)
+            coeffs: list = 1e-08 * jax.random.normal(seed, (number_of_zernikes,))
 
-        toliman_aberrations: object = dl.StaticAberratedAperture(
-            dl.AberratedAperture(
-                 nolls, 
-                 coeffs, 
-                 dl.CircularAperture(
-                     TOLIMAN_PRIMARY_APERTURE_DIAMETER / 2.
-                 )
-            ),
-            coefficients = coeffs,
-            npixels = pixels_in_pupil,
-            pixel_scale = TOLIMAN_PRIMARY_APERTURE_DIAMETER / pixels_in_pupil
-        )
+            toliman_aberrations: object = dl.StaticAberratedAperture(
+                dl.AberratedAperture(
+                     nolls, 
+                     coeffs, 
+                     dl.CircularAperture(
+                         TOLIMAN_PRIMARY_APERTURE_DIAMETER / 2.
+                     )
+                ),
+                coefficients = coeffs,
+                npixels = pixels_in_pupil,
+                pixel_scale = TOLIMAN_PRIMARY_APERTURE_DIAMETER / pixels_in_pupil
+            )
 
-        wavefront_factory: object = dl.CreateWavefront(
-            pixels_in_pupil, 
-            TOLIMAN_PRIMARY_APERTURE_DIAMETER,
-            wavefront_type = "Angular"
-        )
+            toliman_layers.append(toliman_aberrations)
 
-        toliman_pupil: object = dl.StaticAperture(
-            dl.CompoundAperture(
-            [
-                    dl.UniformSpider(
-                        TOLIMAN_NUMBER_OF_STRUTS, 
-                        TOLIMAN_WIDTH_OF_STRUTS
-                    ),
-                    dl.AnnularAperture(
-                        TOLIMAN_PRIMARY_APERTURE_DIAMETER / 2., 
-                        TOLIMAN_SECONDARY_MIRROR_DIAMETER / 2.
-                    )
-                ]
-            ),
-            npixels = pixels_in_pupil,
-            pixel_scale = TOLIMAN_PRIMARY_APERTURE_DIAMETER / pixels_in_pupil
-        )
+        toliman_layers.append(dl.NormaliseWavefront())
 
-        toliman_mask: object = dl.AddOPD(mask)
-        normalise: object = dl.NormaliseWavefront()
+        # Adding the propagator
+        toliman_body: object
+        if not operate_in_fresnel_mode:
+            toliman_body: object = dl.AngularMFT(
+                detector_npix,
+                dl.utils.arcseconds_to_radians(pixels_in_detector)
+            )
+        else:
+            raise NotImplementedError(FRESNEL_USE_ERR_MSG)
 
-        toliman_body: object = dl.AngularMFT(
-            detector_npix,
-            dl.utils.arcseconds_to_radians(pixels_in_detector)
-        )
+        toliman_layers.append(toliman_body)
 
-        toliman: object = dl.Optics(
-            layers = [
-                wavefront_factory,
-                toliman_pupil,
-                toliman_aberrations,
-                toliman_mask,
-                normalise,
-                toliman_body,
-                normalise
-            ]
-        )
+        # Renormalising the flux.
+        toliman_layers.append(dl.NormaliseWavefront())
 
+        super().__init__(layers = toliman_layers)
+
+        # Creating the default detector.
         toliman_jitter: object = dl.ApplyJitter(2.)
         toliman_saturation: object = dl.ApplySaturation(2500.)
             
@@ -183,8 +218,6 @@ class Toliman(dl.Instrument):
 
         super().__init__(
             optics = toliman,
-            sources = [alpha_centauri],
-            detector = toliman_detector
         )
 
 
