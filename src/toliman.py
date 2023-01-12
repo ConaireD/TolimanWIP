@@ -362,7 +362,8 @@ class TolimanDetector(dl.Detector):
             detector_layers.append(dl.ApplyJitter(DEFAULT_DETECTOR_JITTER))
 
             # TODO: Make a contains instance function
-                        raise ValueError(DETECTOR_REPEATED_ERR_MSG)
+            if _contains_instance(detector_layers, dl.ApplyJitter):
+                raise ValueError(DETECTOR_REPEATED_ERR_MSG)
             
         if simulate_saturation:
             detector_layers.append(
@@ -371,10 +372,8 @@ class TolimanDetector(dl.Detector):
                 )
             )
 
-            if extra_detector_layers:
-                for layer in extra_detector_layers:
-                    if isinstance(layer, dl.ApplySaturation):
-                        raise ValueError(DETECTOR_REPEATED_ERR_MSG)
+            if _contains_instance(detector_layers, dl.ApplySaturation):
+                raise ValueError(DETECTOR_REPEATED_ERR_MSG)
             
         if simulate_pixel_response:
             detector_layers.append(
@@ -386,10 +385,8 @@ class TolimanDetector(dl.Detector):
                 )
             )
 
-            if extra_detector_layers:
-                for layer in extra_detector_layers:
-                    if isinstance(layer, dl.ApplyPixelResponse):
-                        raise ValueError(DETECTOR_REPEATED_ERR_MSG)
+            if _contains_instance(detector_layers, dl.ApplyPixelResponse):
+                raise ValueError(DETECTOR_REPEATED_ERR_MSG)
 
         detector_layers.extend(extra_detector_layers)
 
