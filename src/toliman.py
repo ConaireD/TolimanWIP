@@ -39,14 +39,14 @@ def _downsample(arr: float, m: int) -> float:
     
     return dim_two / m / m
 
-mask: float = downsample(np.load('../component_models/sidelobes.npy'), 4)
+mask: float = _downsample(np.load('assets/mask.npy'), 4)
 
 central_wavelength: float = (595. + 695.) / 2.
-aperture_diameter: float = .13
-secondary_mirror_diameter: float = .032
-detector_pixel_size: float = .375
-width_of_struts: float = .01
-number_of_struts: int = 3
+TOLIMAN_PRIMARY_APERTURE_DIAMETER: float = .13
+TOLIMAN_SECONDARY_MIRROR_DIAMETER: float = .032
+TOLIMAN_DETECTOR_PIXEL_SIZE: float = .375
+TOLIMAN_WIDTH_OF_STRUTS: float = .01
+TOLIMAN_NUMBER_OF_STRUTS: int = 3
 
 # Created the aberrations on the aperture. 
 shape: int = 5
