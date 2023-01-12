@@ -2,6 +2,8 @@ import dLux as dl
 import jax.numpy as np
 import jax
 
+__all__ = ["alpha_centauri"] 
+
 ALPHA_CENTAURI_SEPARATION: float = dl.utils.arcseconds_to_radians(8.)
 ALPHA_CENTAURI_POSITION: float = np.array([0., 0.], dtype=float)
 ALPHA_CENTAURI_MEAN_FLUX: float = 1.
