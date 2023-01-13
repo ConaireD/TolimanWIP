@@ -32,7 +32,7 @@ def _contains_instance(_list: list, _type: type) -> bool:
     return False 
 
 
-def _downsample(arr: float, m: int) -> float:
+def _downsample_square_grid(arr: float, m: int) -> float:
     """
     Resample a square array by a factor of `m`. `
 
@@ -88,7 +88,18 @@ def _downsample_along_axis(arr: float, m: int, axis: int = 0) -> float:
     return arr.reshape(new).sum(-1) / m
 
 
-def simulate_alpha_cen_spectra(number_of_wavelenths: float) -> float:
+def _simulate_alpha_cen_spectra(number_of_wavelenths: int = 2525) -> None:
+    """
+    This function will simulate the spectrum of the alpha centauri
+    binary using `pysynphot`. The output is saved to a file so that 
+    it can be used again later without having to be reloaded.
+
+    Parameters
+    ----------
+    number_of_wavelengts: int
+        The number of wavelengths that you wish to use for the simulation.
+        The are taken from the `pysynphot` output by binning. 
+    """
     import pysynphot
 
     alpha_cen_a_spectrum: float = pysynphot.Icat(
