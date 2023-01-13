@@ -152,6 +152,23 @@ def _simulate_alpha_cen_spectra(number_of_wavelenths: int = 25) -> None:
 
         
 def pixel_response(shape: float, threshold: float, seed: int = 1) -> float:
+    """
+    A convinience wrapper for generating a pixel reponse array.
+
+    Parameters
+    ----------
+    shape: tuple[int]
+        The array shape to populate with a random pixel response.
+    threshold: float
+        How far from 1. does the pixel response typically vary. 
+    seed: int = 1
+        The seed of the random generation. 
+
+    Returns
+    -------
+    pixel_response: float
+        An array of the pixel responses. 
+    """
     key: object = jax.random.PRNGKey(seed)
     return 1. + threshold * jax.random.normal(key, shape)
 
