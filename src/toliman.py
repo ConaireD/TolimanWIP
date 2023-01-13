@@ -225,11 +225,43 @@ def pixel_response(shape: float, threshold: float, seed: int = 1) -> float:
 
 
 def photon_noise(psf: float, seed: int = 0) -> float:
+    """
+    A convinience wrapper for generating photon noise.
+
+    Parameters
+    ----------
+    psf: float
+        The psf on which to add photon noise. 
+    seed: int = 1
+        The seed of the random generation. 
+
+    Returns
+    -------
+    photon_noise: float
+        A noisy psf. 
+    """
     key = jax.random.PRNGKey(seed)
     return jax.random.poisson(key, psf)
 
 
 def latent_detector_noise(scale: float, shape: float, seed: int = 0) -> float:
+    """
+    Simulate some gaussian latent noise. 
+
+    Parameters
+    ----------
+    scale: float, photons
+        The standard deviation of the gaussian in photons.
+    shape: tuple
+        The shape of the array to generate the noise on.
+    seed: int = 0 
+        The seed of the random generation. 
+
+    Returns
+    -------
+    det_noise: float, photons
+        The an additional noise source from the detector. 
+    """
     key: object = jax.random.PRNGKey(seed)
     return scale * jax.random.normal(key, shape)
 
