@@ -717,7 +717,4 @@ class Background(dl.MultiPointSource):
             position = position,
             flux = flux,
             spectrum = spectrum
-        )
-
-            
-        
+        ) 
