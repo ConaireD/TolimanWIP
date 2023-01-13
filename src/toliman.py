@@ -202,6 +202,29 @@ def _simulate_background_stars() -> None:
             sheet.write(f"{bg_stars_rel_flux_crop[row]}\n")
             
 
+def _simulate_data(model: object, scale: float) -> float:
+    """
+    Simulate some fake sata for comparison.
+
+    Parameters
+    ----------
+    model: object
+        A model of the toliman. Should inherit from `dl.Instrument` or 
+        be an instance. 
+    scale: float
+        How noisy is the detector?
+
+    Returns
+    -------
+    data: float, photons
+        A noisy psf.
+    """
+    psf: float = model.model()
+    noisy_psf: float = photon_noise(psf)
+    noisy_image: float = noisy_psf + latent_detector_noise(scale, psf.shape)
+    return noisy_image
+
+
 def pixel_response(shape: float, threshold: float, seed: int = 1) -> float:
     """
     A convinience wrapper for generating a pixel reponse array.
@@ -264,10 +287,6 @@ def latent_detector_noise(scale: float, shape: float, seed: int = 0) -> float:
     """
     key: object = jax.random.PRNGKey(seed)
     return scale * jax.random.normal(key, shape)
-
-def _simulate_data(model: object) -> float:
-    """
-    """
 
 
 DEFAULT_PUPIL_NPIX: int = 256
