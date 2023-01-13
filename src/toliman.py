@@ -63,7 +63,14 @@ def _downsample(arr: float, m: int) -> float:
     return dim_two / m / m
 
 
-def simulate_alpha_cen_spectra(wavelengths: float) -> float:
+def _downsample_along_axis(arr: float, m: int, axis: int = 0) -> float:
+    n: int = arr.shape[0]
+    out: int = n // m
+
+    return arr.reshape((n * out, m)).sum(axis = 1)
+
+
+def simulate_alpha_cen_spectra(number_of_wavelenths: float) -> float:
     import pysynphot
 
     alpha_cen_a_spectrum: float = pysynphot.Icat(
@@ -79,6 +86,18 @@ def simulate_alpha_cen_spectra(wavelengths: float) -> float:
         ALPHA_CEN_B_METALICITY,
         ALPHA_CEN_B_SURFACE_GRAV
     )
+
+    alpha_cen_a_waves: float = alpha_cen_a_spectrum.wave
+    alpha_cen_a_flux: float = alpha_cen_a_spectrum.flux
+    alpha_cen_b_waves: float = alpha_cen_b_spectrum.wave
+    alpha_cen_b_flux: float = alpha_cen_b_spectrum.flux
+
+    sampled_alpha_cen_a_waves: float = _downsample_line(alpha_cen_a_waves)
+
+    alpha_cen_waves: float = np.stack([alpha_cen_a_waves, alpha_cen_b_waves])
+    alpha_cen_flux: float = np.stack([alpha_cen_a_flux, alpha_cen_b_flux])
+
+    return dl.CombinedSpectrum()
 
 
 
