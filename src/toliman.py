@@ -224,6 +224,20 @@ def pixel_response(shape: float, threshold: float, seed: int = 1) -> float:
     return 1. + threshold * jax.random.normal(key, shape)
 
 
+def photon_noise(psf: float, seed: int = 0) -> float:
+    key = jax.random.PRNGKey(seed)
+    return jax.random.poisson(key, psf)
+
+
+def latent_detector_noise(scale: float, shape: float, seed: int = 0) -> float:
+    key: object = jax.random.PRNGKey(seed)
+    return scale * jax.random.normal(key, shape)
+
+def _simulate_data(model: object) -> float:
+    """
+    """
+
+
 DEFAULT_PUPIL_NPIX: int = 256
 DEFAULT_DETECTOR_NPIX: int = 128
 DEFAULT_NUMBER_OF_ZERNIKES: int = 5
