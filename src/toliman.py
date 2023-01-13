@@ -627,7 +627,7 @@ class TolimanDetector(dl.Detector, ExtendableModule):
             detector_layers.append(dl.ApplyJitter(DEFAULT_DETECTOR_JITTER))
 
             # TODO: Make a contains instance function
-            if _contains_instance(detector_layers, dl.ApplyJitter):
+            if _contains_instance(extra_detector_layers, dl.ApplyJitter):
                 raise ValueError(DETECTOR_REPEATED_ERR_MSG)
             
         if simulate_saturation:
