@@ -649,3 +649,19 @@ class AlphaCentauri(dl.BinarySource):
             spectrum = spectrum 
         )
 
+
+class Background(dl.MultiPointSource):
+    """
+    """
+
+    def __init__(
+            self: object, 
+            number_of_bg_stars: int, 
+            spectrum: object = None) -> object:
+        """
+        """
+        if not spectrum:
+            spectrum: object = dl.ArraySpectrum(
+
+            )
+        
