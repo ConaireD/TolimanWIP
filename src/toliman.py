@@ -88,7 +88,7 @@ def _downsample_along_axis(arr: float, m: int, axis: int = 0) -> float:
     return arr.reshape(new).sum(-1) / m
 
 
-def _simulate_alpha_cen_spectra(number_of_wavelenths: int = 2525) -> None:
+def _simulate_alpha_cen_spectra(number_of_wavelenths: int = 25) -> None:
     """
     This function will simulate the spectrum of the alpha centauri
     binary using `pysynphot`. The output is saved to a file so that 
@@ -116,22 +116,41 @@ def _simulate_alpha_cen_spectra(number_of_wavelenths: int = 2525) -> None:
         ALPHA_CEN_B_SURFACE_GRAV
     )
 
-    alpha_cen_a_waves: float = alpha_cen_a_spectrum.wave
-    alpha_cen_a_flux: float = alpha_cen_a_spectrum.flux
-    alpha_cen_b_waves: float = alpha_cen_b_spectrum.wave
-    alpha_cen_b_flux: float = alpha_cen_b_spectrum.flux
+    m: int = alpha_cen_a_waves.size // number_of_wavelenths
 
-    sampled_alpha_cen_a_waves: float = _downsample_line(alpha_cen_a_waves)
+    alpha_cen_a_waves: float = _downsample_along_axis(
+        alpha_cen_a_spectrum.wave,
+        m
+    )
 
-    alpha_cen_waves: float = np.stack([alpha_cen_a_waves, alpha_cen_b_waves])
-    alpha_cen_flux: float = np.stack([alpha_cen_a_flux, alpha_cen_b_flux])
+    alpha_cen_a_flux: float = _downsample_along_axis(
+        alpha_cen_a_spectrum.flux
+        m
+    )
 
-    return dl.CombinedSpectrum()
+    alpha_cen_b_waves: float = _downsample_along_axis(
+        alpha_cen_b_spectrum.wave,
+        m
+    )
 
+    alpha_cen_b_flux: float = _downsample_along_axis(
+        alpha_cen_b_spectrum.flux,
+        m
+    )
 
+    with open("assets/spectra.csv", "w") as spectra:
+        spectra.write("alpha cen a waves (m), ")
+        spectra.write("alpha cen a flux (W/m/m), ")
+        spectra.write("alpha cen b waves (m), ")
+        spectra.write("alpha cen b flux (W/m/m)\n")
 
+        for i in np.arange(number_of_wavelenths, dtype = int):
+            spectra.write("%f, ".format(alpha_cen_a_waves[i]))
+            spectra.write("%f, ".format(alpha_cen_a_flux[i]))
+            spectra.write("%f, ".format(alpha_cen_b_waves[i]))
+            spectra.write("%f\n".format(alpha_cen_b_flux[i]))
 
-
+        
 def pixel_response(shape: float, threshold: float, seed: int = 1) -> float:
     key: object = jax.random.PRNGKey(seed)
     return 1. + threshold * jax.random.normal(key, shape)
