@@ -652,13 +652,29 @@ class AlphaCentauri(dl.BinarySource):
 
 class Background(dl.MultiPointSource):
     """
+    Simplies the creation of a sample of background stars. The
+    sample of background stars is pulled from the Gaia database 
+    but there is some voodoo involved in regularising the data. 
+    Use the `_simulate_background_stars` function to generate 
+    alternative samples. 
+
+    Examples
+    --------
+    >>> bg: object = Background()
+    >>> lim_bg: object = Background(number_of_bg_stars = 10)
     """
 
     def __init__(
             self: object, 
-            number_of_bg_stars: int, 
+            number_of_bg_stars: int = None, 
             spectrum: object = None) -> object:
         """
+        Parameters
+        ----------
+        number_of_bg_stars: int = None
+            How many background stars should be simulated.
+        spectrum: object = None
+            A `dl.Spectrum` if the default spectrum is not to be used. 
         """
         if not spectrum:
             spectrum: object = dl.ArraySpectrum(
@@ -676,6 +692,9 @@ class Background(dl.MultiPointSource):
             str_to_float: callable = lambda _str: float(_str.strip())
             entries: list = jax.tree_map(strip, lines)
             _background: float = jax.tree_map(str_to_float, entries)
+
+            if number_of_bg_stars:
+                _background: float = _background[:number_of_stars]
 
         position: float = _background[:, (0, 1)]
         flux: float = _background[:, 2]
