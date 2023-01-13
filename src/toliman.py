@@ -63,11 +63,19 @@ def _downsample(arr: float, m: int) -> float:
     return dim_two / m / m
 
 
+# TODO: Implement a `jax.zip` function.
+# TODO: Implement a `jax.enumerate` function 
 def _downsample_along_axis(arr: float, m: int, axis: int = 0) -> float:
-    n: int = arr.shape[0]
+    shape: tuple = arr.shape
+    n: int = shape[axis]
     out: int = n // m
+    new: tuple = tuple([out if i == axis else dim for i, dim in enumerate(shape)] + [m])
+    return arr.reshape(new).sum(-1) / m
 
-    return arr.reshape((n * out, m)).sum(axis = 1)
+
+arr: float = np.arange(256, dtype=float).reshape(2, 2, 64)
+
+_downsample_along_axis(arr, 4, axis=2)
 
 
 def simulate_alpha_cen_spectra(number_of_wavelenths: float) -> float:
