@@ -63,6 +63,27 @@ def _downsample(arr: float, m: int) -> float:
     return dim_two / m / m
 
 
+def simulate_alpha_cen_spectra(wavelengths: float) -> float:
+    import pysynphot
+
+    alpha_cen_a_spectrum: float = pysynphot.Icat(
+        'phoenix',
+        ALPHA_CEN_A_SURFACE_TEMP,
+        ALPHA_CEN_A_METALICITY,
+        ALPHA_CEN_A_SURFACE_GRAV
+    )
+
+    alpha_cen_b_spectrum: float = pysynphot.Icat(
+        'phoenix',
+        ALPHA_CEN_B_SURFACE_TEMP,
+        ALPHA_CEN_B_METALICITY,
+        ALPHA_CEN_B_SURFACE_GRAV
+    )
+
+
+
+
+
 def pixel_response(shape: float, threshold: float, seed: int = 1) -> float:
     key: object = jax.random.PRNGKey(seed)
     return 1. + threshold * jax.random.normal(key, shape)
@@ -90,6 +111,10 @@ ALPHA_CENTAURI_POSITION_ANGLE: float = 0.
 ALPHA_CEN_A_SURFACE_TEMP: float = 5790.
 ALPHA_CEN_A_METALICITY: float = .2
 ALPHA_CEN_A_SURFACE_GRAV: float = 4.
+
+ALPHA_CEN_B_SURFACE_TEMP: float = 5260.
+ALPHA_CEN_B_METALLICITY: float = .23
+ALPHA_CEN_B_SURFACE_GRAV: float = 4.37
 
 MASK_TOO_LARGE_ERR_MSG = """ 
 The mask you have loaded had a higher resolution than the pupil. 
@@ -434,13 +459,6 @@ class TolimanDetector(dl.Detector, ExtendableModule):
         else:
             raise ValueError(DETECTOR_EMPTY_ERR_MSG)
 
-acenA = S.Icat('phoenix',primary_teff_A,primary_z_A,primary_logg_A)
-
-ALPHA_CEN_B_SURFACE_TEMP: float = 5260.
-ALPHA_CEN_B_METALLICITY: float = .23
-ALPHA_CEN_B_SURFACE_GRAV: float = 4.37
-
-acenB = S.Icat('phoenix',primary_teff_B,primary_z_B,primary_logg_B)
 
 class AlphaCentauri(dl.BinarySource):
     """
