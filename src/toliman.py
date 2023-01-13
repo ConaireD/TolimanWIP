@@ -151,7 +151,14 @@ def _simulate_alpha_cen_spectra(number_of_wavelenths: int = 25) -> None:
             spectra.write("%f\n".format(alpha_cen_b_flux[i]))
 
 
+# TODO: Add arguments
+# TODO: optimise
 def _simulate_background_stars() -> None:
+    """
+    This function samples the Gaia database for a typical sample
+    of background stars. The primary use of this function is to 
+    build a sample that can be used to look for biases. 
+    """
     from astroquery.gaia import Gaia
 
     conical_query = """
