@@ -172,6 +172,7 @@ def pixel_response(shape: float, threshold: float, seed: int = 1) -> float:
     key: object = jax.random.PRNGKey(seed)
     return 1. + threshold * jax.random.normal(key, shape)
 
+
 DEFAULT_PUPIL_NPIX: int = 256
 DEFAULT_DETECTOR_NPIX: int = 128
 DEFAULT_NUMBER_OF_ZERNIKES: int = 5
@@ -546,14 +547,47 @@ class TolimanDetector(dl.Detector, ExtendableModule):
 
 class AlphaCentauri(dl.BinarySource):
     """
+    A convinient representation of the Alpha Centauri binary system.
+    
+    Examples
+    --------
+    ```python 
+    >>> alpha_cen: object = AlphaCentauri()
+    >>> wavelengths: float = 1e-09 * np.linspace(595., 695., 10)
+    >>> fluxes: float = np.ones((10,), dtype = float)
+    >>> spectrum: object = dl.ArraySpectrum(wavelengths, fluxes)
+    >>> alpha_cen: object = AlphaCentauri(spectrum = spectrum)
     """
+
+
     def __init__(
             self: object, 
             spectrum: float = None) -> object:
         """
+        Parameters
+        ----------
+        spectrum: float = None
+            A `dl.Spectrum` if the default is not to be used. Recall
+            that the convinience method `_simulate_alpha_cen_spectrum`
+            can be used to simulate the spectrum.
         """
         if not spectrum:
-            
+            with open(SPECTRUM_DIR, "r") as spectrum:
+                lines: list = open.readlines()
+
+                strip: callable = lambda _str: _str.strip().split(",")
+                str_to_float: callable = lambda _str: float(_str.strip())
+                entries: list = jax.tree_map(strip, lines)
+                _spectrum: float = jax.tree_map(str_to_float, entries)
+
+            alpha_cen_waves: float = _spectrum[:, (0, 2)]
+            alpha_cen_flux: float = _spectrum[:, (1, 3)]
+
+            spectrum: float = dl.CombinedSpectrum(
+                wavelengths = alpha_cen_waves,
+                flux = alpha_cen_flux
+            )
+
 
         super().__init__(
             position = ALPHA_CENTAURI_POSITION,
@@ -561,6 +595,6 @@ class AlphaCentauri(dl.BinarySource):
             contrast = ALPHA_CENTAURI_CONTRAST,
             separation = ALPHA_CENTAURI_SEPARATION,
             position_angle = ALPHA_CENTAURI_POSITION_ANGLE,
-            wavelengths = 1e-09 * np.linspace(595., 695., 10, endpoint=True)
+            spectrum = spectrum 
         )
 
