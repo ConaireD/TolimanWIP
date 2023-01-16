@@ -360,6 +360,18 @@ class ExtendableModule(eqx.Module):
     on it's own.
     """
 
+    def to_optics_list(self: object) -> list:
+        """
+        Get the optical elements that make up the object as a list. 
+
+        Returns
+        -------
+        optics: list
+            The optical layers in order in a list.
+        """
+        return list(self.layers.values())
+
+
     # TODO: Add a remove method
     def insert(self: object, optic: object, index: int) -> object:
         """
