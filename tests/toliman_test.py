@@ -20,22 +20,37 @@ class TestTolimanOptics(object):
         assert _contains_optic(optics, dl.StaticAperture)
 
     def test_constructor_when_not_static(self: object) -> None:
+        # Arrange/Act
+        static_toliman: object = TolimanOptics(
+            operate_in_static_mode = False
+        )
+
+        # Assert
+        optics: list = list(static_toliman.layers.values())
+        assert not _contains_optic(optics, dl.StaticAperture)
 
     def test_constructor_when_mask_too_large(self: object) -> None:
-        # Load a mask that is too large
         with pytest.expect(NotImplementedError):
+            # Arrange/Act/Assert
             toliman: object = TolimanOptics(
                 pixels_in_pupul = 2048
             ) 
 
     def test_constructor_when_mask_incorrectly_sampled(self: object) -> None:
-        # Mask sampling error
+        # Arrange/Act/Assert
         with pytest.expect(ValueError):
             toliman: object = TolimanOptics(
                 pixels_in_pupil = 125
             )
 
     def test_constructor_when_mask_is_correct(self: object) -> None:
+        # Arrange/Act
+        toliman: object = TolimanOptics(pixels_in_pupil = 256)
+
+        # Assert
+        optics: list = 
+        assert _contains_optic(optics, dl.ApplyOPD)
+
 
     def test_constructor_when_mask_file_is_incorrect(self: object) -> None:
         # Incorrect file address error.
