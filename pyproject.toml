@@ -1,4 +1,4 @@
-[project]
+[tool.poetry]
 name = "toliman"
 description = "A differential model of TOLIMAN telescope."
 version = "0.0.1"
@@ -7,12 +7,16 @@ authors = [
     {name = "Conaire Deagan"},
     {name = "Louis Desdoigts"}
 ]
-dependencies = [
-    "jax",
-    "equinox",
-    "dLux"
-    "pysynphot"
-]
+readme = "README.md"
+packages = [{include = "poetry_demo"}]
+
+[tool.poetry.dependencies]
+python = "^3.7"
+jax = "0.4.1"
+dLux = "0.1.2"
+pysynphot = "2.0.0"
 
 [build-system]
-requires = ["setuptools", "wheel"]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"[project]
+
