@@ -3,12 +3,12 @@ name = "toliman"
 description = "A differential model of TOLIMAN telescope."
 version = "0.0.1"
 authors = [
-    {name = "Jordan Dennis", email = "jdenn105@gmail.com"},
-    {name = "Conaire Deagan"},
-    {name = "Louis Desdoigts"}
+    "Jordan Dennis <jdenn105@gmail.com>", 
+    "Conaire Deagan", 
+    "Louis Desdoigts"
 ]
 readme = "README.md"
-packages = [{include = "poetry_demo"}]
+packages = [{include = "toliman"}]
 
 [tool.poetry.dependencies]
 python = "^3.7"
@@ -18,5 +18,5 @@ pysynphot = "2.0.0"
 
 [build-system]
 requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"[project]
+build-backend = "poetry.core.masonry.api"
 
