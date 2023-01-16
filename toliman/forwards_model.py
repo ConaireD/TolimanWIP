@@ -31,7 +31,7 @@ def latent_detector_noise(scale: float, shape: float, seed: int = 0) -> float:
 rescaling: float = 1e5
 
 toliman_photon_noise: float = photon_noise(rescaling * psf) / rescaling
-toliman_latent_noise: float = latent_detector_noise(1. / rescaling, psf.shape)
+toliman_latent_noise: float = latent_detector_noise(1.0 / rescaling, psf.shape)
 toliman_image: float = toliman_photon_noise + toliman_latent_noise
 
 _: None = plots.plot_im_with_cax_on_fig(toliman_image, plt.figure(figsize=(6, 6)))
@@ -59,10 +59,10 @@ simulation: float = model.set(separation_path, separation).model()
 
 initial_separation: float = np.array([dl.utils.arcseconds_to_radians(8.5)])
 
-results: object = optimize.minimize(loss, initial_separation, (model, toliman_image), method = "BFGS")
+results: object = optimize.minimize(
+    loss, initial_separation, (model, toliman_image), method="BFGS"
+)
 
 results.x
 
 true_separation
-
-
