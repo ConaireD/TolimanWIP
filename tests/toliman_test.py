@@ -16,18 +16,20 @@ class TestTolimanOptics(object):
         )
 
         # Assert
-        optics: list = list(static_toliman.layers.values())
+        optics: list = static_toliman.to_optics_list() 
         assert _contains_optic(optics, dl.StaticAperture)
+
 
     def test_constructor_when_not_static(self: object) -> None:
         # Arrange/Act
-        static_toliman: object = TolimanOptics(
+        dynamic_toliman: object = TolimanOptics(
             operate_in_static_mode = False
         )
 
         # Assert
-        optics: list = list(static_toliman.layers.values())
+        optics: list = dynamic_toliman.to_optics_list() 
         assert not _contains_optic(optics, dl.StaticAperture)
+
 
     def test_constructor_when_mask_too_large(self: object) -> None:
         with pytest.expect(NotImplementedError):
@@ -36,6 +38,7 @@ class TestTolimanOptics(object):
                 pixels_in_pupul = 2048
             ) 
 
+
     def test_constructor_when_mask_incorrectly_sampled(self: object) -> None:
         # Arrange/Act/Assert
         with pytest.expect(ValueError):
@@ -43,12 +46,22 @@ class TestTolimanOptics(object):
                 pixels_in_pupil = 125
             )
 
+
     def test_constructor_when_mask_is_correct(self: object) -> None:
         # Arrange/Act
         toliman: object = TolimanOptics(pixels_in_pupil = 256)
 
         # Assert
-        optics: list = 
+        optics: list = toliman.to_optics_list() 
+        assert _contains_optic(optics, dl.ApplyOPD)
+
+
+    def test_constructor_when_mask_is_correct_at_max(self: object) -> None:
+        # Arrange/Act
+        toliman: object = TolimanOptics(pixels_in_pupil = 1024)
+
+        # Assert
+        optics: list = toliman.to_optics_list() 
         assert _contains_optic(optics, dl.ApplyOPD)
 
 
@@ -60,9 +73,11 @@ class TestTolimanOptics(object):
             )
 
     def test_constructor_when_aberrated(self: object) -> None:
-        # Simulate aberrations (yes and no)
+        # Arrange/Act
         toliman: object = TolimanOptics(simulate_aberrations = True)
-        opitcs: list = list(toliman.layers.values())
+        opitcs: list = toliman.to_optics_list()
+
+        # Assert
         assert _contains_instance(optics, dl.StaticAberratedAperture)
 
     def test_constructor_when_not_aberrated(self: object) -> None:
