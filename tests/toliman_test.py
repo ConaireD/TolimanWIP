@@ -9,52 +9,67 @@ from toliman import (
 )
 
 class TestTolimanOptics(object):
-    def test___init__(self: object) -> None:
-        # Operate in static mode
+    def test_constructor_when_static(self: object) -> None:
+        # Arrange/Act
         static_toliman: object = TolimanOptics(
             operate_in_static_mode = True
         )
 
+        # Assert
         optics: list = list(static_toliman.layers.values())
         assert _contains_optic(optics, dl.StaticAperture)
 
+    def test_constructor_when_not_static(self: object) -> None:
+
+    def test_constructor_when_mask_too_large(self: object) -> None:
         # Load a mask that is too large
         with pytest.expect(NotImplementedError):
             toliman: object = TolimanOptics(
                 pixels_in_pupul = 2048
             ) 
 
+    def test_constructor_when_mask_incorrectly_sampled(self: object) -> None:
         # Mask sampling error
         with pytest.expect(ValueError):
             toliman: object = TolimanOptics(
                 pixels_in_pupil = 125
             )
 
+    def test_constructor_when_mask_is_correct(self: object) -> None:
+
+    def test_constructor_when_mask_file_is_incorrect(self: object) -> None:
         # Incorrect file address error.
         with pytest.expect(ValueError):
             toliman: object = TolimanOptics(
                 path_to_mask = "i/don't/exist.npy"
             )
 
+    def test_constructor_when_aberrated(self: object) -> None:
         # Simulate aberrations (yes and no)
         toliman: object = TolimanOptics(simulate_aberrations = True)
         opitcs: list = list(toliman.layers.values())
         assert _contains_instance(optics, dl.StaticAberratedAperture)
 
+    def test_constructor_when_not_aberrated(self: object) -> None:
         toliman: object = TolimanOptics(simulate_aberrations = False)
         opitcs: list = list(toliman.layers.values())
         assert not _contains_instance(optics, dl.StaticAberratedAperture)
 
+    def test_constructor_when_polish_is_simulated(self: object) -> None:
         # Simulate polish
         with pytest.expect(NotImplementedError):
             toliman: object = TolimanOptics(
                 simulate_polish = True
             )
 
+    def test_constructor_when_polish_is_not_simulated(self: object) -> None:
+
+    def test_constructor_when_using_fresnel(self: object) -> None:
         # Operate in Fresnel mode
         with pytest.expect(NotImplementedError):
             toliman: object = TolimanOptics(operate_in_fresnel_mode = True)
 
+    def test_constructor_when_not_using_fresnel(self: object) -> None:
 
     def test_insert(self: object) -> None:
         # Test not an optical layer
