@@ -11,10 +11,10 @@ readme = "README.md"
 packages = [{include = "toliman"}]
 
 [tool.poetry.dependencies]
-python = "^3.7"
-jax = "0.4.1"
-dLux = "0.1.2"
-pysynphot = "2.0.0"
+python = ">=3.10"
+jax = ">=0.4.1"
+dLux = ">=0.1.2"
+pysynphot = ">=2.0.0"
 
 [build-system]
 requires = ["poetry-core"]
