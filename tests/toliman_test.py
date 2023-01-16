@@ -67,10 +67,15 @@ class TestTolimanOptics(object):
 
     def test_constructor_when_mask_file_is_incorrect(self: object) -> None:
         # Incorrect file address error.
+        # TODO: Make sure that this file does not exist
+        #       This is a best practice thing as it can theoretically 
+        #       exist making this test environment dependent. This 
+        #       violates the R in the F.I.R.S.T principles.
         with pytest.expect(ValueError):
             toliman: object = TolimanOptics(
                 path_to_mask = "i/don't/exist.npy"
             )
+
 
     def test_constructor_when_aberrated(self: object) -> None:
         # Arrange/Act
@@ -80,26 +85,48 @@ class TestTolimanOptics(object):
         # Assert
         assert _contains_instance(optics, dl.StaticAberratedAperture)
 
+
     def test_constructor_when_not_aberrated(self: object) -> None:
+        # Arrange/Act
         toliman: object = TolimanOptics(simulate_aberrations = False)
         opitcs: list = list(toliman.layers.values())
+
+        # Assert
         assert not _contains_instance(optics, dl.StaticAberratedAperture)
 
+
     def test_constructor_when_polish_is_simulated(self: object) -> None:
-        # Simulate polish
+        # Arrange/Act/Assert
         with pytest.expect(NotImplementedError):
             toliman: object = TolimanOptics(
                 simulate_polish = True
             )
 
+
     def test_constructor_when_polish_is_not_simulated(self: object) -> None:
+        # Arrange/Act
+        toliman: object = TolimanOptics(simulate_polish = False)
+        optics: list = toliman.to_optics_list()
+        
+        # Assert
+        assert not _contains_instance(optics, GeometricAberrations)
+        
 
     def test_constructor_when_using_fresnel(self: object) -> None:
         # Operate in Fresnel mode
         with pytest.expect(NotImplementedError):
             toliman: object = TolimanOptics(operate_in_fresnel_mode = True)
 
+
     def test_constructor_when_not_using_fresnel(self: object) -> None:
+        # Arrange/Act
+        toliman: object = TolimanOptics(operate_in_fresnel_mode = False)
+        optics: list = toliman.to_optics_list()
+
+        # TODO: get the correct name for the FresnelPropagator.
+        # Assert
+        assert not _contains_instance(optics, dl.FresnelPropagator)
+
 
     def test_insert(self: object) -> None:
         # Test not an optical layer
@@ -107,7 +134,7 @@ class TestTolimanOptics(object):
         with pytest.expect(ValueError):
             toliman.insert(0, 1)
 
-        optics: list = list(toliman.layers.values())
+        optics: list = toliman.to_optics_list()
         length: int = len(optics)
 
         insertion: object = dl.HexagonalAperture(1.)
