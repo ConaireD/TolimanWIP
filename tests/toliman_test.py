@@ -128,12 +128,28 @@ class TestTolimanOptics(object):
         assert not _contains_instance(optics, dl.FresnelPropagator)
 
 
-    def test_insert(self: object) -> None:
-        # Test not an optical layer
+    def test_insert_when_type_is_incorrect(self: object) -> None:
+        # Arrange
         toliman: object = TolimanOptics()
         with pytest.expect(ValueError):
+            # Act/Assert
             toliman.insert(0, 1)
 
+
+    def test_insert_when_index_is_too_long(self: object) -> None:
+        # Arrange
+        toliman: object = TolimanOptics()
+        optics: list = toliman.to_optics_list()
+        length: int = len(optics)
+        wrong_index: int = length + 1
+        element_to_insert: object = dl.CircularAperture(1.)
+
+        # Act/Assert
+        with pytest.expect(ValueError):
+            toliman.insert(wrong_index, element_to_insert)
+
+
+    def test_insert_when_index_is_negative(self: object) -> None:
         optics: list = toliman.to_optics_list()
         length: int = len(optics)
 
