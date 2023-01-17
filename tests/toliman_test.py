@@ -202,14 +202,33 @@ class TestTolimanOptics(object):
 
         # Act
         new_toliman: object = toliman.remove(0)
-        new_optics: list = new_toliman,to_optics_list()
+        new_optics: list = new_toliman.to_optics_list()
 
         # Assert
         assert not _contains_instance(new_optics, dl.StaticAperture)
         
 
     def test_append_when_type_is_incorrect(self: object) -> None:
+        # Arrange
+        toliman: object = TolimanOptics()
+        
+        # Act/Assert
+        with pytest.expect(ValueError):
+            toliman.append(1)
+
+
     def test_append_when_correct(self: object) -> None:
+        # Arrange
+        toliman: object = TolimanOptics()
+        element_to_append: object = dl.CircularAperture(1.)
+
+        # Act
+        toliman: object = toliman.append(element_to_append)
+        optics: list = toliman.to_optics_list()
+
+        # Assert
+        assert _contains_instance(optics, dl.CircularAperture)
+
    
     def test_pop_removes_element(self: object) -> None:
     def test_pop_returns_element(self: object) -> None:
