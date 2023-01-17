@@ -1,5 +1,5 @@
 site_name: TOLIMAN
-
+docs_dir: ./tests/
 plugins:
     - simple
     - mkdocstrings
