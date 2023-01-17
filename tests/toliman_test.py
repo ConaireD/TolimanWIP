@@ -150,18 +150,40 @@ class TestTolimanOptics(object):
 
 
     def test_insert_when_index_is_negative(self: object) -> None:
+        # Arrange
+        toliman: object = TolimanOptics()
+        element_to_insert: object = dl.CircularAperture(1.)
+
+        # Act/Assert
+        with pytest.expect(ValueError):
+            toliman.insert(-1, element_to_insert)
+        
+
+    def test_insert_when_correct(self: object) -> None:
+        # Arrange
+        toliman: object = TolimanOptics()
         optics: list = toliman.to_optics_list()
         length: int = len(optics)
 
+        # Act
         insertion: object = dl.HexagonalAperture(1.)
         toliman: object = toliman.insert(0, insertion)
 
-        new_optics: list = list(toliman.layers.values())
+        # Assert
+        new_optics: list = toliman.to_optics_list()
+        assert _contains_instance(new_optics, dl.HexagonalAperture)
 
             
+    def test_remove_when_index_is_too_long(self: object) -> None:
+    def test_remove_when_index_is_negative(self: object) -> None:
+    def test_remove_when_correct(self: object) -> None:
 
-    def test_remove(self: object) -> None:
 
+    def test_append_when_type_is_incorrect(self: object) -> None:
+    def test_append_when_correct(self: object) -> None:
+   
+    def test_pop_removes_element(self: object) -> None:
+    def test_pop_returns_element(self: object) -> None:
 
 def TestTolimanDetector(object):
     def test___init__(self: object) -> None:
