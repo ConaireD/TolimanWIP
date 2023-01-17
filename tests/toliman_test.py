@@ -231,7 +231,17 @@ class TestTolimanOptics(object):
 
    
     def test_pop_removes_element(self: object) -> None:
-    def test_pop_returns_element(self: object) -> None:
+        # Arrange
+        toliman: object = TolimanOptics()
+        optics: list = toliman.to_optics_list()
+
+        # Act
+        new_toliman: object = toliman.pop()
+        new_optics: list = new_toliman.to_optics_list()
+
+        # Assert
+        assert optics[-1] != new_optics[-1]
+
 
 def TestTolimanDetector(object):
     def test___init__(self: object) -> None:
