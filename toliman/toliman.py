@@ -5,7 +5,7 @@ import equinox as eqx
 
 
 __author__ = "Jordan Dennis"
-__all__ = ["TolimanDetector", "TolimanOptics", "AlphaCentaur", "Background", "_contains_instance"]
+__all__ = ["TolimanDetector", "TolimanOptics", "AlphaCentauri", "Background", "_contains_instance"]
 
 
 def _contains_instance(_list: list, _type: type) -> bool:
