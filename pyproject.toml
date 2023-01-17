@@ -20,6 +20,7 @@ pytest = "^7.2.1"
 pytest-black = "^0.3.12"
 pytest-sugar = "^0.9.6"
 mkdocs = "^1.4.2"
+mkdocs-simple-plugin = "2.1.2"
 mkdocs-semiliterate = "^0.7.0"
 opt-einsum = "^3.3.0"
 
