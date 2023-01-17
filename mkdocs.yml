@@ -1,4 +1,5 @@
 site_name: TOLIMAN
 
 plugins:
-    - semiliterate
+    - simple
+

@@ -9,7 +9,7 @@ __all__ = ["TolimanDetector", "TolimanOptics", "AlphaCentauri", "Background", "_
 
 
 def _contains_instance(_list: list, _type: type) -> bool:
-    """
+    """md
     Check to see if a list constains an element of a certain
     type.
 
