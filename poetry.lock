@@ -1779,22 +1779,6 @@ Markdown = ">=3.3"
 mkdocs = ">=1.1"
 
 [[package]]
-name = "mkdocs-semiliterate"
-version = "0.7.0"
-description = "Extension of mkdocs-simple-plugin adding easy content inclusion"
-category = "main"
-optional = false
-python-versions = "*"
-files = [
-    {file = "mkdocs-semiliterate-0.7.0.tar.gz", hash = "sha256:7ace58ee48ff6d85c3143ae7973aab375c21e9b84bdc400fe22c57aed1c86b90"},
-    {file = "mkdocs_semiliterate-0.7.0-py3-none-any.whl", hash = "sha256:9b9e876c33d13433160e8a38a912bd91d8d08cbc17d4fda3aa1a7fa64af23f83"},
-]
-
-[package.dependencies]
-mkdocs = ">=1.4,<2.0"
-mkdocs-simple-plugin = "2.1.2"
-
-[[package]]
 name = "mkdocs-simple-plugin"
 version = "2.1.2"
 description = "Plugin for adding simple wiki site creation from markdown files interspersed within your code with MkDocs."
@@ -3571,4 +3555,4 @@ optax = "*"
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10,<3.11"
-content-hash = "c18e1704eebfaca8315751c75e1956808f07ffcb64ebabab3efe1bac67714f5d"
+content-hash = "6e4d5d5723b25efe1c062001cb2b6bf1274fab8256644b0bdf8851623b880717"
