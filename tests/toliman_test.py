@@ -309,6 +309,8 @@ def TestTolimanDetector(object):
         assert _contains_instance(optics, ApplySaturation)
         assert _contains_instance(optics, ApplyPixelResponse)
 
+    def test_constructor_when_empty(self: object) -> None:
+
     def test_insert_when_type_is_incorrect(self: object) -> None:
         # Arrange
         detector: object = TolimanDetector()
@@ -354,6 +356,10 @@ def TestTolimanDetector(object):
     def test_remove_when_index_is_negative(self: object) -> None:
     def test_remove_when_correct(self: object) -> None:
 
+    def test_append_when_type_is_incorrect(self: object) -> None:
+    def test_append_when_correct(self: object) -> None:
+
+    def test_pop_when_correct(self: object) -> None:
 
 class TestAlphaCentauri(object):
     def test___init__(self: object) -> None:
