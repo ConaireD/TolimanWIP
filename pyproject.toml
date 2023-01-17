@@ -11,9 +11,9 @@ readme = "README.md"
 packages = [{include = "toliman"}]
 
 [tool.poetry.dependencies]
-python = ">=3.10,<4.0"
+python = ">=3.10,<3.11"
 jax = ">=0.4.1"
-dLux = ">=0.1.2"
+dLux = ">=0.9"
 pysynphot = ">=2.0.0"
 black = "^22.12.0"
 pytest = "^7.2.1"
