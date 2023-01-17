@@ -206,18 +206,17 @@ class TestTolimanOptics(object):
 
 
 def TestTolimanDetector(object):
-    def test___init__(self: object) -> None:
-        # Simulate Jitter
-        # Extra dectector layers already contains a Jitter
+    def test_constructor_when_jittered(self: object) -> None:
+    def test_constructor_when_not_jittered(self: object) -> None:
+    def test_constructor_when_jitter_is_repeated(self: object) -> None:
 
-        # Simulate saturation
-        # Extra detector layers already contains a Saturation
+    def test_constructor_when_saturated(self: object) -> None:
+    def test_constructor_when_not_saturated(self: object) -> None:
+    def test_constructor_when_saturation_is_repeated(self: object) -> None:
 
-        # Simulate pixel response
-        # Extra detector layers already contains a PixelResponse
-
-        # Empty detector
-        pass
+    def test_constructor_when_pixels_respond(self: object) -> None:
+    def test_constructor_when_pixels_dont_respond(self: object) -> None:
+    def test_constructor_when_pixel_response_is_repeated(self: object) -> None:
 
     def test_insert(self: object) -> None:
         pass
