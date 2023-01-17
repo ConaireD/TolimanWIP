@@ -1,6 +1,8 @@
 site_name: TOLIMAN
-docs_dir: ./tests/
+docs_dir: .
 plugins:
+    - search
+    - same-dir
     - simple
     - mkdocstrings
 

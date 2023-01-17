@@ -1779,6 +1779,21 @@ Markdown = ">=3.3"
 mkdocs = ">=1.1"
 
 [[package]]
+name = "mkdocs-same-dir"
+version = "0.1.2"
+description = "MkDocs plugin to allow placing mkdocs.yml in the same directory as documentation"
+category = "main"
+optional = false
+python-versions = ">=3.6,<4.0"
+files = [
+    {file = "mkdocs-same-dir-0.1.2.tar.gz", hash = "sha256:dfb0d8e8b4930a8c7fc3f8ad558d647e8243cd4e1b6e6178e5fa8c1423b0ee45"},
+    {file = "mkdocs_same_dir-0.1.2-py3-none-any.whl", hash = "sha256:627991894d51a9fcc54e7d3f0c48a2be3c0a248e015bbeb8e90d4f95f1ac59ba"},
+]
+
+[package.dependencies]
+mkdocs = ">=1.0.3,<2.0.0"
+
+[[package]]
 name = "mkdocs-simple-plugin"
 version = "2.1.2"
 description = "Plugin for adding simple wiki site creation from markdown files interspersed within your code with MkDocs."
@@ -3555,4 +3570,4 @@ optax = "*"
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10,<3.11"
-content-hash = "6e4d5d5723b25efe1c062001cb2b6bf1274fab8256644b0bdf8851623b880717"
+content-hash = "1b0f74f6b80d33b55993f1f89759565e7c2858f43d1a44f622b62c26453b9b6d"

@@ -24,6 +24,7 @@ mkdocs-simple-plugin = "2.1.2"
 opt-einsum = "^3.3.0"
 mkdocstrings = {extras = ["python"], version = "^0.19.1"}
 pytkdocs = {version = ">=0.5.0", extras = ["numpy-style"]}
+mkdocs-same-dir = "^0.1.2"
 
 [build-system]
 requires = ["poetry-core"]
