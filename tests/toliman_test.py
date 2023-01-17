@@ -388,9 +388,38 @@ def TestTolimanDetector(object):
         assert _contains_instance(optics, ApplyJitter)
 
     def test_append_when_type_is_incorrect(self: object) -> None:
+        # Arrange
+        detector: object = TolimanDetector()
+
+        # Act/Assert
+        with pytest.expect(ValueError):
+            detector.append(1)
+
+
     def test_append_when_correct(self: object) -> None:
+        # Arrange
+        detector: object = TolimanDetector()
+        element_to_insert: object = AddConstant(2.)
+
+        # Act
+        new_detector: object = detector.append(element_to_insert)
+        new_optics: list = new_detector.to_optics_list()
+
+        # Assert
+        assert _contains_instance(new_optics, AddConstant)
 
     def test_pop_when_correct(self: object) -> None:
+        # Arrange
+        detector: object = TolimanDetector()
+
+        # Act
+        new_detector: object = detector.pop()
+        new_optics: list = new_detector.to_optics_list()
+
+        # Assert
+        # TODO: Check that I actually have this correct and upgrade 
+        #       to make it more programmatic.
+        assert not _contains_instance(new_optics, ApplyPixelResponse)
 
 class TestAlphaCentauri(object):
     def test___init__(self: object) -> None:
