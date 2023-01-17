@@ -5,8 +5,11 @@ from dLux import (
     HexagonalAperture,
     ApplyOPD,
     ApplyJitter,
+    ApplyPixelResponse,
     StaticAperture,
-    StaticAberratedAperture
+    StaticAberratedAperture,
+    ArraySpectrum,
+    CombinedSpectrum
 )
 
 from toliman import (
@@ -422,11 +425,28 @@ def TestTolimanDetector(object):
         assert not _contains_instance(new_optics, ApplyPixelResponse)
 
 class TestAlphaCentauri(object):
-    def test___init__(self: object) -> None:
-        # Test without spectrum
-        # test wth spectrum
-        pass
+    def test_constructor_when_given_spectrum(self: object) -> None:
+        # Arrange
+        shape: int = 10
+        wavelengths: float = np.linspace(595., 695., shape, dtype=float)
+        weights: float = np.ones((shape,), dtype=float)
+        spectrum: object = ArraySpectrum(wavelengths = wavelengths, weights = weights)
 
+        # Act
+        alpha_centauri: object = AlphaCentauri(spectrum = spectrum)
+
+        # Assert
+        # TODO: Make sure that the initial type of spectrum is not 
+        #       an ArraySpectrum
+        assert isinstance(alpha_centauri.spectrum, ArraySpectrum) 
+        
+
+    def test_constructor_when_not_given_spectrum(self: object) -> None:
+        # Arrange
+        alpha_centauri: object = AlphaCentauri()
+
+        # Act/Assert
+        assert isinstance(alpha_centauri.spectrum, CombinedSpectrum)
 
 class TestBackground(object):
     def test___init__(self: object) -> None:
