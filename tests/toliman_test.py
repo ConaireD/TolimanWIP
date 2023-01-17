@@ -3,21 +3,21 @@ import pytest
 from dLux import (
     CircularAperture,
     HexagonalAperture,
-    ApplyOPD,
+    AddOPD,
     ApplyJitter,
     ApplyPixelResponse,
     StaticAperture,
     StaticAberratedAperture,
     ArraySpectrum,
-    CombinedSpectrum
+    CombinedSpectrum,
 )
 
 from toliman import (
     _contains_instance,
-    TolimanOptics, 
-    TolimanDetector, 
-    AlphaCentauri, 
-    Background
+    TolimanOptics,
+    TolimanDetector,
+    AlphaCentauri,
+    Background,
 )
 
 
@@ -54,7 +54,7 @@ class TestTolimanOptics(object):
 
         # Assert
         optics: list = toliman.to_optics_list()
-        assert _contains_optic(optics, dl.ApplyOPD)
+        assert _contains_optic(optics, dl.AddOPD)
 
     def test_constructor_when_mask_is_correct_at_max(self: object) -> None:
         # Arrange/Act
@@ -62,7 +62,7 @@ class TestTolimanOptics(object):
 
         # Assert
         optics: list = toliman.to_optics_list()
-        assert _contains_optic(optics, dl.ApplyOPD)
+        assert _contains_optic(optics, dl.AddOPD)
 
     def test_constructor_when_mask_file_is_incorrect(self: object) -> None:
         # Incorrect file address error.
@@ -224,49 +224,46 @@ class TestTolimanOptics(object):
 
 def TestTolimanDetector(object):
     def test_constructor_when_jittered(self: object) -> None:
-        # Arrange/Act 
-        detector: object = TolimanDetector(simulate_jitter = True)
+        # Arrange/Act
+        detector: object = TolimanDetector(simulate_jitter=True)
         optics: list = detector.to_optics_list()
 
         # Assert
         assert _contains_instance(optics, dl.ApplyJitter)
 
-
     def test_constructor_when_not_jittered(self: object) -> None:
-        # Arrange/Act 
-        detector: object = TolimanDetector(simulate_jitter = False)
+        # Arrange/Act
+        detector: object = TolimanDetector(simulate_jitter=False)
         optics: list = detector.to_optics_list()
 
         # Assert
         assert not _contains_instance(optics, dl.ApplyJitter)
 
-
     def test_constructor_when_jitter_is_repeated(self: object) -> None:
         # Arrange
-        jitter: object = ApplyJitter(2.)
+        jitter: object = ApplyJitter(2.0)
 
         # Act/Assert
         with pytest.expect(ValueError):
-            detector: object = TolimanDetector(simulate_jitter = True, extra_detector_layers = [jitter])
-
+            detector: object = TolimanDetector(
+                simulate_jitter=True, extra_detector_layers=[jitter]
+            )
 
     def test_constructor_when_saturated(self: object) -> None:
-        # Arrange/Act 
-        detector: object = TolimanDetector(simulate_saturation = True)
+        # Arrange/Act
+        detector: object = TolimanDetector(simulate_saturation=True)
         optics: list = detector.to_optics_list()
 
         # Assert
         assert _contains_instance(optics, dl.ApplySaturation)
 
-
     def test_constructor_when_not_saturated(self: object) -> None:
-        # Arrange/Act 
-        detector: object = TolimanDetector(simulate_saturation = False)
+        # Arrange/Act
+        detector: object = TolimanDetector(simulate_saturation=False)
         optics: list = detector.to_optics_list()
 
         # Assert
         assert not _contains_instance(optics, dl.ApplySaturation)
-        
 
     def test_constructor_when_saturation_is_repeated(self: object) -> None:
         # Arrange
@@ -274,21 +271,21 @@ def TestTolimanDetector(object):
 
         # Act/Assert
         with pytest.expect(ValueError):
-            detector: object = TolimanDetector(simulate_saturation = True, extra_detector_layers = [saturation])
-
+            detector: object = TolimanDetector(
+                simulate_saturation=True, extra_detector_layers=[saturation]
+            )
 
     def test_constructor_when_pixels_respond(self: object) -> None:
-        # Arrange/Act 
-        detector: object = TolimanDetector(simulate_pixel_response = True)
+        # Arrange/Act
+        detector: object = TolimanDetector(simulate_pixel_response=True)
         optics: list = detector.to_optics_list()
 
         # Assert
         assert _contains_instance(optics, dl.ApplyPixelResponse)
 
-        
     def test_constructor_when_pixels_dont_respond(self: object) -> None:
-        # Arrange/Act 
-        detector: object = TolimanDetector(simulate_pixel_response = False)
+        # Arrange/Act
+        detector: object = TolimanDetector(simulate_pixel_response=False)
         optics: list = detector.to_optics_list()
 
         # Assert
@@ -300,7 +297,9 @@ def TestTolimanDetector(object):
 
         # Act/Assert
         with pytest.expect(ValueError):
-            detector: object = TolimanDetector(simulate_pixel_response = True, extra_detector_layers = [pixel_response])
+            detector: object = TolimanDetector(
+                simulate_pixel_response=True, extra_detector_layers=[pixel_response]
+            )
 
     def test_constructor_when_correct(self: object) -> None:
         # Arrange/Act
@@ -315,8 +314,11 @@ def TestTolimanDetector(object):
     def test_constructor_when_empty(self: object) -> None:
         # Arrange/Act/Assert
         with pytest.expect(ValueError):
-            detector: object = TolimanDetector(simulate_jitter = False, simulate_saturation = False, simulate_pixel_response = False)
-
+            detector: object = TolimanDetector(
+                simulate_jitter=False,
+                simulate_saturation=False,
+                simulate_pixel_response=False,
+            )
 
     def test_insert_when_type_is_incorrect(self: object) -> None:
         # Arrange
@@ -332,7 +334,7 @@ def TestTolimanDetector(object):
         optics: object = detector.to_optics_list()
         length: int = len(optics)
         too_long: int = length + 1
-        element_to_insert: object = AddConstant(1.)
+        element_to_insert: object = AddConstant(1.0)
 
         # Act/Assert
         with pytest.expect(ValueError):
@@ -341,7 +343,7 @@ def TestTolimanDetector(object):
     def test_insert_when_index_is_negative(self: object) -> None:
         # Arrange
         detector: object = TolimanDetector()
-        element_to_insert: object = AddConstant(1.)
+        element_to_insert: object = AddConstant(1.0)
 
         # Act/Assert
         with pytest.expect(ValueError):
@@ -350,7 +352,7 @@ def TestTolimanDetector(object):
     def test_insert_when_correct(self: object) -> None:
         # Arrange
         detector: object = TolimanDetector()
-        element_to_insert: object = AddConstant(1.)
+        element_to_insert: object = AddConstant(1.0)
 
         # Act
         detector: object = detector.insert(0, element_to_insert)
@@ -369,7 +371,6 @@ def TestTolimanDetector(object):
         # Act/Assert
         with pytest.expect(ValueError):
             detector.remove(too_long)
-            
 
     def test_remove_when_index_is_negative(self: object) -> None:
         # Arrange
@@ -380,10 +381,10 @@ def TestTolimanDetector(object):
             detector.remove(-1)
 
     def test_remove_when_correct(self: object) -> None:
-        # Arrange 
+        # Arrange
         detector: object = TolimanDetector()
 
-        # Act 
+        # Act
         detector: object = detector.remove(0)
         optics: list = detector.to_optics_list()
 
@@ -398,11 +399,10 @@ def TestTolimanDetector(object):
         with pytest.expect(ValueError):
             detector.append(1)
 
-
     def test_append_when_correct(self: object) -> None:
         # Arrange
         detector: object = TolimanDetector()
-        element_to_insert: object = AddConstant(2.)
+        element_to_insert: object = AddConstant(2.0)
 
         # Act
         new_detector: object = detector.append(element_to_insert)
@@ -420,26 +420,26 @@ def TestTolimanDetector(object):
         new_optics: list = new_detector.to_optics_list()
 
         # Assert
-        # TODO: Check that I actually have this correct and upgrade 
+        # TODO: Check that I actually have this correct and upgrade
         #       to make it more programmatic.
         assert not _contains_instance(new_optics, ApplyPixelResponse)
+
 
 class TestAlphaCentauri(object):
     def test_constructor_when_given_spectrum(self: object) -> None:
         # Arrange
         shape: int = 10
-        wavelengths: float = np.linspace(595., 695., shape, dtype=float)
+        wavelengths: float = np.linspace(595.0, 695.0, shape, dtype=float)
         weights: float = np.ones((shape,), dtype=float)
-        spectrum: object = ArraySpectrum(wavelengths = wavelengths, weights = weights)
+        spectrum: object = ArraySpectrum(wavelengths=wavelengths, weights=weights)
 
         # Act
-        alpha_centauri: object = AlphaCentauri(spectrum = spectrum)
+        alpha_centauri: object = AlphaCentauri(spectrum=spectrum)
 
         # Assert
-        # TODO: Make sure that the initial type of spectrum is not 
+        # TODO: Make sure that the initial type of spectrum is not
         #       an ArraySpectrum
-        assert isinstance(alpha_centauri.spectrum, ArraySpectrum) 
-        
+        assert isinstance(alpha_centauri.spectrum, ArraySpectrum)
 
     def test_constructor_when_not_given_spectrum(self: object) -> None:
         # Arrange
@@ -458,7 +458,7 @@ class TestAlphaCentauri(object):
         # Act/Assert
         with pytest.expect(IOError):
             alpha_centaur: object = AlphaCentauri()
-            
+
 
 # TODO: Make sure that the stars are correctly thinned randomly.
 class TestBackground(object):
@@ -469,14 +469,12 @@ class TestBackground(object):
         # Assert
         assert background.fluxes.size > 10
 
-
     def test_constructor_when_thinned(self: object) -> None:
         # Arrange/Act
-        background: object = Background(number_of_bg_stars = 10)
+        background: object = Background(number_of_bg_stars=10)
 
         # Assert
         assert background.fluxes.size == 10
-
 
     def test_constructor_when_background_dir_invalid(self: object) -> None:
         # Arrange
@@ -488,5 +486,3 @@ class TestBackground(object):
         # Act/Assert
         with pytest.expect(IOError):
             alpha_centaur: object = AlphaCentauri()
-        
-
