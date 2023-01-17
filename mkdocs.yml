@@ -2,4 +2,5 @@ site_name: TOLIMAN
 
 plugins:
     - simple
+    - mkdocstrings
 

@@ -1,15 +1,27 @@
+"""md
+
+## Overview
+This will be an overview with some deatiled end to end examples.
+
+::: toliman.TolimanOptics
+    handler: python
+    options:
+        show_root_heading: true
+        show_source: false
+        heading_level: 3
+
+"""
 import jax.numpy as np
 import jax
 import dLux as dl
 import equinox as eqx
-
 
 __author__ = "Jordan Dennis"
 __all__ = ["TolimanDetector", "TolimanOptics", "AlphaCentauri", "Background", "_contains_instance"]
 
 
 def _contains_instance(_list: list, _type: type) -> bool:
-    """md
+    """
     Check to see if a list constains an element of a certain
     type.
 
@@ -420,6 +432,8 @@ class ExtendableModule(eqx.Module):
 #       that the values which are returned are always correct.
 class TolimanOptics(dl.Optics, ExtendableModule):
     """
+    TolimanOptics
+    -------------
     Simulates the optical system of the TOLIMAN telescope. It is
     designed to occupy the `optics` kwarg of `dl.Instrument`.
     The `TolimanOptics` provides a default implementation that

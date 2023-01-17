@@ -23,6 +23,7 @@ mkdocs = "^1.4.2"
 mkdocs-simple-plugin = "2.1.2"
 mkdocs-semiliterate = "^0.7.0"
 opt-einsum = "^3.3.0"
+mkdocstrings = {extras = ["python"], version = "^0.19.1"}
 
 [build-system]
 requires = ["poetry-core"]
