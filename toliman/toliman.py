@@ -732,6 +732,7 @@ class Background(dl.MultiPointSource):
                 fluxes=np.ones((FILTER_DEFAULT_RES,), dtype=float),
             )
 
+        # TODO: Better error handling if BACKGROUND_DIR is not valid
         with open(BACKGROUND_DIR, "r") as background:
             lines: list = background.readlines().remove(0)
             strip: callable = lambda _str: _str.strip().split(",")

@@ -448,8 +448,45 @@ class TestAlphaCentauri(object):
         # Act/Assert
         assert isinstance(alpha_centauri.spectrum, CombinedSpectrum)
 
+    def test_constructor_when_spectrum_dir_invalid(self: object) -> None:
+        # Arrange
+        SPECTRUM_DIR: str = "a/file/that/doesn't/exist.txt"
+
+        if os.path.isfile(SPECTRUM_DIR):
+            raise ValueError("Oh no! {} is a file.".format(SPECTRUM_DIR))
+
+        # Act/Assert
+        with pytest.expect(IOError):
+            alpha_centaur: object = AlphaCentauri()
+            
+
+# TODO: Make sure that the stars are correctly thinned randomly.
 class TestBackground(object):
-    def test___init__(self: object) -> None:
-        # Test without spectrum
-        # test wth spectrum
-        pass
+    def test_constructor_when_all_used(self: object) -> None:
+        # Arrange/Act
+        background: object = Background()
+
+        # Assert
+        assert background.fluxes.size > 10
+
+
+    def test_constructor_when_thinned(self: object) -> None:
+        # Arrange/Act
+        background: object = Background(number_of_bg_stars = 10)
+
+        # Assert
+        assert background.fluxes.size == 10
+
+
+    def test_constructor_when_background_dir_invalid(self: object) -> None:
+        # Arrange
+        BACKGROUND_DIR: str = "a/file/that/doesn't/exist.txt"
+
+        if os.path.isfile(BACKGROUND_DIR):
+            raise ValueError("Oh no! {} is a file.".format(BACKGROUND_DIR))
+
+        # Act/Assert
+        with pytest.expect(IOError):
+            alpha_centaur: object = AlphaCentauri()
+        
+
