@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "toliman"
 description = "A differential model of TOLIMAN telescope."
-version = "0.0.1"
+version = "0.0.2"
 authors = [
     "Jordan Dennis <jdenn105@gmail.com>", 
     "Conaire Deagan", 
@@ -16,12 +16,16 @@ jax = ">=0.4.1"
 dLux = ">=0.9"
 pysynphot = ">=2.0.0"
 black = "^22.12.0"
+opt-einsum = "^3.3.0"
+
+[tool.poetry.group.tests.dependencies]
 pytest = "^7.2.1"
 pytest-black = "^0.3.12"
 pytest-sugar = "^0.9.6"
+
+[tool.poetry.group.docs.dependencies]
 mkdocs = "^1.4.2"
 mkdocs-semiliterate = "^0.7.0"
-opt-einsum = "^3.3.0"
 
 [build-system]
 requires = ["poetry-core"]
