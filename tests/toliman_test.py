@@ -310,6 +310,10 @@ def TestTolimanDetector(object):
         assert _contains_instance(optics, ApplyPixelResponse)
 
     def test_constructor_when_empty(self: object) -> None:
+        # Arrange/Act/Assert
+        with pytest.expect(ValueError):
+            detector: object = TolimanDetector(simulate_jitter = False, simulate_saturation = False, simulate_pixel_response = False)
+
 
     def test_insert_when_type_is_incorrect(self: object) -> None:
         # Arrange
@@ -353,8 +357,35 @@ def TestTolimanDetector(object):
         assert _contains_instance(optics, AddConstant)
 
     def test_remove_when_index_is_too_long(self: object) -> None:
+        # Arrange
+        detector: object = TolimanDetector()
+        optics: list = detector.to_optics_list()
+        length: int = len(optics)
+        too_long: int = length + 1
+
+        # Act/Assert
+        with pytest.expect(ValueError):
+            detector.remove(too_long)
+            
+
     def test_remove_when_index_is_negative(self: object) -> None:
+        # Arrange
+        detector: object = TolimanDetector()
+
+        # Act
+        with pytest.expect(ValueError):
+            detector.remove(-1)
+
     def test_remove_when_correct(self: object) -> None:
+        # Arrange 
+        detector: object = TolimanDetector()
+
+        # Act 
+        detector: object = detector.remove(0)
+        optics: list = detector.to_optics_list()
+
+        # Assert
+        assert _contains_instance(optics, ApplyJitter)
 
     def test_append_when_type_is_incorrect(self: object) -> None:
     def test_append_when_correct(self: object) -> None:
