@@ -9,6 +9,8 @@ This will be an overview with some deatiled end to end examples.
         show_root_heading: true
         show_source: false
         heading_level: 3
+    selection:
+        docstring_style: numpy
 
 """
 import jax.numpy as np
