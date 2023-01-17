@@ -5,12 +5,10 @@ This will be an overview with some deatiled end to end examples.
 
 ::: toliman.TolimanOptics
     handler: python
-    options:
-        show_root_heading: true
-        show_source: false
-        heading_level: 3
     selection:
         docstring_style: numpy
+        show_source: False
+        merge_init_into_class: True
 
 """
 import jax.numpy as np
