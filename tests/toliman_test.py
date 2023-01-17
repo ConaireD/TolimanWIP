@@ -1,5 +1,4 @@
 import pytest
-import dLux as dl
 
 from dLux import (
     CircularAperture,
@@ -10,7 +9,13 @@ from dLux import (
     StaticAberratedAperture
 )
 
-from toliman import TolimanOptics, TolimanDetector, AlphaCentauri, Background
+from toliman import (
+    _contains_instance,
+    TolimanOptics, 
+    TolimanDetector, 
+    AlphaCentauri, 
+    Background
+)
 
 
 class TestTolimanOptics(object):
@@ -279,9 +284,30 @@ def TestTolimanDetector(object):
 
         
     def test_constructor_when_pixels_dont_respond(self: object) -> None:
+        # Arrange/Act 
+        detector: object = TolimanDetector(simulate_pixel_response = False)
+        optics: list = detector.to_optics_list()
+
+        # Assert
+        assert not _contains_instance(optics, dl.ApplyPixelResponse)
+
     def test_constructor_when_pixel_response_is_repeated(self: object) -> None:
+        # Arrange
+        pixel_response: object = ApplySaturation(2)
+
+        # Act/Assert
+        with pytest.expect(ValueError):
+            detector: object = TolimanDetector(simulate_pixel_response = True, extra_detector_layers = [pixel_response])
 
     def test_constructor_when_correct(self: object) -> None:
+        # Arrange/Act
+        detector: object = TolimanDetector()
+        optics: list = detector.to_optics_list()
+
+        # Assert
+        assert _contains_instance(optics, ApplyJitter)
+        assert _contains_instance(optics, ApplySaturation)
+        assert _contains_instance(optics, ApplyPixelResponse)
 
     def test_insert_when_type_is_incorrect(self: object) -> None:
     def test_insert_when_index_is_too_long(self: object) -> None:
