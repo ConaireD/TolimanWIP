@@ -5,12 +5,12 @@ import equinox as eqx
 
 
 __author__ = "Jordan Dennis"
-__all__ = ["TolimanDetector", "TolimanOptics", "AlphaCentauri"]
+__all__ = ["TolimanDetector", "TolimanOptics", "AlphaCentauri", "Background", "_contains_instance"]
 
 
 def _contains_instance(_list: list, _type: type) -> bool:
     """
-    Check to see if a list constains an element of a certain 
+    Check to see if a list constains an element of a certain
     type.
 
     Parameters
@@ -29,7 +29,7 @@ def _contains_instance(_list: list, _type: type) -> bool:
         for _elem in _list:
             if isinstance(_elem, _type):
                 return True
-    return False 
+    return False
 
 
 def _downsample_square_grid(arr: float, m: int) -> float:
@@ -46,7 +46,7 @@ def _downsample_square_grid(arr: float, m: int) -> float:
 
     Examples
     --------
-    ```python 
+    ```python
     >>> import jax.numpy as np
     >>> up_arr: float = np.ones((1024, 1024), dtype=float)
     >>> down_arr: float = _downsample(arr, 4)
@@ -59,13 +59,13 @@ def _downsample_square_grid(arr: float, m: int) -> float:
 
     dim_one: float = arr.reshape((n * out, m)).sum(1).reshape(n, out).T
     dim_two: float = dim_one.reshape((out * out, m)).sum(1).reshape(out, out).T
-    
+
     return dim_two / m / m
 
 
 def _downsample_along_axis(arr: float, m: int, axis: int = 0) -> float:
     """
-    Resampling an array by averaging along a particular dimension. 
+    Resampling an array by averaging along a particular dimension.
 
     Parameters
     ----------
@@ -91,52 +91,40 @@ def _downsample_along_axis(arr: float, m: int, axis: int = 0) -> float:
 def _simulate_alpha_cen_spectra(number_of_wavelenths: int = 25) -> None:
     """
     This function will simulate the spectrum of the alpha centauri
-    binary using `pysynphot`. The output is saved to a file so that 
+    binary using `pysynphot`. The output is saved to a file so that
     it can be used again later without having to be reloaded.
 
     Parameters
     ----------
     number_of_wavelengts: int
         The number of wavelengths that you wish to use for the simulation.
-        The are taken from the `pysynphot` output by binning. 
+        The are taken from the `pysynphot` output by binning.
     """
     import pysynphot
 
     alpha_cen_a_spectrum: float = pysynphot.Icat(
-        'phoenix',
+        "phoenix",
         ALPHA_CEN_A_SURFACE_TEMP,
         ALPHA_CEN_A_METALICITY,
-        ALPHA_CEN_A_SURFACE_GRAV
+        ALPHA_CEN_A_SURFACE_GRAV,
     )
 
     alpha_cen_b_spectrum: float = pysynphot.Icat(
-        'phoenix',
+        "phoenix",
         ALPHA_CEN_B_SURFACE_TEMP,
         ALPHA_CEN_B_METALICITY,
-        ALPHA_CEN_B_SURFACE_GRAV
+        ALPHA_CEN_B_SURFACE_GRAV,
     )
 
     m: int = alpha_cen_a_waves.size // number_of_wavelenths
 
-    alpha_cen_a_waves: float = _downsample_along_axis(
-        alpha_cen_a_spectrum.wave,
-        m
-    )
+    alpha_cen_a_waves: float = _downsample_along_axis(alpha_cen_a_spectrum.wave, m)
 
-    alpha_cen_a_flux: float = _downsample_along_axis(
-        alpha_cen_a_spectrum.flux
-        m
-    )
+    alpha_cen_a_flux: float = _downsample_along_axis(alpha_cen_a_spectrum.flux, m)
 
-    alpha_cen_b_waves: float = _downsample_along_axis(
-        alpha_cen_b_spectrum.wave,
-        m
-    )
+    alpha_cen_b_waves: float = _downsample_along_axis(alpha_cen_b_spectrum.wave, m)
 
-    alpha_cen_b_flux: float = _downsample_along_axis(
-        alpha_cen_b_spectrum.flux,
-        m
-    )
+    alpha_cen_b_flux: float = _downsample_along_axis(alpha_cen_b_spectrum.flux, m)
 
     with open("assets/spectra.csv", "w") as spectra:
         spectra.write("alpha cen a waves (m), ")
@@ -144,7 +132,7 @@ def _simulate_alpha_cen_spectra(number_of_wavelenths: int = 25) -> None:
         spectra.write("alpha cen b waves (m), ")
         spectra.write("alpha cen b flux (W/m/m)\n")
 
-        for i in np.arange(number_of_wavelenths, dtype = int):
+        for i in np.arange(number_of_wavelenths, dtype=int):
             spectra.write("%f, ".format(alpha_cen_a_waves[i]))
             spectra.write("%f, ".format(alpha_cen_a_flux[i]))
             spectra.write("%f, ".format(alpha_cen_b_waves[i]))
@@ -156,8 +144,8 @@ def _simulate_alpha_cen_spectra(number_of_wavelenths: int = 25) -> None:
 def _simulate_background_stars() -> None:
     """
     This function samples the Gaia database for a typical sample
-    of background stars. The primary use of this function is to 
-    build a sample that can be used to look for biases. 
+    of background stars. The primary use of this function is to
+    build a sample that can be used to look for biases.
     """
     from astroquery.gaia import Gaia
 
@@ -175,8 +163,8 @@ def _simulate_background_stars() -> None:
     bg_ra: float = 220.002540961 + 0.1
     bg_dec: float = -60.8330381775
     alpha_cen_flux: float = 1145.4129625806625
-    bg_win: float = 2. / 60. 
-    bg_rad: float = 2. / 60. * np.sqrt(2.)
+    bg_win: float = 2.0 / 60.0
+    bg_rad: float = 2.0 / 60.0 * np.sqrt(2.0)
 
     bg_stars: object = Gaia.launch_job(conical_query.format(bg_ra, bg_dec, bg_rad))
 
@@ -200,7 +188,7 @@ def _simulate_background_stars() -> None:
             sheet.write(f"{bg_stars_ra_crop[row]},")
             sheet.write(f"{bg_stars_dec_crop[row]},")
             sheet.write(f"{bg_stars_rel_flux_crop[row]}\n")
-            
+
 
 def _simulate_data(model: object, scale: float) -> float:
     """
@@ -209,8 +197,8 @@ def _simulate_data(model: object, scale: float) -> float:
     Parameters
     ----------
     model: object
-        A model of the toliman. Should inherit from `dl.Instrument` or 
-        be an instance. 
+        A model of the toliman. Should inherit from `dl.Instrument` or
+        be an instance.
     scale: float
         How noisy is the detector?
 
@@ -234,17 +222,17 @@ def pixel_response(shape: float, threshold: float, seed: int = 1) -> float:
     shape: tuple[int]
         The array shape to populate with a random pixel response.
     threshold: float
-        How far from 1. does the pixel response typically vary. 
+        How far from 1. does the pixel response typically vary.
     seed: int = 1
-        The seed of the random generation. 
+        The seed of the random generation.
 
     Returns
     -------
     pixel_response: float
-        An array of the pixel responses. 
+        An array of the pixel responses.
     """
     key: object = jax.random.PRNGKey(seed)
-    return 1. + threshold * jax.random.normal(key, shape)
+    return 1.0 + threshold * jax.random.normal(key, shape)
 
 
 def photon_noise(psf: float, seed: int = 0) -> float:
@@ -254,14 +242,14 @@ def photon_noise(psf: float, seed: int = 0) -> float:
     Parameters
     ----------
     psf: float
-        The psf on which to add photon noise. 
+        The psf on which to add photon noise.
     seed: int = 1
-        The seed of the random generation. 
+        The seed of the random generation.
 
     Returns
     -------
     photon_noise: float
-        A noisy psf. 
+        A noisy psf.
     """
     key = jax.random.PRNGKey(seed)
     return jax.random.poisson(key, psf)
@@ -269,7 +257,7 @@ def photon_noise(psf: float, seed: int = 0) -> float:
 
 def latent_detector_noise(scale: float, shape: float, seed: int = 0) -> float:
     """
-    Simulate some gaussian latent noise. 
+    Simulate some gaussian latent noise.
 
     Parameters
     ----------
@@ -277,13 +265,13 @@ def latent_detector_noise(scale: float, shape: float, seed: int = 0) -> float:
         The standard deviation of the gaussian in photons.
     shape: tuple
         The shape of the array to generate the noise on.
-    seed: int = 0 
-        The seed of the random generation. 
+    seed: int = 0
+        The seed of the random generation.
 
     Returns
     -------
     det_noise: float, photons
-        The an additional noise source from the detector. 
+        The an additional noise source from the detector.
     """
     key: object = jax.random.PRNGKey(seed)
     return scale * jax.random.normal(key, shape)
@@ -293,28 +281,28 @@ DEFAULT_PUPIL_NPIX: int = 256
 DEFAULT_DETECTOR_NPIX: int = 128
 DEFAULT_NUMBER_OF_ZERNIKES: int = 5
 
-TOLIMAN_PRIMARY_APERTURE_DIAMETER: float = .13
-TOLIMAN_SECONDARY_MIRROR_DIAMETER: float = .032
-TOLIMAN_DETECTOR_PIXEL_SIZE: float = .375
-TOLIMAN_WIDTH_OF_STRUTS: float = .01
+TOLIMAN_PRIMARY_APERTURE_DIAMETER: float = 0.13
+TOLIMAN_SECONDARY_MIRROR_DIAMETER: float = 0.032
+TOLIMAN_DETECTOR_PIXEL_SIZE: float = 0.375
+TOLIMAN_WIDTH_OF_STRUTS: float = 0.01
 TOLIMAN_NUMBER_OF_STRUTS: int = 3
 
-DEFAULT_DETECTOR_JITTER: float = 2.
+DEFAULT_DETECTOR_JITTER: float = 2.0
 DEFAULT_DETECTOR_SATURATION: float = 2500
-DEFAULT_DETECTOR_THRESHOLD: float = .05
+DEFAULT_DETECTOR_THRESHOLD: float = 0.05
 
-ALPHA_CENTAURI_SEPARATION: float = dl.utils.arcseconds_to_radians(8.)
-ALPHA_CENTAURI_POSITION: float = np.array([0., 0.], dtype=float)
-ALPHA_CENTAURI_MEAN_FLUX: float = 1.
-ALPHA_CENTAURI_CONTRAST: float = 2.
-ALPHA_CENTAURI_POSITION_ANGLE: float = 0.
+ALPHA_CENTAURI_SEPARATION: float = dl.utils.arcseconds_to_radians(8.0)
+ALPHA_CENTAURI_POSITION: float = np.array([0.0, 0.0], dtype=float)
+ALPHA_CENTAURI_MEAN_FLUX: float = 1.0
+ALPHA_CENTAURI_CONTRAST: float = 2.0
+ALPHA_CENTAURI_POSITION_ANGLE: float = 0.0
 
-ALPHA_CEN_A_SURFACE_TEMP: float = 5790.
-ALPHA_CEN_A_METALICITY: float = .2
-ALPHA_CEN_A_SURFACE_GRAV: float = 4.
+ALPHA_CEN_A_SURFACE_TEMP: float = 5790.0
+ALPHA_CEN_A_METALICITY: float = 0.2
+ALPHA_CEN_A_SURFACE_GRAV: float = 4.0
 
-ALPHA_CEN_B_SURFACE_TEMP: float = 5260.
-ALPHA_CEN_B_METALLICITY: float = .23
+ALPHA_CEN_B_SURFACE_TEMP: float = 5260.0
+ALPHA_CEN_B_METALLICITY: float = 0.23
 ALPHA_CEN_B_SURFACE_GRAV: float = 4.37
 
 MASK_TOO_LARGE_ERR_MSG = """ 
@@ -365,12 +353,23 @@ that each type of detector is only provided once.
 
 class ExtendableModule(eqx.Module):
     """
-    This "interface" adds `.insert` and `.remove` methods to an 
-    `equinox` module. The interface is based of the interface of 
-    the default python list. This class is designed to be used in 
-    multiple inheritance with other classes and should not be used 
+    This "interface" adds `.insert` and `.remove` methods to an
+    `equinox` module. The interface is based of the interface of
+    the default python list. This class is designed to be used in
+    multiple inheritance with other classes and should not be used
     on it's own.
     """
+
+    def to_optics_list(self: object) -> list:
+        """
+        Get the optical elements that make up the object as a list. 
+
+        Returns
+        -------
+        optics: list
+            The optical layers in order in a list.
+        """
+        return list(self.layers.values())
 
 
     # TODO: Add a remove method
@@ -380,7 +379,7 @@ class ExtendableModule(eqx.Module):
 
         Parameters
         ----------
-        optic: object 
+        optic: object
             A `dLux.OpticalLayer` to include in the model.
         index: int
             Where in the list of layers to add optic.
@@ -388,14 +387,13 @@ class ExtendableModule(eqx.Module):
         Returns
         -------
         toliman: TolimanOptics
-            A new `TolimanOptics` instance with the applied update. 
+            A new `TolimanOptics` instance with the applied update.
         """
         if not isinstance(optic, dl.OpticalLayer):
             raise ValueError("Inserted optics must be optical layers.")
 
         new_layers: list = self.layers.copy().insert(index, optic)
         return eqx.tree_at(lambda x: x.layers, self, new_layers)
-
 
     def remove(self: object, index: int) -> object:
         """
@@ -409,7 +407,7 @@ class ExtendableModule(eqx.Module):
         Returns
         -------
         toliman: TolimanOptics
-            A new `TolimanOptics` instance with the applied update. 
+            A new `TolimanOptics` instance with the applied update.
         """
         if not isinstance(optic, dl.OpticalLayer):
             raise ValueError("Inserted optics must be optical layers.")
@@ -418,16 +416,15 @@ class ExtendableModule(eqx.Module):
         return eqx.tree_at(lambda x: x.layers, self, new_layers)
 
 
-
-# TODO: I need to work out how to do the regularisation internally so 
-#       that the values which are returned are always correct. 
+# TODO: I need to work out how to do the regularisation internally so
+#       that the values which are returned are always correct.
 class TolimanOptics(dl.Optics, ExtendableModule):
     """
-    Simulates the optical system of the TOLIMAN telescope. It is 
-    designed to occupy the `optics` kwarg of `dl.Instrument`. 
-    The `TolimanOptics` provides a default implementation that 
-    can be extended using the `.add` method. There are also 
-    several ways that the `TolimanOptics` can be initialised. 
+    Simulates the optical system of the TOLIMAN telescope. It is
+    designed to occupy the `optics` kwarg of `dl.Instrument`.
+    The `TolimanOptics` provides a default implementation that
+    can be extended using the `.add` method. There are also
+    several ways that the `TolimanOptics` can be initialised.
 
     Examples
     --------
@@ -436,23 +433,23 @@ class TolimanOptics(dl.Optics, ExtendableModule):
     >>> toliman_optics: object = TolimanOptics(simulate_aberrations = False)
     >>> toliman_optics: object = TolimanOptics(pixels_in_pupil = 1024)
     ```
-    
+
     For more options run `help(TolimanOptics.__init__)`.
     """
 
-
     def __init__(
-            self: object,
-            simulate_polish: bool = True,
-            simulate_aberrations: bool = True,
-            operate_in_fresnel_mode: bool = False,
-            operate_in_static_mode: bool = True,
-            number_of_zernikes: int = DEFAULT_NUMBER_OF_ZERNIKES,
-            pixels_in_pupil: int = DEFAULT_PUPIL_NPIX,
-            pixels_on_detector: int = DEFAULT_DETECTOR_NPIX,
-            path_to_mask: str = "assets/mask.npy",
-            path_to_filter: str = "assets/filter.npy",
-            path_to_polish: str = "assets/polish.npy") -> object:
+        self: object,
+        simulate_polish: bool = True,
+        simulate_aberrations: bool = True,
+        operate_in_fresnel_mode: bool = False,
+        operate_in_static_mode: bool = True,
+        number_of_zernikes: int = DEFAULT_NUMBER_OF_ZERNIKES,
+        pixels_in_pupil: int = DEFAULT_PUPIL_NPIX,
+        pixels_on_detector: int = DEFAULT_DETECTOR_NPIX,
+        path_to_mask: str = "assets/mask.npy",
+        path_to_filter: str = "assets/filter.npy",
+        path_to_polish: str = "assets/polish.npy",
+    ) -> object:
         """
         Parameters
         ----------
@@ -460,58 +457,55 @@ class TolimanOptics(dl.Optics, ExtendableModule):
             True if a layer should be included simulating the polish
             on the secondary mirror.
         simulate_aberrations: bool = True
-            True if the aberrations should be included. 
+            True if the aberrations should be included.
         operate_in_fresnel_mode: bool = False
-            True if the simulation should use Fresnel instead of 
+            True if the simulation should use Fresnel instead of
             Fourier optics.
         operate_in_static_mode: bool = True
-            True if the pupil of the aperture should be modelled 
-            as static. This will improve performance so only change 
+            True if the pupil of the aperture should be modelled
+            as static. This will improve performance so only change
             it if you want to learn a parameter of the aperture.
         number_of_zernikes: int = DEFAULT_NUMBER_OF_ZERNIKES
-            The number of zernike polynomials that should be used 
+            The number of zernike polynomials that should be used
             to model the aberrations.
         pixels_in_pupil: int = DEFAULT_PUPIL_NPIX
             The number of pixels in the pupil plane.
         pixels_on_detector: int = DEFAULT_DETECTOR_NPIX
             The number of pixels in the detector plane.
         path_to_mask: str = "assets/mask.npy"
-            The file location of a `.npy` file that contains an 
-            array representation o the mask. 
+            The file location of a `.npy` file that contains an
+            array representation o the mask.
         path_to_filter: str = "assets/filter.npy"
             The file location of a `.npy` file that contains an
-            array representation og the filter. 
+            array representation og the filter.
         path_to_polish: str = "assets/polish.npy"
-            The file location of a `.npy` file that contains an 
-            array representation of the secondary mirror polish. 
+            The file location of a `.npy` file that contains an
+            array representation of the secondary mirror polish.
         """
         toliman_layers: list = [
             dl.CreateWavefront(
-                pixels_in_pupil, 
+                pixels_in_pupil,
                 TOLIMAN_PRIMARY_APERTURE_DIAMETER,
-                wavefront_type = "Angular"
+                wavefront_type="Angular",
             )
         ]
 
         # Adding the pupil
         dyn_toliman_pupil: object = dl.CompoundAperture(
             [
-                dl.UniformSpider(
-                    TOLIMAN_NUMBER_OF_STRUTS, 
-                    TOLIMAN_WIDTH_OF_STRUTS
-                ),
+                dl.UniformSpider(TOLIMAN_NUMBER_OF_STRUTS, TOLIMAN_WIDTH_OF_STRUTS),
                 dl.AnnularAperture(
-                    TOLIMAN_PRIMARY_APERTURE_DIAMETER / 2., 
-                    TOLIMAN_SECONDARY_MIRROR_DIAMETER / 2.
-                )
+                    TOLIMAN_PRIMARY_APERTURE_DIAMETER / 2.0,
+                    TOLIMAN_SECONDARY_MIRROR_DIAMETER / 2.0,
+                ),
             ]
         )
 
         if operate_in_static_mode:
             static_toliman_pupil: object = dl.StaticAperture(
                 dyn_toliman_pupil,
-                npixels = pixels_in_pupil,
-                pixel_scale = TOLIMAN_PRIMARY_APERTURE_DIAMETER / pixels_in_pupil
+                npixels=pixels_in_pupil,
+                pixel_scale=TOLIMAN_PRIMARY_APERTURE_DIAMETER / pixels_in_pupil,
             )
 
             toliman_layers.append(static_toliman_pupil)
@@ -523,17 +517,17 @@ class TolimanOptics(dl.Optics, ExtendableModule):
             loaded_mask: float = np.load(path_to_mask)
             loaded_shape: tuple = loaded_mask.shape
             loaded_width: int = loaded_shape[0]
-            
-            mask: float 
+
+            mask: float
             if not loaded_width == pixels_in_pupil:
                 if loaded_width < pixels_in_pupil:
                     raise NotImplementedError(MASK_TOO_LARGE_ERR_MSG)
                 if loaded_width % pixels_in_pupil == 0:
-                    downsample_by: int = loaded_width // pixels_in_pupil 
+                    downsample_by: int = loaded_width // pixels_in_pupil
                     mask: float = _downsample(loaded_mask, downsample_by)
                 else:
                     raise ValueError(MASK_SAMPLING_ERR_MSG)
-            else: 
+            else:
                 mask: float = loaded_mask
 
             del loaded_mask
@@ -541,7 +535,7 @@ class TolimanOptics(dl.Optics, ExtendableModule):
             del loaded_width
         except IOError as ioe:
             raise ValueError(MASK_IMPORT_ERR_MSG)
-        
+
         toliman_model.append(dl.AddOPD(mask))
 
         # Generating the Zernikes
@@ -553,15 +547,13 @@ class TolimanOptics(dl.Optics, ExtendableModule):
 
             toliman_aberrations: object = dl.StaticAberratedAperture(
                 dl.AberratedAperture(
-                     nolls, 
-                     coeffs, 
-                     dl.CircularAperture(
-                         TOLIMAN_PRIMARY_APERTURE_DIAMETER / 2.
-                     )
+                    nolls,
+                    coeffs,
+                    dl.CircularAperture(TOLIMAN_PRIMARY_APERTURE_DIAMETER / 2.0),
                 ),
-                coefficients = coeffs,
-                npixels = pixels_in_pupil,
-                pixel_scale = TOLIMAN_PRIMARY_APERTURE_DIAMETER / pixels_in_pupil
+                coefficients=coeffs,
+                npixels=pixels_in_pupil,
+                pixel_scale=TOLIMAN_PRIMARY_APERTURE_DIAMETER / pixels_in_pupil,
             )
 
             toliman_layers.append(toliman_aberrations)
@@ -575,8 +567,7 @@ class TolimanOptics(dl.Optics, ExtendableModule):
         toliman_body: object
         if not operate_in_fresnel_mode:
             toliman_body: object = dl.AngularMFT(
-                detector_npix,
-                dl.utils.arcseconds_to_radians(pixels_in_detector)
+                detector_npix, dl.utils.arcseconds_to_radians(pixels_in_detector)
             )
         else:
             raise NotImplementedError(FRESNEL_USE_ERR_MSG)
@@ -586,13 +577,13 @@ class TolimanOptics(dl.Optics, ExtendableModule):
         # Renormalising the flux.
         toliman_layers.append(dl.NormaliseWavefront())
 
-        super().__init__(layers = toliman_layers)
+        super().__init__(layers=toliman_layers)
 
 
 class TolimanDetector(dl.Detector, ExtendableModule):
     """
-    A default implementation of a generic detector that is designed 
-    to be used with the `dLux.Instrument`. 
+    A default implementation of a generic detector that is designed
+    to be used with the `dLux.Instrument`.
 
     Examples
     --------
@@ -601,25 +592,27 @@ class TolimanDetector(dl.Detector, ExtendableModule):
     >>> toliman_detector: object = TolimanDetector(simulate_jitter = False)
     """
 
-    def __init__(self: object, 
-            simulate_jitter: bool = True,
-            simulate_pixel_response: bool = True,
-            simulate_saturation: bool = True,
-            extra_detector_layers: list = []) -> object:
+    def __init__(
+        self: object,
+        simulate_jitter: bool = True,
+        simulate_pixel_response: bool = True,
+        simulate_saturation: bool = True,
+        extra_detector_layers: list = [],
+    ) -> object:
         """
         Parameters
         ----------
         simulate_jitter: bool = True
-            True if jitter should be included in the simulation of the 
+            True if jitter should be included in the simulation of the
             detector.
         simulate_pixel_response: bool = True
-            True if a pixel response should be included in the simulation 
+            True if a pixel response should be included in the simulation
             of the detector.
         simulate_saturation: bool = True
-            True if staturation should be included in the simulation of 
+            True if staturation should be included in the simulation of
             the detector.
         extra_detector_layers: list = []
-            Extra detector effects besides the default ones. 
+            Extra detector effects besides the default ones.
         """
         detector_layers: list = []
 
@@ -627,25 +620,21 @@ class TolimanDetector(dl.Detector, ExtendableModule):
             detector_layers.append(dl.ApplyJitter(DEFAULT_DETECTOR_JITTER))
 
             # TODO: Make a contains instance function
-            if _contains_instance(detector_layers, dl.ApplyJitter):
+            if _contains_instance(extra_detector_layers, dl.ApplyJitter):
                 raise ValueError(DETECTOR_REPEATED_ERR_MSG)
-            
+
         if simulate_saturation:
-            detector_layers.append(
-                dl.ApplySaturation(
-                    DEFAULT_DETECTOR_SATURATION
-                )
-            )
+            detector_layers.append(dl.ApplySaturation(DEFAULT_DETECTOR_SATURATION))
 
             if _contains_instance(detector_layers, dl.ApplySaturation):
                 raise ValueError(DETECTOR_REPEATED_ERR_MSG)
-            
+
         if simulate_pixel_response:
             detector_layers.append(
                 dl.ApplyPixelResponse(
                     pixel_response(
-                        (DEFAULT_DETECTOR_NPIX, DEFAULT_DETECTOR_NPIX), 
-                        DEFAULT_DETECTOR_THRESHOLD
+                        (DEFAULT_DETECTOR_NPIX, DEFAULT_DETECTOR_NPIX),
+                        DEFAULT_DETECTOR_THRESHOLD,
                     )
                 )
             )
@@ -664,10 +653,10 @@ class TolimanDetector(dl.Detector, ExtendableModule):
 class AlphaCentauri(dl.BinarySource):
     """
     A convinient representation of the Alpha Centauri binary system.
-    
+
     Examples
     --------
-    ```python 
+    ```python
     >>> alpha_cen: object = AlphaCentauri()
     >>> wavelengths: float = 1e-09 * np.linspace(595., 695., 10)
     >>> fluxes: float = np.ones((10,), dtype = float)
@@ -675,10 +664,7 @@ class AlphaCentauri(dl.BinarySource):
     >>> alpha_cen: object = AlphaCentauri(spectrum = spectrum)
     """
 
-
-    def __init__(
-            self: object, 
-            spectrum: float = None) -> object:
+    def __init__(self: object, spectrum: float = None) -> object:
         """
         Parameters
         ----------
@@ -700,28 +686,26 @@ class AlphaCentauri(dl.BinarySource):
             alpha_cen_flux: float = _spectrum[:, (1, 3)]
 
             spectrum: float = dl.CombinedSpectrum(
-                wavelengths = alpha_cen_waves,
-                flux = alpha_cen_flux
+                wavelengths=alpha_cen_waves, flux=alpha_cen_flux
             )
 
-
         super().__init__(
-            position = ALPHA_CENTAURI_POSITION,
-            flux = ALPHA_CENTAURI_MEAN_FLUX,
-            contrast = ALPHA_CENTAURI_CONTRAST,
-            separation = ALPHA_CENTAURI_SEPARATION,
-            position_angle = ALPHA_CENTAURI_POSITION_ANGLE,
-            spectrum = spectrum 
+            position=ALPHA_CENTAURI_POSITION,
+            flux=ALPHA_CENTAURI_MEAN_FLUX,
+            contrast=ALPHA_CENTAURI_CONTRAST,
+            separation=ALPHA_CENTAURI_SEPARATION,
+            position_angle=ALPHA_CENTAURI_POSITION_ANGLE,
+            spectrum=spectrum,
         )
 
 
 class Background(dl.MultiPointSource):
     """
     Simplies the creation of a sample of background stars. The
-    sample of background stars is pulled from the Gaia database 
-    but there is some voodoo involved in regularising the data. 
-    Use the `_simulate_background_stars` function to generate 
-    alternative samples. 
+    sample of background stars is pulled from the Gaia database
+    but there is some voodoo involved in regularising the data.
+    Use the `_simulate_background_stars` function to generate
+    alternative samples.
 
     Examples
     --------
@@ -730,27 +714,25 @@ class Background(dl.MultiPointSource):
     """
 
     def __init__(
-            self: object, 
-            number_of_bg_stars: int = None, 
-            spectrum: object = None) -> object:
+        self: object, number_of_bg_stars: int = None, spectrum: object = None
+    ) -> object:
         """
         Parameters
         ----------
         number_of_bg_stars: int = None
             How many background stars should be simulated.
         spectrum: object = None
-            A `dl.Spectrum` if the default spectrum is not to be used. 
+            A `dl.Spectrum` if the default spectrum is not to be used.
         """
         if not spectrum:
             spectrum: object = dl.ArraySpectrum(
-                wavelengths = np.linspace(
-                    FILTER_MIN_WAVELENGTH, 
-                    FILTER_MAX_WAVELENGTH, 
-                    FILTER_DEFAULT_RES
+                wavelengths=np.linspace(
+                    FILTER_MIN_WAVELENGTH, FILTER_MAX_WAVELENGTH, FILTER_DEFAULT_RES
                 ),
-                fluxes = np.ones((FILTER_DEFAULT_RES,), dtype = float)
+                fluxes=np.ones((FILTER_DEFAULT_RES,), dtype=float),
             )
 
+        # TODO: Better error handling if BACKGROUND_DIR is not valid
         with open(BACKGROUND_DIR, "r") as background:
             lines: list = background.readlines().remove(0)
             strip: callable = lambda _str: _str.strip().split(",")
@@ -764,8 +746,4 @@ class Background(dl.MultiPointSource):
         position: float = _background[:, (0, 1)]
         flux: float = _background[:, 2]
 
-        super().__init__(
-            position = position,
-            flux = flux,
-            spectrum = spectrum
-        ) 
+        super().__init__(position=position, flux=flux, spectrum=spectrum)
