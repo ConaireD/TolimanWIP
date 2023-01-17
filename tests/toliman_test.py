@@ -310,9 +310,45 @@ def TestTolimanDetector(object):
         assert _contains_instance(optics, ApplyPixelResponse)
 
     def test_insert_when_type_is_incorrect(self: object) -> None:
+        # Arrange
+        detector: object = TolimanDetector()
+
+        # Act/Assert
+        with pytest.expect(ValueError):
+            detector.insert(0, 1)
+
     def test_insert_when_index_is_too_long(self: object) -> None:
+        # Arrange
+        detector: object = TolimanDetector()
+        optics: object = detector.to_optics_list()
+        length: int = len(optics)
+        too_long: int = length + 1
+        element_to_insert: object = AddConstant(1.)
+
+        # Act/Assert
+        with pytest.expect(ValueError):
+            detector.insert(too_long, element_to_insert)
+
     def test_insert_when_index_is_negative(self: object) -> None:
+        # Arrange
+        detector: object = TolimanDetector()
+        element_to_insert: object = AddConstant(1.)
+
+        # Act/Assert
+        with pytest.expect(ValueError):
+            detector.insert(-1, element_to_insert)
+
     def test_insert_when_correct(self: object) -> None:
+        # Arrange
+        detector: object = TolimanDetector()
+        element_to_insert: object = AddConstant(1.)
+
+        # Act
+        detector: object = detector.insert(0, element_to_insert)
+        optics: list = detector.to_optics_list()
+
+        # Assert
+        assert _contains_instance(optics, AddConstant)
 
     def test_remove_when_index_is_too_long(self: object) -> None:
     def test_remove_when_index_is_negative(self: object) -> None:
