@@ -9,7 +9,9 @@ This will be an overview with some deatiled end to end examples.
         docstring_style: numpy
         show_source: False
         merge_init_into_class: True
-
+        inherited_members: True
+    options:
+        members: [insert, remove]
 """
 import jax.numpy as np
 import jax
