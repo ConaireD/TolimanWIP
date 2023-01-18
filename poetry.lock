@@ -1919,7 +1919,7 @@ python-legacy = ["mkdocstrings-python-legacy (>=0.2.1)"]
 name = "mkdocstrings-python-legacy"
 version = "0.2.3"
 description = "A legacy Python handler for mkdocstrings."
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
@@ -2836,7 +2836,7 @@ files = [
 name = "pytkdocs"
 version = "0.16.1"
 description = "Load Python objects documentation."
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
@@ -3761,4 +3761,4 @@ optax = "*"
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10,<3.11"
-content-hash = "eefec23c51598eeda96969003c9b223cbf3bdf72d1c3aa07323654e3b4778467"
+content-hash = "253e244355c763ace13e5b234f08404fa6476ec1d828f43a5e15251bdd4fda31"

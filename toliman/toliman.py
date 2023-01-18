@@ -4,15 +4,25 @@
 This will be an overview with some deatiled end to end examples.
 
 ::: toliman.TolimanOptics
-    handler: python
+    handler:
+        python
     options:
         docstring_style: numpy
         show_source: False
         merge_init_into_class: True
         inherited_members: True
+        members:
+            - insert
+            - __call__
+            - remove
+            - pop
+            - append
+            - get 
+            - set
 
 ::: toliman.TolimanDetector
-    handler: python
+    handler:
+        python
     options:
         docstring_style: numpy
         show_source: False
@@ -20,7 +30,8 @@ This will be an overview with some deatiled end to end examples.
         inherited_members: True
 
 ::: toliman.AlphaCentauri
-    handler: python
+    handler:
+        python
     options:
         docstring_style: numpy
         show_source: False
@@ -28,7 +39,8 @@ This will be an overview with some deatiled end to end examples.
         inherited_members: True
 
 ::: toliman.Background
-    handler: python 
+    handler:
+        python
     options:
         docstring_style: numpy
         show_source: False
@@ -604,7 +616,6 @@ class TolimanOptics(dl.Optics, CollectionInterface):
                     coefficients = coeffs,
                     aperture = dl.CircularAperture(TOLIMAN_PRIMARY_APERTURE_DIAMETER / 2.0),
                 ),
-                coefficients=coeffs,
                 npixels=pixels_in_pupil,
                 diameter=TOLIMAN_PRIMARY_APERTURE_DIAMETER,
             )
