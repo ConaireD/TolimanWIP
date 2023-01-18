@@ -17,6 +17,7 @@ dLux = ">=0.9"
 pysynphot = ">=2.0.0"
 black = "^22.12.0"
 opt-einsum = "^3.3.0"
+mkdocstrings-python-legacy = "^0.2.3"
 
 [tool.poetry.group.tests.dependencies]
 pytest = "^7.2.1"
@@ -26,7 +27,6 @@ pytest-sugar = "^0.9.6"
 [tool.poetry.group.docs.dependencies]
 mkdocs = "^1.4.2"
 mkdocs-simple-plugin = "2.1.2"
-mkdocstrings = {extras = ["python"], version = "^0.19.1"}
 pytkdocs = {version = ">=0.5.1", extras = ["numpy-style"]}
 mkdocs-same-dir = "^0.1.2"
 mkdocs-material = "^9.0.5"
