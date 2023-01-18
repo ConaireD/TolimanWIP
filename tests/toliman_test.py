@@ -28,7 +28,7 @@ class TestTolimanOptics(object):
 
         # Assert
         optics: list = static_toliman.to_optics_list()
-        assert _contains_optic(optics, dl.StaticAperture)
+        assert _contains_optic(optics, StaticAperture)
 
     def test_constructor_when_not_static(self: object) -> None:
         # Arrange/Act
@@ -36,7 +36,7 @@ class TestTolimanOptics(object):
 
         # Assert
         optics: list = dynamic_toliman.to_optics_list()
-        assert not _contains_optic(optics, dl.StaticAperture)
+        assert not _contains_optic(optics, StaticAperture)
 
     def test_constructor_when_mask_too_large(self: object) -> None:
         with pytest.raises(NotImplementedError):
@@ -54,7 +54,7 @@ class TestTolimanOptics(object):
 
         # Assert
         optics: list = toliman.to_optics_list()
-        assert _contains_optic(optics, dl.AddOPD)
+        assert _contains_optic(optics, AddOPD)
 
     def test_constructor_when_mask_is_correct_at_max(self: object) -> None:
         # Arrange/Act
@@ -62,7 +62,7 @@ class TestTolimanOptics(object):
 
         # Assert
         optics: list = toliman.to_optics_list()
-        assert _contains_optic(optics, dl.AddOPD)
+        assert _contains_optic(optics, AddOPD)
 
     def test_constructor_when_mask_file_is_incorrect(self: object) -> None:
         # Incorrect file address error.
@@ -79,7 +79,7 @@ class TestTolimanOptics(object):
         opitcs: list = toliman.to_optics_list()
 
         # Assert
-        assert _contains_instance(optics, dl.StaticAberratedAperture)
+        assert _contains_instance(optics, StaticAberratedAperture)
 
     def test_constructor_when_not_aberrated(self: object) -> None:
         # Arrange/Act
@@ -87,7 +87,7 @@ class TestTolimanOptics(object):
         opitcs: list = list(toliman.layers.values())
 
         # Assert
-        assert not _contains_instance(optics, dl.StaticAberratedAperture)
+        assert not _contains_instance(optics, StaticAberratedAperture)
 
     def test_constructor_when_polish_is_simulated(self: object) -> None:
         # Arrange/Act/Assert
@@ -114,7 +114,7 @@ class TestTolimanOptics(object):
 
         # TODO: get the correct name for the FresnelPropagator.
         # Assert
-        assert not _contains_instance(optics, dl.FresnelPropagator)
+        assert not _contains_instance(optics, FresnelPropagator)
 
     def test_insert_when_type_is_incorrect(self: object) -> None:
         # Arrange
@@ -129,7 +129,7 @@ class TestTolimanOptics(object):
         optics: list = toliman.to_optics_list()
         length: int = len(optics)
         wrong_index: int = length + 1
-        element_to_insert: object = dl.CircularAperture(1.0)
+        element_to_insert: object = CircularAperture(1.0)
 
         # Act/Assert
         with pytest.raises(ValueError):
@@ -138,7 +138,7 @@ class TestTolimanOptics(object):
     def test_insert_when_index_is_negative(self: object) -> None:
         # Arrange
         toliman: object = TolimanOptics()
-        element_to_insert: object = dl.CircularAperture(1.0)
+        element_to_insert: object = CircularAperture(1.0)
 
         # Act/Assert
         with pytest.raises(ValueError):
@@ -151,12 +151,12 @@ class TestTolimanOptics(object):
         length: int = len(optics)
 
         # Act
-        insertion: object = dl.HexagonalAperture(1.0)
+        insertion: object = HexagonalAperture(1.0)
         toliman: object = toliman.insert(0, insertion)
 
         # Assert
         new_optics: list = toliman.to_optics_list()
-        assert _contains_instance(new_optics, dl.HexagonalAperture)
+        assert _contains_instance(new_optics, HexagonalAperture)
 
     def test_remove_when_index_is_too_long(self: object) -> None:
         # Arrange
@@ -187,7 +187,7 @@ class TestTolimanOptics(object):
         new_optics: list = new_toliman.to_optics_list()
 
         # Assert
-        assert not _contains_instance(new_optics, dl.StaticAperture)
+        assert not _contains_instance(new_optics, StaticAperture)
 
     def test_append_when_type_is_incorrect(self: object) -> None:
         # Arrange
@@ -200,14 +200,14 @@ class TestTolimanOptics(object):
     def test_append_when_correct(self: object) -> None:
         # Arrange
         toliman: object = TolimanOptics()
-        element_to_append: object = dl.CircularAperture(1.0)
+        element_to_append: object = CircularAperture(1.0)
 
         # Act
         toliman: object = toliman.append(element_to_append)
         optics: list = toliman.to_optics_list()
 
         # Assert
-        assert _contains_instance(optics, dl.CircularAperture)
+        assert _contains_instance(optics, CircularAperture)
 
     def test_pop_removes_element(self: object) -> None:
         # Arrange
@@ -229,7 +229,7 @@ def TestTolimanDetector(object):
         optics: list = detector.to_optics_list()
 
         # Assert
-        assert _contains_instance(optics, dl.ApplyJitter)
+        assert _contains_instance(optics, ApplyJitter)
 
     def test_constructor_when_not_jittered(self: object) -> None:
         # Arrange/Act
@@ -237,7 +237,7 @@ def TestTolimanDetector(object):
         optics: list = detector.to_optics_list()
 
         # Assert
-        assert not _contains_instance(optics, dl.ApplyJitter)
+        assert not _contains_instance(optics, ApplyJitter)
 
     def test_constructor_when_jitter_is_repeated(self: object) -> None:
         # Arrange
@@ -255,7 +255,7 @@ def TestTolimanDetector(object):
         optics: list = detector.to_optics_list()
 
         # Assert
-        assert _contains_instance(optics, dl.ApplySaturation)
+        assert _contains_instance(optics, ApplySaturation)
 
     def test_constructor_when_not_saturated(self: object) -> None:
         # Arrange/Act
@@ -263,7 +263,7 @@ def TestTolimanDetector(object):
         optics: list = detector.to_optics_list()
 
         # Assert
-        assert not _contains_instance(optics, dl.ApplySaturation)
+        assert not _contains_instance(optics, ApplySaturation)
 
     def test_constructor_when_saturation_is_repeated(self: object) -> None:
         # Arrange
@@ -281,7 +281,7 @@ def TestTolimanDetector(object):
         optics: list = detector.to_optics_list()
 
         # Assert
-        assert _contains_instance(optics, dl.ApplyPixelResponse)
+        assert _contains_instance(optics, ApplyPixelResponse)
 
     def test_constructor_when_pixels_dont_respond(self: object) -> None:
         # Arrange/Act
@@ -289,7 +289,7 @@ def TestTolimanDetector(object):
         optics: list = detector.to_optics_list()
 
         # Assert
-        assert not _contains_instance(optics, dl.ApplyPixelResponse)
+        assert not _contains_instance(optics, ApplyPixelResponse)
 
     def test_constructor_when_pixel_response_is_repeated(self: object) -> None:
         # Arrange

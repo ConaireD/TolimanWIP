@@ -504,7 +504,7 @@ class TolimanOptics(dl.Optics, CollectionInterface):
 
     def __init__(
         self: object,
-        simulate_polish: bool = True,
+        simulate_polish: bool = False,
         simulate_aberrations: bool = True,
         operate_in_fresnel_mode: bool = False,
         operate_in_static_mode: bool = True,
@@ -631,7 +631,7 @@ class TolimanOptics(dl.Optics, CollectionInterface):
         toliman_body: object
         if not operate_in_fresnel_mode:
             toliman_body: object = dl.AngularMFT(
-                detector_npix, dl.utils.arcseconds_to_radians(pixels_in_detector)
+                pixels_on_detector, dl.utils.arcseconds_to_radians(pixels_on_detector)
             )
         else:
             raise NotImplementedError(FRESNEL_USE_ERR_MSG)
