@@ -4,5 +4,7 @@ plugins:
     - search
     - same-dir
     - simple
-    - mkdocstrings
+    - mkdocstrings:
 
+theme: 
+    name: material
