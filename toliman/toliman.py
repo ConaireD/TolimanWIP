@@ -418,11 +418,6 @@ class CollectionInterface(abc.ABC):
         toliman: TolimanOptics
             A new `TolimanOptics` instance with the applied update.
         """
-        if not isinstance(optic, dl.OpticalLayer):
-            raise ValueError("Inserted optics must be optical layers.")
-
-        new_layers: list = self.layers.copy().insert(index, optic)
-        return eqx.tree_at(lambda x: x.layers, self, new_layers)
 
     @abc.abstractmethod
     def remove(self: object, index: int) -> object:
@@ -439,11 +434,6 @@ class CollectionInterface(abc.ABC):
         toliman: TolimanOptics
             A new `TolimanOptics` instance with the applied update.
         """
-        if not isinstance(optic, dl.OpticalLayer):
-            raise ValueError("Inserted optics must be optical layers.")
-
-        new_layers: list = self.layers.copy().remove(optic)
-        return eqx.tree_at(lambda x: x.layers, self, new_layers)
 
     @abc.abstractmethod
     def append(self: object, optic: object) -> object:
