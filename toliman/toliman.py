@@ -462,6 +462,19 @@ class CollectionInterface(abc.ABC):
             The new optical system.
         """
 
+    @abc.abstractmethod
+    def pop(self: object) -> object:
+        """
+        Remove the last element in the optical system. Please note
+        that this differs from the `.pop` method of the `list` class
+        because it does not return the popped element.
+
+        Returns
+        -------
+        optics: object
+            The optical system with the layer removed.
+        """
+
 # TODO: I need to work out how to do the regularisation internally so
 #       that the values which are returned are always correct.
 class TolimanOptics(dl.Optics, ExtendableModule):
