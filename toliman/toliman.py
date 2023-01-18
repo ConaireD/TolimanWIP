@@ -589,7 +589,7 @@ class TolimanOptics(dl.Optics, CollectionInterface):
         except IOError as ioe:
             raise ValueError(MASK_IMPORT_ERR_MSG)
 
-        toliman_model.append(dl.AddOPD(mask))
+        toliman_layers.append(dl.AddOPD(mask))
 
         # Generating the Zernikes
         # TODO: Make zernike_coefficients a function
@@ -600,9 +600,9 @@ class TolimanOptics(dl.Optics, CollectionInterface):
 
             toliman_aberrations: object = dl.StaticAberratedAperture(
                 dl.AberratedAperture(
-                    nolls,
-                    coeffs,
-                    dl.CircularAperture(TOLIMAN_PRIMARY_APERTURE_DIAMETER / 2.0),
+                    noll_inds = nolls,
+                    coefficients = coeffs,
+                    aperture = dl.CircularAperture(TOLIMAN_PRIMARY_APERTURE_DIAMETER / 2.0),
                 ),
                 coefficients=coeffs,
                 npixels=pixels_in_pupil,
