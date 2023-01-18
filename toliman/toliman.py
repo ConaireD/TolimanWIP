@@ -432,7 +432,7 @@ class ExtendableModule(eqx.Module):
 
 # TODO: I need to work out how to do the regularisation internally so
 #       that the values which are returned are always correct.
-class TolimanOptics(dl.Optics, ExtendableModule):
+class TolimanOptics(ExtendableModule):
     """
     TolimanOptics
     -------------
