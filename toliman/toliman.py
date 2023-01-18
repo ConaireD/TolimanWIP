@@ -639,6 +639,7 @@ class TolimanOptics(dl.Optics, ExtendableModule):
         optics: list
             The optical layers in order in a list.
         """
+        return list(self.layers.values())
 
     def insert(self: object, optic: object, index: int) -> object:
         """
@@ -659,8 +660,12 @@ class TolimanOptics(dl.Optics, ExtendableModule):
         if not isinstance(optic, dl.OpticalLayer):
             raise ValueError("Inserted optics must be optical layers.")
 
-        new_layers: list = self.layers.copy().insert(index, optic)
-        return eqx.tree_at(lambda x: x.layers, self, new_layers)
+        if index < 0:
+            raise ValueError("`index` must be positive.")
+
+        new_layers: list = self.to_optics_list().insert(index, optic)
+        dl_new_layers: dict = dl.utils.dict_to_list(new_layers)
+        return eqx.tree_at(lambda x: x.layers, self, dl_new_layers)
 
     def remove(self: object, index: int) -> object:
         """
@@ -676,11 +681,12 @@ class TolimanOptics(dl.Optics, ExtendableModule):
         toliman: TolimanOptics
             A new `TolimanOptics` instance with the applied update.
         """
-        if not isinstance(optic, dl.OpticalLayer):
-            raise ValueError("Inserted optics must be optical layers.")
+        if index < 0:
+            raise ValueError("`index` must be positive.")
 
-        new_layers: list = self.layers.copy().remove(optic)
-        return eqx.tree_at(lambda x: x.layers, self, new_layers)
+        new_layers: list = self.to_optics_list().remove(index)
+        dl_new_layers: dict = dl.utils.dict_to_list(new_layers)
+        return eqx.tree_at(lambda x: x.layers, self, dl_new_layers)
 
     def append(self: object, optic: object) -> object:
         """
@@ -697,6 +703,12 @@ class TolimanOptics(dl.Optics, ExtendableModule):
         optics: object
             The new optical system.
         """
+        if not isinstance(optic, dl.OpticalLayer):
+            raise ValueError("Inserted optics must be optical layers.")
+
+        new_layers: list = self.to_optics_list().append(optic)
+        dl_new_layers: dict = dl.utils.dict_to_list(new_layers)
+        return eqx.tree_at(lambda x: x.layers, self, dl_new_layers)
 
     def pop(self: object) -> object:
         """
@@ -709,6 +721,10 @@ class TolimanOptics(dl.Optics, ExtendableModule):
         optics: object
             The optical system with the layer removed.
         """
+        new_layers: list = self.to_optics_list()
+        _: object = new_layers.pop()
+        dl_new_layers: dict = dl.utils.dict_to_list(new_layers)
+        return eqx.tree_at(lambda x: x.layers, self, dl_new_layers)
 
 
 class TolimanDetector(dl.Detector, ExtendableModule):
