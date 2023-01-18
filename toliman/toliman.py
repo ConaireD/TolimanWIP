@@ -41,6 +41,7 @@ import jax
 import dLux as dl
 import equinox as eqx
 import abc
+import os
 
 __author__ = "Jordan Dennis"
 __all__ = ["TolimanDetector", "TolimanOptics", "AlphaCentauri", "Background", "_contains_instance"]
@@ -318,6 +319,7 @@ def latent_detector_noise(scale: float, shape: float, seed: int = 0) -> float:
 DEFAULT_PUPIL_NPIX: int = 256
 DEFAULT_DETECTOR_NPIX: int = 128
 DEFAULT_NUMBER_OF_ZERNIKES: int = 5
+DEFAULT_MASK_DIR: str = "/home/jordan/Documents/toliman/toliman/assets/mask.npy"
 
 TOLIMAN_PRIMARY_APERTURE_DIAMETER: float = 0.13
 TOLIMAN_SECONDARY_MIRROR_DIAMETER: float = 0.032
@@ -497,7 +499,7 @@ class TolimanOptics(dl.Optics, CollectionInterface):
         number_of_zernikes: int = DEFAULT_NUMBER_OF_ZERNIKES,
         pixels_in_pupil: int = DEFAULT_PUPIL_NPIX,
         pixels_on_detector: int = DEFAULT_DETECTOR_NPIX,
-        path_to_mask: str = "assets/mask.npy",
+        path_to_mask: str = DEFAULT_MASK_DIR,
         path_to_filter: str = "assets/filter.npy",
         path_to_polish: str = "assets/polish.npy",
     ) -> object:
