@@ -3,6 +3,6 @@ docs_dir: .
 plugins:
     - search
     - same-dir
-    - simple
+#    - simple
     - mkdocstrings
 
