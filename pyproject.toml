@@ -25,6 +25,7 @@ opt-einsum = "^3.3.0"
 mkdocstrings = {extras = ["python"], version = "^0.19.1"}
 pytkdocs = {version = ">=0.5.1", extras = ["numpy-style"]}
 mkdocs-same-dir = "^0.1.2"
+mkdocs-material = "^9.0.5"
 
 [build-system]
 requires = ["poetry-core"]
