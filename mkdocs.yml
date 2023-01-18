@@ -1,8 +1,13 @@
 site_name: TOLIMAN
 docs_dir: .
 plugins:
-    - search
-    - same-dir
+- search
+- same-dir
 #    - simple
-    - mkdocstrings
+- mkdocstrings:
+    handlers: 
+        python:
+            options:
+                docstring_style: numpy
+                inherited_members: True
 
