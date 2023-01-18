@@ -467,7 +467,7 @@ class CollectionInterface(abc.ABC):
 
 # TODO: I need to work out how to do the regularisation internally so
 #       that the values which are returned are always correct.
-class TolimanOptics(dl.Optics, ExtendableModule):
+class TolimanOptics(dl.Optics, CollectionInterface):
     """
     TolimanOptics
     -------------
@@ -556,7 +556,7 @@ class TolimanOptics(dl.Optics, ExtendableModule):
             static_toliman_pupil: object = dl.StaticAperture(
                 dyn_toliman_pupil,
                 npixels=pixels_in_pupil,
-                pixel_scale=TOLIMAN_PRIMARY_APERTURE_DIAMETER / pixels_in_pupil,
+                diameter=TOLIMAN_PRIMARY_APERTURE_DIAMETER,
             )
 
             toliman_layers.append(static_toliman_pupil)
@@ -604,7 +604,7 @@ class TolimanOptics(dl.Optics, ExtendableModule):
                 ),
                 coefficients=coeffs,
                 npixels=pixels_in_pupil,
-                pixel_scale=TOLIMAN_PRIMARY_APERTURE_DIAMETER / pixels_in_pupil,
+                diameter=TOLIMAN_PRIMARY_APERTURE_DIAMETER,
             )
 
             toliman_layers.append(toliman_aberrations)
@@ -727,7 +727,7 @@ class TolimanOptics(dl.Optics, ExtendableModule):
         return eqx.tree_at(lambda x: x.layers, self, dl_new_layers)
 
 
-class TolimanDetector(dl.Detector, ExtendableModule):
+class TolimanDetector(dl.Detector, CollectionInterface):
     """
     TolimanDetector
     ---------------

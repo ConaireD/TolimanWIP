@@ -39,13 +39,13 @@ class TestTolimanOptics(object):
         assert not _contains_optic(optics, dl.StaticAperture)
 
     def test_constructor_when_mask_too_large(self: object) -> None:
-        with pytest.expect(NotImplementedError):
+        with pytest.raises(NotImplementedError):
             # Arrange/Act/Assert
             toliman: object = TolimanOptics(pixels_in_pupul=2048)
 
     def test_constructor_when_mask_incorrectly_sampled(self: object) -> None:
         # Arrange/Act/Assert
-        with pytest.expect(ValueError):
+        with pytest.raises(ValueError):
             toliman: object = TolimanOptics(pixels_in_pupil=125)
 
     def test_constructor_when_mask_is_correct(self: object) -> None:
@@ -70,7 +70,7 @@ class TestTolimanOptics(object):
         #       This is a best practice thing as it can theoretically
         #       exist making this test environment dependent. This
         #       violates the R in the F.I.R.S.T principles.
-        with pytest.expect(ValueError):
+        with pytest.raises(ValueError):
             toliman: object = TolimanOptics(path_to_mask="i/don't/exist.npy")
 
     def test_constructor_when_aberrated(self: object) -> None:
@@ -91,7 +91,7 @@ class TestTolimanOptics(object):
 
     def test_constructor_when_polish_is_simulated(self: object) -> None:
         # Arrange/Act/Assert
-        with pytest.expect(NotImplementedError):
+        with pytest.raises(NotImplementedError):
             toliman: object = TolimanOptics(simulate_polish=True)
 
     def test_constructor_when_polish_is_not_simulated(self: object) -> None:
@@ -104,7 +104,7 @@ class TestTolimanOptics(object):
 
     def test_constructor_when_using_fresnel(self: object) -> None:
         # Operate in Fresnel mode
-        with pytest.expect(NotImplementedError):
+        with pytest.raises(NotImplementedError):
             toliman: object = TolimanOptics(operate_in_fresnel_mode=True)
 
     def test_constructor_when_not_using_fresnel(self: object) -> None:
@@ -119,7 +119,7 @@ class TestTolimanOptics(object):
     def test_insert_when_type_is_incorrect(self: object) -> None:
         # Arrange
         toliman: object = TolimanOptics()
-        with pytest.expect(ValueError):
+        with pytest.raises(ValueError):
             # Act/Assert
             toliman.insert(0, 1)
 
@@ -132,7 +132,7 @@ class TestTolimanOptics(object):
         element_to_insert: object = dl.CircularAperture(1.0)
 
         # Act/Assert
-        with pytest.expect(ValueError):
+        with pytest.raises(ValueError):
             toliman.insert(wrong_index, element_to_insert)
 
     def test_insert_when_index_is_negative(self: object) -> None:
@@ -141,7 +141,7 @@ class TestTolimanOptics(object):
         element_to_insert: object = dl.CircularAperture(1.0)
 
         # Act/Assert
-        with pytest.expect(ValueError):
+        with pytest.raises(ValueError):
             toliman.insert(-1, element_to_insert)
 
     def test_insert_when_correct(self: object) -> None:
@@ -166,7 +166,7 @@ class TestTolimanOptics(object):
         wrong_index: int = length + 1
 
         # Act/Assert
-        with pytest.expect(ValueError):
+        with pytest.raises(ValueError):
             toliman.remove(wrong_index)
 
     def test_remove_when_index_is_negative(self: object) -> None:
@@ -174,7 +174,7 @@ class TestTolimanOptics(object):
         toliman: object = TolimanOptics()
 
         # Act/Assert
-        with pytest.expect(ValueError):
+        with pytest.raises(ValueError):
             toliman.remove(-1)
 
     def test_remove_when_correct(self: object) -> None:
@@ -194,7 +194,7 @@ class TestTolimanOptics(object):
         toliman: object = TolimanOptics()
 
         # Act/Assert
-        with pytest.expect(ValueError):
+        with pytest.raises(ValueError):
             toliman.append(1)
 
     def test_append_when_correct(self: object) -> None:
@@ -244,7 +244,7 @@ def TestTolimanDetector(object):
         jitter: object = ApplyJitter(2.0)
 
         # Act/Assert
-        with pytest.expect(ValueError):
+        with pytest.raises(ValueError):
             detector: object = TolimanDetector(
                 simulate_jitter=True, extra_detector_layers=[jitter]
             )
@@ -270,7 +270,7 @@ def TestTolimanDetector(object):
         saturation: object = ApplySaturation(2)
 
         # Act/Assert
-        with pytest.expect(ValueError):
+        with pytest.raises(ValueError):
             detector: object = TolimanDetector(
                 simulate_saturation=True, extra_detector_layers=[saturation]
             )
@@ -296,7 +296,7 @@ def TestTolimanDetector(object):
         pixel_response: object = ApplySaturation(2)
 
         # Act/Assert
-        with pytest.expect(ValueError):
+        with pytest.raises(ValueError):
             detector: object = TolimanDetector(
                 simulate_pixel_response=True, extra_detector_layers=[pixel_response]
             )
@@ -313,7 +313,7 @@ def TestTolimanDetector(object):
 
     def test_constructor_when_empty(self: object) -> None:
         # Arrange/Act/Assert
-        with pytest.expect(ValueError):
+        with pytest.raises(ValueError):
             detector: object = TolimanDetector(
                 simulate_jitter=False,
                 simulate_saturation=False,
@@ -325,7 +325,7 @@ def TestTolimanDetector(object):
         detector: object = TolimanDetector()
 
         # Act/Assert
-        with pytest.expect(ValueError):
+        with pytest.raises(ValueError):
             detector.insert(0, 1)
 
     def test_insert_when_index_is_too_long(self: object) -> None:
@@ -337,7 +337,7 @@ def TestTolimanDetector(object):
         element_to_insert: object = AddConstant(1.0)
 
         # Act/Assert
-        with pytest.expect(ValueError):
+        with pytest.raises(ValueError):
             detector.insert(too_long, element_to_insert)
 
     def test_insert_when_index_is_negative(self: object) -> None:
@@ -346,7 +346,7 @@ def TestTolimanDetector(object):
         element_to_insert: object = AddConstant(1.0)
 
         # Act/Assert
-        with pytest.expect(ValueError):
+        with pytest.raises(ValueError):
             detector.insert(-1, element_to_insert)
 
     def test_insert_when_correct(self: object) -> None:
@@ -369,7 +369,7 @@ def TestTolimanDetector(object):
         too_long: int = length + 1
 
         # Act/Assert
-        with pytest.expect(ValueError):
+        with pytest.raises(ValueError):
             detector.remove(too_long)
 
     def test_remove_when_index_is_negative(self: object) -> None:
@@ -377,7 +377,7 @@ def TestTolimanDetector(object):
         detector: object = TolimanDetector()
 
         # Act
-        with pytest.expect(ValueError):
+        with pytest.raises(ValueError):
             detector.remove(-1)
 
     def test_remove_when_correct(self: object) -> None:
@@ -396,7 +396,7 @@ def TestTolimanDetector(object):
         detector: object = TolimanDetector()
 
         # Act/Assert
-        with pytest.expect(ValueError):
+        with pytest.raises(ValueError):
             detector.append(1)
 
     def test_append_when_correct(self: object) -> None:
@@ -456,7 +456,7 @@ class TestAlphaCentauri(object):
             raise ValueError("Oh no! {} is a file.".format(SPECTRUM_DIR))
 
         # Act/Assert
-        with pytest.expect(IOError):
+        with pytest.raises(IOError):
             alpha_centaur: object = AlphaCentauri()
 
 
@@ -484,5 +484,5 @@ class TestBackground(object):
             raise ValueError("Oh no! {} is a file.".format(BACKGROUND_DIR))
 
         # Act/Assert
-        with pytest.expect(IOError):
+        with pytest.raises(IOError):
             alpha_centaur: object = AlphaCentauri()
