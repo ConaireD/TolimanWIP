@@ -8,6 +8,7 @@ plugins:
     - same-dir
     - simple
     - mkdocstrings
+    - spellcheck
 
 theme: 
     name: material 
