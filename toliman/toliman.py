@@ -10,6 +10,31 @@ This will be an overview with some deatiled end to end examples.
         show_source: False
         merge_init_into_class: True
         inherited_members: True
+
+::: toliman.TolimanDetector
+    handler: python
+    options:
+        docstring_style: numpy
+        show_source: False
+        merge_init_into_class: True
+        inherited_members: True
+
+::: toliman.AlphaCentauri
+    handler: python
+    options:
+        docstring_style: numpy
+        show_source: False
+        merge_init_into_class: True
+        inherited_members: True
+
+::: toliman.Background
+    handler: python 
+    options:
+        docstring_style: numpy
+        show_source: False
+        merge_init_into_class: True
+        inherited_members: True
+
 """
 import jax.numpy as np
 import jax
@@ -596,6 +621,8 @@ class TolimanOptics(dl.Optics, ExtendableModule):
 
 class TolimanDetector(dl.Detector, ExtendableModule):
     """
+    TolimanDetector
+    ---------------
     A default implementation of a generic detector that is designed
     to be used with the `dLux.Instrument`.
 
@@ -604,6 +631,7 @@ class TolimanDetector(dl.Detector, ExtendableModule):
     ```py
     >>> toliman_detector: object = TolimanDetector()
     >>> toliman_detector: object = TolimanDetector(simulate_jitter = False)
+    ```
     """
 
     def __init__(
@@ -666,6 +694,8 @@ class TolimanDetector(dl.Detector, ExtendableModule):
 
 class AlphaCentauri(dl.BinarySource):
     """
+    AlphaCentauri
+    -------------
     A convinient representation of the Alpha Centauri binary system.
 
     Examples
@@ -676,6 +706,7 @@ class AlphaCentauri(dl.BinarySource):
     >>> fluxes: float = np.ones((10,), dtype = float)
     >>> spectrum: object = dl.ArraySpectrum(wavelengths, fluxes)
     >>> alpha_cen: object = AlphaCentauri(spectrum = spectrum)
+    ```
     """
 
     def __init__(self: object, spectrum: float = None) -> object:
@@ -715,6 +746,8 @@ class AlphaCentauri(dl.BinarySource):
 
 class Background(dl.MultiPointSource):
     """
+    Background
+    ----------
     Simplies the creation of a sample of background stars. The
     sample of background stars is pulled from the Gaia database
     but there is some voodoo involved in regularising the data.
@@ -723,8 +756,10 @@ class Background(dl.MultiPointSource):
 
     Examples
     --------
+    ```python
     >>> bg: object = Background()
     >>> lim_bg: object = Background(number_of_bg_stars = 10)
+    ```
     """
 
     def __init__(
