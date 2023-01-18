@@ -28,7 +28,7 @@ class TestTolimanOptics(object):
 
         # Assert
         optics: list = static_toliman.to_optics_list()
-        assert _contains_optic(optics, StaticAperture)
+        assert _contains_instance(optics, StaticAperture)
 
     def test_constructor_when_not_static(self: object) -> None:
         # Arrange/Act
@@ -36,7 +36,7 @@ class TestTolimanOptics(object):
 
         # Assert
         optics: list = dynamic_toliman.to_optics_list()
-        assert not _contains_optic(optics, StaticAperture)
+        assert not _contains_instance(optics, StaticAperture)
 
     def test_constructor_when_mask_too_large(self: object) -> None:
         with pytest.raises(NotImplementedError):
@@ -54,7 +54,7 @@ class TestTolimanOptics(object):
 
         # Assert
         optics: list = toliman.to_optics_list()
-        assert _contains_optic(optics, AddOPD)
+        assert _contains_instance(optics, AddOPD)
 
     def test_constructor_when_mask_is_correct_at_max(self: object) -> None:
         # Arrange/Act
@@ -62,7 +62,7 @@ class TestTolimanOptics(object):
 
         # Assert
         optics: list = toliman.to_optics_list()
-        assert _contains_optic(optics, AddOPD)
+        assert _contains_instance(optics, AddOPD)
 
     def test_constructor_when_mask_file_is_incorrect(self: object) -> None:
         # Incorrect file address error.

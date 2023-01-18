@@ -677,7 +677,7 @@ class TolimanOptics(dl.Optics, CollectionInterface):
             raise ValueError("`index` must be positive.")
 
         new_layers: list = self.to_optics_list().insert(index, optic)
-        dl_new_layers: dict = dl.utils.dictionary_to_list(new_layers)
+        dl_new_layers: dict = dl.utils.list_to_dictionary(new_layers)
         return eqx.tree_at(lambda x: x.layers, self, dl_new_layers)
 
     def remove(self: object, index: int) -> object:
@@ -698,7 +698,7 @@ class TolimanOptics(dl.Optics, CollectionInterface):
             raise ValueError("`index` must be positive.")
 
         new_layers: list = self.to_optics_list().remove(index)
-        dl_new_layers: dict = dl.utils.dictionary_to_list(new_layers)
+        dl_new_layers: dict = dl.utils.list_to_dictionary(new_layers)
         return eqx.tree_at(lambda x: x.layers, self, dl_new_layers)
 
     def append(self: object, optic: object) -> object:
@@ -720,7 +720,7 @@ class TolimanOptics(dl.Optics, CollectionInterface):
             raise ValueError("Inserted optics must be optical layers.")
 
         new_layers: list = self.to_optics_list().append(optic)
-        dl_new_layers: dict = dl.utils.dictionary_to_list(new_layers)
+        dl_new_layers: dict = dl.utils.list_to_dictionary(new_layers)
         return eqx.tree_at(lambda x: x.layers, self, dl_new_layers)
 
     def pop(self: object) -> object:
@@ -736,7 +736,7 @@ class TolimanOptics(dl.Optics, CollectionInterface):
         """
         new_layers: list = self.to_optics_list()
         _: object = new_layers.pop()
-        dl_new_layers: dict = dl.utils.dictionary_to_list(new_layers)
+        dl_new_layers: dict = dl.utils.list_to_dictionary(new_layers)
         return eqx.tree_at(lambda x: x.layers, self, dl_new_layers)
 
 
