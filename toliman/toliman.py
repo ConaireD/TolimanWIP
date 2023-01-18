@@ -670,7 +670,13 @@ class TolimanOptics(dl.Optics, CollectionInterface):
         toliman: TolimanOptics
             A new `TolimanOptics` instance with the applied update.
         """
-        if not isinstance(optic, dl.optics.OpticalLayer):
+        correct_type: bool = False
+        if isinstance(optic, dl.optics.OpticalLayer):
+            correct_type: bool = True
+        elif isinstance(optic, dl.apertures.ApertureLayer):
+            correct_type: bool = True
+
+        if not correct_type:
             raise ValueError("Inserted optics must be optical layers.")
 
         if index < 0:
@@ -716,10 +722,17 @@ class TolimanOptics(dl.Optics, CollectionInterface):
         optics: object
             The new optical system.
         """
-        if not isinstance(optic, dl.optics.OpticalLayer):
+        correct_type: bool = False
+        if isinstance(optic, dl.optics.OpticalLayer):
+            correct_type: bool = True
+        elif isinstance(optic, dl.apertures.ApertureLayer):
+            correct_type: bool = True
+
+        if not correct_type:
             raise ValueError("Inserted optics must be optical layers.")
 
-        new_layers: list = self.to_optics_list().append(optic)
+        new_layers: list = self.to_optics_list()
+        _: None = new_layers.append(optic)
         dl_new_layers: dict = dl.utils.list_to_dictionary(new_layers)
         return eqx.tree_at(lambda x: x.layers, self, dl_new_layers)
 

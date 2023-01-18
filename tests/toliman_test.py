@@ -41,7 +41,7 @@ class TestTolimanOptics(object):
     def test_constructor_when_mask_too_large(self: object) -> None:
         with pytest.raises(NotImplementedError):
             # Arrange/Act/Assert
-            toliman: object = TolimanOptics(pixels_in_pupul=2048)
+            toliman: object = TolimanOptics(pixels_in_pupil=2048)
 
     def test_constructor_when_mask_incorrectly_sampled(self: object) -> None:
         # Arrange/Act/Assert
@@ -76,7 +76,7 @@ class TestTolimanOptics(object):
     def test_constructor_when_aberrated(self: object) -> None:
         # Arrange/Act
         toliman: object = TolimanOptics(simulate_aberrations=True)
-        opitcs: list = toliman.to_optics_list()
+        optics: list = toliman.to_optics_list()
 
         # Assert
         assert _contains_instance(optics, StaticAberratedAperture)
@@ -84,7 +84,7 @@ class TestTolimanOptics(object):
     def test_constructor_when_not_aberrated(self: object) -> None:
         # Arrange/Act
         toliman: object = TolimanOptics(simulate_aberrations=False)
-        opitcs: list = list(toliman.layers.values())
+        optics: list = list(toliman.layers.values())
 
         # Assert
         assert not _contains_instance(optics, StaticAberratedAperture)
