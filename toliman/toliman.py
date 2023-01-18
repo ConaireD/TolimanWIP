@@ -40,6 +40,7 @@ import jax.numpy as np
 import jax
 import dLux as dl
 import equinox as eqx
+import abc
 
 __author__ = "Jordan Dennis"
 __all__ = ["TolimanDetector", "TolimanOptics", "AlphaCentauri", "Background", "_contains_instance"]
@@ -388,15 +389,8 @@ that each type of detector is only provided once.
 """
 
 
-class ExtendableModule(eqx.Module):
-    """
-    This "interface" adds `.insert` and `.remove` methods to an
-    `equinox` module. The interface is based of the interface of
-    the default python list. This class is designed to be used in
-    multiple inheritance with other classes and should not be used
-    on it's own.
-    """
-
+class CollectionInterface(abc.ABC):
+    @abc.abstractmethod
     def to_optics_list(self: object) -> list:
         """
         Get the optical elements that make up the object as a list. 
@@ -406,10 +400,8 @@ class ExtendableModule(eqx.Module):
         optics: list
             The optical layers in order in a list.
         """
-        return list(self.layers.values())
 
-
-    # TODO: Add a remove method
+    @abc.abstractmethod
     def insert(self: object, optic: object, index: int) -> object:
         """
         Add an additional layer to the optical system.
@@ -432,6 +424,7 @@ class ExtendableModule(eqx.Module):
         new_layers: list = self.layers.copy().insert(index, optic)
         return eqx.tree_at(lambda x: x.layers, self, new_layers)
 
+    @abc.abstractmethod
     def remove(self: object, index: int) -> object:
         """
         Take a layer from the optical system.
@@ -452,6 +445,22 @@ class ExtendableModule(eqx.Module):
         new_layers: list = self.layers.copy().remove(optic)
         return eqx.tree_at(lambda x: x.layers, self, new_layers)
 
+    @abc.abstractmethod
+    def append(self: object, optic: object) -> object:
+        """
+        Place a new optic at the end of the optical system.
+
+        Parameters
+        ----------
+        optic: object
+            The optic to include. It must be a subclass of the 
+            `dLux.OpticalLayer`.
+
+        Returns
+        -------
+        optics: object
+            The new optical system.
+        """
 
 # TODO: I need to work out how to do the regularisation internally so
 #       that the values which are returned are always correct.
