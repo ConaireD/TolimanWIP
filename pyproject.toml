@@ -25,7 +25,14 @@ pytest-sugar = "^0.9.6"
 
 [tool.poetry.group.docs.dependencies]
 mkdocs = "^1.4.2"
-mkdocs-semiliterate = "^0.7.0"
+mkdocs-simple-plugin = "2.1.2"
+mkdocstrings = {extras = ["python"], version = "^0.19.1"}
+pytkdocs = {version = ">=0.5.1", extras = ["numpy-style"]}
+mkdocs-same-dir = "^0.1.2"
+mkdocs-material = "^9.0.5"
+mkdocs-spellcheck = {extras = ["symspelly"], version = "^1.0.0"}
+symspellpy = "^6.7.7"
+codespell = "^2.2.2"
 
 [build-system]
 requires = ["poetry-core"]

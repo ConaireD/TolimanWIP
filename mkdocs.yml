@@ -1,0 +1,14 @@
+site_name: TOLIMAN
+docs_dir: .
+extra_css:
+    - extra.css
+
+plugins:
+    - search
+    - same-dir
+    - simple
+    - mkdocstrings
+    - spellcheck
+
+theme: 
+    name: material 
