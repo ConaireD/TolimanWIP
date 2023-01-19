@@ -10,6 +10,7 @@ from dLux import (
     StaticAberratedAperture,
     ArraySpectrum,
     CombinedSpectrum,
+    CreateWavefront,
 )
 
 from toliman import (
@@ -209,7 +210,7 @@ class TestTolimanOptics(object):
         new_optics: list = new_toliman.to_optics_list()
 
         # Assert
-        assert not _contains_instance(new_optics, StaticAperture)
+        assert not _contains_instance(new_optics, CreateWavefront)
 
     def test_append_when_type_is_incorrect(self: object) -> None:
         # Arrange
