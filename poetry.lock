@@ -259,7 +259,7 @@ lxml = ["lxml"]
 name = "black"
 version = "22.12.0"
 description = "The uncompromising code formatter."
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
@@ -539,7 +539,7 @@ toolz = ">=0.9.0"
 name = "click"
 version = "8.1.3"
 description = "Composable command line interface toolkit"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
@@ -1956,23 +1956,6 @@ mkdocs = ">=1.4.0"
 PyYAML = ">=6.0"
 
 [[package]]
-name = "mkdocs-spellcheck"
-version = "1.0.0"
-description = "A spell checker plugin for MkDocs."
-category = "dev"
-optional = false
-python-versions = ">=3.7"
-files = [
-    {file = "mkdocs-spellcheck-1.0.0.tar.gz", hash = "sha256:b2fd6fc507b1a23238cd614c73a2ff632eaeae65db67956c7a292e71d59728f3"},
-    {file = "mkdocs_spellcheck-1.0.0-py3-none-any.whl", hash = "sha256:dbdbec6289aa3af786d0cd8d6e0715dec627c38f5810a5ad85857a10ea6f8d20"},
-]
-
-[package.extras]
-all = ["mkdocs-spellcheck[codespell,symspellpy]"]
-codespell = ["codespell (>=2.2.2)"]
-symspellpy = ["symspellpy (>=6.7.6)"]
-
-[[package]]
 name = "mkdocstrings"
 version = "0.19.1"
 description = "Automatic documentation from sources, for MkDocs."
@@ -2033,7 +2016,7 @@ six = "*"
 name = "mypy-extensions"
 version = "0.4.3"
 description = "Experimental type system extensions for programs checked with the mypy typechecker."
-category = "main"
+category = "dev"
 optional = false
 python-versions = "*"
 files = [
@@ -2419,7 +2402,7 @@ testing = ["docopt", "pytest (<6.0.0)"]
 name = "pathspec"
 version = "0.10.3"
 description = "Utility library for gitignore style pattern matching of file paths."
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
@@ -2684,6 +2667,24 @@ files = [
     {file = "pycparser-2.21-py2.py3-none-any.whl", hash = "sha256:8ee45429555515e1f6b185e78100aea234072576aa43ab53aefcae078162fca9"},
     {file = "pycparser-2.21.tar.gz", hash = "sha256:e644fdec12f7872f86c58ff790da456218b10f863970249516d60a5eaca77206"},
 ]
+
+[[package]]
+name = "pydocstyle"
+version = "6.3.0"
+description = "Python docstring style checker"
+category = "dev"
+optional = false
+python-versions = ">=3.6"
+files = [
+    {file = "pydocstyle-6.3.0-py3-none-any.whl", hash = "sha256:118762d452a49d6b05e194ef344a55822987a462831ade91ec5c06fd2169d019"},
+    {file = "pydocstyle-6.3.0.tar.gz", hash = "sha256:7ce43f0c0ac87b07494eb9c0b462c0b73e6ff276807f204d6b53edc72b7e44e1"},
+]
+
+[package.dependencies]
+snowballstemmer = ">=2.2.0"
+
+[package.extras]
+toml = ["tomli (>=1.2.3)"]
 
 [[package]]
 name = "pyerfa"
@@ -3454,6 +3455,18 @@ files = [
 ]
 
 [[package]]
+name = "snowballstemmer"
+version = "2.2.0"
+description = "This package provides 29 stemmers for 28 languages generated from Snowball algorithms."
+category = "dev"
+optional = false
+python-versions = "*"
+files = [
+    {file = "snowballstemmer-2.2.0-py2.py3-none-any.whl", hash = "sha256:c8e1716e83cc398ae16824e5572ae04e0d9fc2c6b985fb0f900f5f0c96ecba1a"},
+    {file = "snowballstemmer-2.2.0.tar.gz", hash = "sha256:09b16deb8547d3412ad7b590689584cd0fe25ec8db3be37788be3810cbf19cb1"},
+]
+
+[[package]]
 name = "soupsieve"
 version = "2.3.2.post1"
 description = "A modern CSS selector implementation for Beautiful Soup."
@@ -3874,4 +3887,4 @@ optax = "*"
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10,<3.11"
-content-hash = "15438b747449c251bc98038aa8119518bd796505c75250d702b14f3b1e0e2a01"
+content-hash = "a974db0d8e34527a993573f5a97ad6a9432c34c0fdfc650ac1896c48e16ac35d"

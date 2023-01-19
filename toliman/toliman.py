@@ -1,53 +1,3 @@
-"""md
-
-## Overview
-This will be an overview with some deatiled end to end examples.
-
-::: toliman.TolimanOptics
-    handler:
-        python
-    options:
-        docstring_style: numpy
-        show_source: False
-        merge_init_into_class: True
-        inherited_members: True
-        members:
-            - insert
-            - __call__
-            - remove
-            - pop
-            - append
-            - get 
-            - set
-
-::: toliman.TolimanDetector
-    handler:
-        python
-    options:
-        docstring_style: numpy
-        show_source: False
-        merge_init_into_class: True
-        inherited_members: True
-
-::: toliman.AlphaCentauri
-    handler:
-        python
-    options:
-        docstring_style: numpy
-        show_source: False
-        merge_init_into_class: True
-        inherited_members: True
-
-::: toliman.Background
-    handler:
-        python
-    options:
-        docstring_style: numpy
-        show_source: False
-        merge_init_into_class: True
-        inherited_members: True
-
-"""
 import jax.numpy as np
 import jax
 import dLux as dl
@@ -56,13 +6,18 @@ import abc
 import os
 
 __author__ = "Jordan Dennis"
-__all__ = ["TolimanDetector", "TolimanOptics", "AlphaCentauri", "Background", "_contains_instance"]
+__all__ = [
+    "TolimanDetector",
+    "TolimanOptics",
+    "AlphaCentauri",
+    "Background",
+    "_contains_instance",
+]
 
 
 def _contains_instance(_list: list, _type: type) -> bool:
     """
-    Check to see if a list constains an element of a certain
-    type.
+    Check to see if a list constains an element of a certain type.
 
     Parameters
     ----------
@@ -85,7 +40,7 @@ def _contains_instance(_list: list, _type: type) -> bool:
 
 def _downsample_square_grid(arr: float, m: int) -> float:
     """
-    Resample a square array by a factor of `m`. `
+    Resample a square array by a factor of `m`.
 
     Parameters
     ----------
@@ -141,8 +96,9 @@ def _downsample_along_axis(arr: float, m: int, axis: int = 0) -> float:
 
 def _simulate_alpha_cen_spectra(number_of_wavelenths: int = 25) -> None:
     """
-    This function will simulate the spectrum of the alpha centauri
-    binary using `pysynphot`. The output is saved to a file so that
+    Simulate the spectrum of the alpha centauri binary using `pysynphot`.
+
+    The output is saved to a file so that
     it can be used again later without having to be reloaded.
 
     Parameters
@@ -194,8 +150,9 @@ def _simulate_alpha_cen_spectra(number_of_wavelenths: int = 25) -> None:
 # TODO: optimise
 def _simulate_background_stars() -> None:
     """
-    This function samples the Gaia database for a typical sample
-    of background stars. The primary use of this function is to
+    Sample the Gaia database for typical background stars.
+
+    The primary use of this function is to
     build a sample that can be used to look for biases.
     """
     from astroquery.gaia import Gaia
@@ -266,7 +223,7 @@ def _simulate_data(model: object, scale: float) -> float:
 
 def pixel_response(shape: float, threshold: float, seed: int = 1) -> float:
     """
-    A convinience wrapper for generating a pixel reponse array.
+    Simulate pixel reponses.
 
     Parameters
     ----------
@@ -288,7 +245,7 @@ def pixel_response(shape: float, threshold: float, seed: int = 1) -> float:
 
 def photon_noise(psf: float, seed: int = 0) -> float:
     """
-    A convinience wrapper for generating photon noise.
+    Simulate photon noise.
 
     Parameters
     ----------
@@ -407,7 +364,7 @@ class CollectionInterface(abc.ABC):
     @abc.abstractmethod
     def to_optics_list(self: object) -> list:
         """
-        Get the optical elements that make up the object as a list. 
+        Get the optical elements that make up the object as a list.
 
         Returns
         -------
@@ -457,7 +414,7 @@ class CollectionInterface(abc.ABC):
         Parameters
         ----------
         optic: object
-            The optic to include. It must be a subclass of the 
+            The optic to include. It must be a subclass of the
             `dLux.OpticalLayer`.
 
         Returns
@@ -469,9 +426,10 @@ class CollectionInterface(abc.ABC):
     @abc.abstractmethod
     def pop(self: object) -> object:
         """
-        Remove the last element in the optical system. Please note
-        that this differs from the `.pop` method of the `list` class
-        because it does not return the popped element.
+        Remove the last element in the optical system.
+
+        Please note that this differs from the `.pop` method of the
+        `list` class because it does not return the popped element.
 
         Returns
         -------
@@ -479,14 +437,14 @@ class CollectionInterface(abc.ABC):
             The optical system with the layer removed.
         """
 
+
 # TODO: I need to work out how to do the regularisation internally so
 #       that the values which are returned are always correct.
 class TolimanOptics(dl.Optics, CollectionInterface):
     """
-    TolimanOptics
-    -------------
-    Simulates the optical system of the TOLIMAN telescope. It is
-    designed to occupy the `optics` kwarg of `dl.Instrument`.
+    Simulates the optical system of the TOLIMAN telescope.
+
+    It is designed to occupy the `optics` kwarg of `dl.Instrument`.
     The `TolimanOptics` provides a default implementation that
     can be extended using the `.add` method. There are also
     several ways that the `TolimanOptics` can be initialised.
@@ -516,6 +474,8 @@ class TolimanOptics(dl.Optics, CollectionInterface):
         path_to_polish: str = "assets/polish.npy",
     ) -> object:
         """
+        Simulate the Toliman telescope.
+
         Parameters
         ----------
         simulate_polish: bool = True
@@ -612,9 +572,11 @@ class TolimanOptics(dl.Optics, CollectionInterface):
 
             toliman_aberrations: object = dl.StaticAberratedAperture(
                 dl.AberratedAperture(
-                    noll_inds = nolls,
-                    coefficients = coeffs,
-                    aperture = dl.CircularAperture(TOLIMAN_PRIMARY_APERTURE_DIAMETER / 2.0),
+                    noll_inds=nolls,
+                    coefficients=coeffs,
+                    aperture=dl.CircularAperture(
+                        TOLIMAN_PRIMARY_APERTURE_DIAMETER / 2.0
+                    ),
                 ),
                 npixels=pixels_in_pupil,
                 diameter=TOLIMAN_PRIMARY_APERTURE_DIAMETER,
@@ -645,7 +607,7 @@ class TolimanOptics(dl.Optics, CollectionInterface):
 
     def to_optics_list(self: object) -> list:
         """
-        Get the optical elements that make up the object as a list. 
+        Get the optical elements that make up the object as a list.
 
         Returns
         -------
@@ -721,7 +683,7 @@ class TolimanOptics(dl.Optics, CollectionInterface):
         Parameters
         ----------
         optic: object
-            The optic to include. It must be a subclass of the 
+            The optic to include. It must be a subclass of the
             `dLux.OpticalLayer`.
 
         Returns
@@ -745,9 +707,10 @@ class TolimanOptics(dl.Optics, CollectionInterface):
 
     def pop(self: object) -> object:
         """
-        Remove the last element in the optical system. Please note
-        that this differs from the `.pop` method of the `list` class
-        because it does not return the popped element.
+        Remove the last element in the optical system.
+
+        Please note that this differs from the `.pop` method of
+        the `list` class  because it does not return the popped element.
 
         Returns
         -------
@@ -762,8 +725,8 @@ class TolimanOptics(dl.Optics, CollectionInterface):
 
 class TolimanDetector(dl.Detector, CollectionInterface):
     """
-    TolimanDetector
-    ---------------
+    Represents the Toliman detector.
+
     A default implementation of a generic detector that is designed
     to be used with the `dLux.Instrument`.
 
@@ -783,6 +746,8 @@ class TolimanDetector(dl.Detector, CollectionInterface):
         extra_detector_layers: list = [],
     ) -> object:
         """
+        Simulate the Toliman detector.
+
         Parameters
         ----------
         simulate_jitter: bool = True
@@ -835,8 +800,6 @@ class TolimanDetector(dl.Detector, CollectionInterface):
 
 class AlphaCentauri(dl.BinarySource):
     """
-    AlphaCentauri
-    -------------
     A convinient representation of the Alpha Centauri binary system.
 
     Examples
@@ -852,6 +815,8 @@ class AlphaCentauri(dl.BinarySource):
 
     def __init__(self: object, spectrum: float = None) -> object:
         """
+        Simulate Alpha Centauri.
+
         Parameters
         ----------
         spectrum: float = None
@@ -887,10 +852,9 @@ class AlphaCentauri(dl.BinarySource):
 
 class Background(dl.MultiPointSource):
     """
-    Background
-    ----------
-    Simplies the creation of a sample of background stars. The
-    sample of background stars is pulled from the Gaia database
+    Simplies the creation of a sample of background stars.
+
+    The sample of background stars is pulled from the Gaia database
     but there is some voodoo involved in regularising the data.
     Use the `_simulate_background_stars` function to generate
     alternative samples.
@@ -907,6 +871,8 @@ class Background(dl.MultiPointSource):
         self: object, number_of_bg_stars: int = None, spectrum: object = None
     ) -> object:
         """
+        Simulate background stars.
+
         Parameters
         ----------
         number_of_bg_stars: int = None

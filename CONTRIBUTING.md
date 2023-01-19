@@ -26,7 +26,7 @@ machine.
 
 This process should have cloned the project into a new folder called 
 `TolimanWIP`. Move into that directory using `cd` and then run `poetry install`.
-This will take some time as `poetry` resolves the packages dependancies. So
+This will take some time as `poetry` resolves the packages dependencies. So
 go grab a coffee sit back and relax while it runs (should take about 1-10min
 depending on your connection). You can now make changes to the source code.
 If you want these changes to join the `git` repository you will instead need
@@ -48,13 +48,13 @@ $ cd TolimanWIP
 $ poetry install 
 ```
 If you are planning to change the code, then be aware that we are using `black`
-as an autoformatter on both the tests and the source code. Before pushing make
+as an auto-format-tool on both the tests and the source code. Before pushing make
 sure that you have run the tests by invoking `pytest` and formatted the code 
 using `black`. 
 
 Externally, we have a few other recommendations. Where it makes sense to do so 
 use `from package import ...` rather than `import package; package.(...)` but
-this is not a strict rule and is just a guidline. To get updates from the 
+this is not a strict rule and is just a guideline. To get updates from the 
 repository run `git pull` and then re-install using `poetry install`. Note,
 it should be much faster after the first time because `poetry` has already 
-installed all the dependancies.
+installed all the dependencies.
