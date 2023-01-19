@@ -856,7 +856,7 @@ jaxtyping = ">=0.2.5"
 name = "exceptiongroup"
 version = "1.1.0"
 description = "Backport of PEP 654 (exception groups)"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7"
 files = [
@@ -969,7 +969,7 @@ files = [
 name = "iniconfig"
 version = "2.0.0"
 description = "brain-dead simple config-ini parsing"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7"
 files = [
@@ -2495,7 +2495,7 @@ test = ["appdirs (==1.4.4)", "covdefaults (>=2.2.2)", "pytest (>=7.2)", "pytest-
 name = "pluggy"
 version = "1.0.0"
 description = "plugin and hook calling mechanisms for python"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 files = [
@@ -2752,7 +2752,7 @@ six = "*"
 name = "pytest"
 version = "7.2.1"
 description = "pytest: simple powerful testing with Python"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7"
 files = [
@@ -2804,6 +2804,25 @@ files = [
 packaging = ">=14.1"
 pytest = ">=2.9"
 termcolor = ">=1.1.0"
+
+[[package]]
+name = "pytest-timer"
+version = "0.0.11"
+description = "A timer plugin for pytest"
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "pytest-timer-0.0.11.tar.gz", hash = "sha256:440f3e6536cb68fd06617485f0b199414abab4a116de59065b08f7c7262f5c91"},
+]
+
+[package.dependencies]
+pytest = "*"
+termcolor = {version = "*", optional = true, markers = "extra == \"termcolor\""}
+
+[package.extras]
+colorama = ["colorama"]
+termcolor = ["termcolor"]
 
 [[package]]
 name = "python-dateutil"
@@ -3429,7 +3448,7 @@ editdistpy = ">=0.1.3"
 name = "termcolor"
 version = "2.2.0"
 description = "ANSI color formatting for output in terminal"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7"
 files = [
@@ -3761,4 +3780,4 @@ optax = "*"
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10,<3.11"
-content-hash = "253e244355c763ace13e5b234f08404fa6476ec1d828f43a5e15251bdd4fda31"
+content-hash = "96d51e4a5a375feb5f3d07e09590550c3c6fe2bd0329430c6742576135b7e646"
