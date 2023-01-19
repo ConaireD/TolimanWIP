@@ -824,6 +824,21 @@ class TolimanDetector(dl.Detector, CollectionInterface):
         toliman: TolimanOptics
             A new `TolimanOptics` instance with the applied update.
         """
+        if isinstance(optic, dl.detector.DetectorLayer):
+            raise ValueError("Inserted optics must be optical layers.")
+
+        if index < 0:
+            raise ValueError("`index` must be positive.")
+
+        new_layers: list = self.to_optics_list()
+        length: int = len(new_layers)
+
+        if index > length:
+            raise ValueError("`index` is outside the layers.")
+        
+        _: None = new_layers.insert(index, optic)
+        dl_new_layers: dict = dl.utils.list_to_dictionary(new_layers)
+        return eqx.tree_at(lambda x: x.layers, self, dl_new_layers)
 
     def remove(self: object, index: int) -> object:
         """
