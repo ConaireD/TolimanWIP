@@ -837,6 +837,7 @@ class AlphaCentauri(dl.BinarySource):
     """
     AlphaCentauri
     -------------
+
     A convinient representation of the Alpha Centauri binary system.
 
     Examples
