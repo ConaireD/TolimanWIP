@@ -56,7 +56,13 @@ import abc
 import os
 
 __author__ = "Jordan Dennis"
-__all__ = ["TolimanDetector", "TolimanOptics", "AlphaCentauri", "Background", "_contains_instance"]
+__all__ = [
+    "TolimanDetector",
+    "TolimanOptics",
+    "AlphaCentauri",
+    "Background",
+    "_contains_instance",
+]
 
 
 def _contains_instance(_list: list, _type: type) -> bool:
@@ -458,7 +464,7 @@ class CollectionInterface(abc.ABC):
         Parameters
         ----------
         optic: object
-            The optic to include. It must be a subclass of the 
+            The optic to include. It must be a subclass of the
             `dLux.OpticalLayer`.
 
         Returns
@@ -480,6 +486,7 @@ class CollectionInterface(abc.ABC):
         optics: object
             The optical system with the layer removed.
         """
+
 
 # TODO: I need to work out how to do the regularisation internally so
 #       that the values which are returned are always correct.
@@ -615,9 +622,11 @@ class TolimanOptics(dl.Optics, CollectionInterface):
 
             toliman_aberrations: object = dl.StaticAberratedAperture(
                 dl.AberratedAperture(
-                    noll_inds = nolls,
-                    coefficients = coeffs,
-                    aperture = dl.CircularAperture(TOLIMAN_PRIMARY_APERTURE_DIAMETER / 2.0),
+                    noll_inds=nolls,
+                    coefficients=coeffs,
+                    aperture=dl.CircularAperture(
+                        TOLIMAN_PRIMARY_APERTURE_DIAMETER / 2.0
+                    ),
                 ),
                 npixels=pixels_in_pupil,
                 diameter=TOLIMAN_PRIMARY_APERTURE_DIAMETER,
@@ -724,7 +733,7 @@ class TolimanOptics(dl.Optics, CollectionInterface):
         Parameters
         ----------
         optic: object
-            The optic to include. It must be a subclass of the 
+            The optic to include. It must be a subclass of the
             `dLux.OpticalLayer`.
 
         Returns
@@ -750,7 +759,7 @@ class TolimanOptics(dl.Optics, CollectionInterface):
         """
         Remove the last element in the optical system.
 
-        Please note that this differs from the `.pop` method of 
+        Please note that this differs from the `.pop` method of
         the `list` class  because it does not return the popped element.
 
         Returns
