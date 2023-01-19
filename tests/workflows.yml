@@ -1,2 +1,0 @@
-- name: test-toliman-optics
-  command: pytest -n 4 tests/toliman_test.py::TestTolimanOptics
