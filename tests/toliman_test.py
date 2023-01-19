@@ -11,6 +11,10 @@ from dLux import (
     ArraySpectrum,
     CombinedSpectrum,
     CreateWavefront,
+    ApplyJitter,
+    ApplySaturation,
+    ApplyPixelResponse,
+    AddConstant,
 )
 
 from toliman import (
@@ -378,7 +382,7 @@ class TestTolimanDetector(object):
         element_to_insert: object = AddConstant(1.0)
 
         # Act
-        detector: object = detector.insert(0, element_to_insert)
+        detector: object = detector.insert(element_to_insert, 0)
         optics: list = detector.to_optics_list()
 
         # Assert
@@ -412,7 +416,7 @@ class TestTolimanDetector(object):
         optics: list = detector.to_optics_list()
 
         # Assert
-        assert _contains_instance(optics, ApplyJitter)
+        assert not _contains_instance(optics, ApplyJitter)
 
     def test_append_when_type_is_incorrect(self: object) -> None:
         # Arrange

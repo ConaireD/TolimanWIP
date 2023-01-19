@@ -774,7 +774,7 @@ class TolimanDetector(dl.Detector, CollectionInterface):
         if simulate_saturation:
             detector_layers.append(dl.ApplySaturation(DEFAULT_DETECTOR_SATURATION))
 
-            if _contains_instance(detector_layers, dl.ApplySaturation):
+            if _contains_instance(extra_detector_layers, dl.ApplySaturation):
                 raise ValueError(DETECTOR_REPEATED_ERR_MSG)
 
         if simulate_pixel_response:
@@ -787,7 +787,7 @@ class TolimanDetector(dl.Detector, CollectionInterface):
                 )
             )
 
-            if _contains_instance(detector_layers, dl.ApplyPixelResponse):
+            if _contains_instance(extra_detector_layers, dl.ApplyPixelResponse):
                 raise ValueError(DETECTOR_REPEATED_ERR_MSG)
 
         detector_layers.extend(extra_detector_layers)
@@ -824,7 +824,7 @@ class TolimanDetector(dl.Detector, CollectionInterface):
         toliman: TolimanOptics
             A new `TolimanOptics` instance with the applied update.
         """
-        if isinstance(optic, dl.detector.DetectorLayer):
+        if not isinstance(optic, dl.detectors.DetectorLayer):
             raise ValueError("Inserted optics must be optical layers.")
 
         if index < 0:
@@ -882,7 +882,7 @@ class TolimanDetector(dl.Detector, CollectionInterface):
         optics: object
             The new optical system.
         """
-        if isinstance(optic, dl.detectors.DetectorLayer):
+        if not isinstance(optic, dl.detectors.DetectorLayer):
             raise ValueError("Inserted optics must be a detector layer.")
 
         new_layers: list = self.to_optics_list()
