@@ -2789,6 +2789,21 @@ pytest = ">=3.5.0"
 toml = "*"
 
 [[package]]
+name = "pytest-concurrent"
+version = "0.2.2"
+description = "Concurrently execute test cases with multithread, multiprocess and gevent"
+category = "dev"
+optional = false
+python-versions = "*"
+files = [
+    {file = "pytest_concurrent-0.2.2-py3-none-any.whl", hash = "sha256:8b012417c2f0a1f433e4fe2131d9d47c6852ace8087143b62e383d3abc917274"},
+]
+
+[package.dependencies]
+psutil = ">=5.2.2"
+pytest = ">=3.1.1"
+
+[[package]]
 name = "pytest-sugar"
 version = "0.9.6"
 description = "pytest-sugar is a plugin for pytest that changes the default look and feel of pytest (e.g. progressbar, show tests that fail instantly)."
@@ -3780,4 +3795,4 @@ optax = "*"
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10,<3.11"
-content-hash = "2ec70dfa2b3ad21a005f31a9863b071a1f44145c424bf1d75a243287fef142f5"
+content-hash = "3b8aac6de5cdb903badd15a3bb914b220ac2b96341e15991b366e11a935a163e"
