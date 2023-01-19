@@ -245,7 +245,7 @@ class TestTolimanOptics(object):
         assert optics[-1] != new_optics[-1]
 
 
-def TestTolimanDetector(object):
+class TestTolimanDetector(object):
     def test_constructor_when_jittered(self: object) -> None:
         # Arrange/Act
         detector: object = TolimanDetector(simulate_jitter=True)
