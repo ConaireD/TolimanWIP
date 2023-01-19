@@ -797,7 +797,6 @@ class TolimanDetector(dl.Detector, CollectionInterface):
         else:
             raise ValueError(DETECTOR_EMPTY_ERR_MSG)
 
-    @abc.abstractmethod
     def to_optics_list(self: object) -> list:
         """
         Get the optical elements that make up the object as a list.
@@ -807,8 +806,8 @@ class TolimanDetector(dl.Detector, CollectionInterface):
         optics: list
             The optical layers in order in a list.
         """
+        return list(self.layers.values())
 
-    @abc.abstractmethod
     def insert(self: object, optic: object, index: int) -> object:
         """
         Add an additional layer to the optical system.
@@ -826,7 +825,6 @@ class TolimanDetector(dl.Detector, CollectionInterface):
             A new `TolimanOptics` instance with the applied update.
         """
 
-    @abc.abstractmethod
     def remove(self: object, index: int) -> object:
         """
         Take a layer from the optical system.
@@ -842,7 +840,6 @@ class TolimanDetector(dl.Detector, CollectionInterface):
             A new `TolimanOptics` instance with the applied update.
         """
 
-    @abc.abstractmethod
     def append(self: object, optic: object) -> object:
         """
         Place a new optic at the end of the optical system.
@@ -859,7 +856,6 @@ class TolimanDetector(dl.Detector, CollectionInterface):
             The new optical system.
         """
 
-    @abc.abstractmethod
     def pop(self: object) -> object:
         """
         Remove the last element in the optical system.
