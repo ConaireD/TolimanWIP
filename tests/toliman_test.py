@@ -20,6 +20,13 @@ from toliman import (
     Background,
 )
 
+from jax import (
+    numpy as np,
+    jit, 
+    grad, 
+    vmap
+)
+
 
 class GeometricAberrations(object):
     """
@@ -69,8 +76,11 @@ class TestTolimanOptics(object):
         assert _contains_instance(optics, AddOPD)
 
     def test_constructor_when_mask_is_correct_at_max(self: object) -> None:
+        # TODO: Load the mask to get the correct size
+        mask: float = np.load("/home/jordan/Documents/toliman/toliman/assets/mask.npy")
+        max_size: int = mask.shape[0]
         # Arrange/Act
-        toliman: object = TolimanOptics(pixels_in_pupil=1024)
+        toliman: object = TolimanOptics(pixels_in_pupil=max_size)
 
         # Assert
         optics: list = toliman.to_optics_list()
