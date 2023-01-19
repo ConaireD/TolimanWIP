@@ -9,7 +9,7 @@ plugins:
     - simple
     - mkdocstrings:
         default_handler: python 
-    - spellcheck
 
 theme: 
     name: material 
+    logo: toliman/assets/logo.png
