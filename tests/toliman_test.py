@@ -21,6 +21,18 @@ from toliman import (
 )
 
 
+class GeometricAberrations(object):
+    """
+    """
+    pass
+
+
+class FresnelPropagator(object):
+    """
+    """
+    pass
+
+
 class TestTolimanOptics(object):
     def test_constructor_when_static(self: object) -> None:
         # Arrange/Act
@@ -152,7 +164,7 @@ class TestTolimanOptics(object):
 
         # Act
         insertion: object = HexagonalAperture(1.0)
-        toliman: object = toliman.insert(0, insertion)
+        toliman: object = toliman.insert(insertion, 0)
 
         # Assert
         new_optics: list = toliman.to_optics_list()

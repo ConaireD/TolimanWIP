@@ -703,7 +703,13 @@ class TolimanOptics(dl.Optics, CollectionInterface):
         if index < 0:
             raise ValueError("`index` must be positive.")
 
-        new_layers: list = self.to_optics_list().remove(index)
+        new_layers: list = self.to_optics_list()
+        length: int = len(new_layers)
+
+        if index > length:
+            raise ValueError("`index` must be within the optical system.")
+
+        _: None = new_layers.pop(index)
         dl_new_layers: dict = dl.utils.list_to_dictionary(new_layers)
         return eqx.tree_at(lambda x: x.layers, self, dl_new_layers)
 
