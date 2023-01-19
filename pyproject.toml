@@ -33,7 +33,6 @@ mkdocs = "^1.4.2"
 mkdocs-simple-plugin = "2.1.2"
 mkdocs-same-dir = "^0.1.2"
 mkdocs-material = "^9.0.5"
-mkdocs-spellcheck = {extras = ["symspelly"], version = "^1.0.0"}
 mkdocstrings = "^0.19.1"
 mkdocstrings-python-legacy = "^0.2.3"
 symspellpy = "^6.7.7"

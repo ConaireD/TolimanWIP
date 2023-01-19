@@ -1956,23 +1956,6 @@ mkdocs = ">=1.4.0"
 PyYAML = ">=6.0"
 
 [[package]]
-name = "mkdocs-spellcheck"
-version = "1.0.0"
-description = "A spell checker plugin for MkDocs."
-category = "dev"
-optional = false
-python-versions = ">=3.7"
-files = [
-    {file = "mkdocs-spellcheck-1.0.0.tar.gz", hash = "sha256:b2fd6fc507b1a23238cd614c73a2ff632eaeae65db67956c7a292e71d59728f3"},
-    {file = "mkdocs_spellcheck-1.0.0-py3-none-any.whl", hash = "sha256:dbdbec6289aa3af786d0cd8d6e0715dec627c38f5810a5ad85857a10ea6f8d20"},
-]
-
-[package.extras]
-all = ["mkdocs-spellcheck[codespell,symspellpy]"]
-codespell = ["codespell (>=2.2.2)"]
-symspellpy = ["symspellpy (>=6.7.6)"]
-
-[[package]]
 name = "mkdocstrings"
 version = "0.19.1"
 description = "Automatic documentation from sources, for MkDocs."
@@ -3904,4 +3887,4 @@ optax = "*"
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10,<3.11"
-content-hash = "260603fee858c9e02285cb756cfbc61cd91cb81aecf426fdef50250beb9d484a"
+content-hash = "a974db0d8e34527a993573f5a97ad6a9432c34c0fdfc650ac1896c48e16ac35d"
