@@ -854,6 +854,18 @@ class TolimanDetector(dl.Detector, CollectionInterface):
         toliman: TolimanOptics
             A new `TolimanOptics` instance with the applied update.
         """
+        if index < 0:
+            raise ValueError("`index` must be positive.")
+
+        new_layers: list = self.to_optics_list()
+        length: int = len(new_layers)
+
+        if index > length:
+            raise ValueError("`index` must be within the detector.")
+
+        _: None = new_layers.pop(index)
+        dl_new_layers: dict = dl.utils.list_to_dictionary(new_layers)
+        return eqx.tree_at(lambda x: x.layers, self, dl_new_layers)
 
     def append(self: object, optic: object) -> object:
         """
@@ -870,21 +882,30 @@ class TolimanDetector(dl.Detector, CollectionInterface):
         optics: object
             The new optical system.
         """
+        if isinstance(optic, dl.detectors.DetectorLayer):
+            raise ValueError("Inserted optics must be a detector layer.")
+
+        new_layers: list = self.to_optics_list()
+        _: None = new_layers.append(optic)
+        dl_new_layers: dict = dl.utils.list_to_dictionary(new_layers)
+        return eqx.tree_at(lambda x: x.layers, self, dl_new_layers)
 
     def pop(self: object) -> object:
         """
         Remove the last element in the optical system.
 
-        Please note that this differs from the `.pop` method of the
-        `list` class because it does not return the popped element.
+        Please note that this differs from the `.pop` method of
+        the `list` class  because it does not return the popped element.
 
         Returns
         -------
         optics: object
             The optical system with the layer removed.
         """
-
-
+        new_layers: list = self.to_optics_list()
+        _: object = new_layers.pop()
+        dl_new_layers: dict = dl.utils.list_to_dictionary(new_layers)
+        return eqx.tree_at(lambda x: x.layers, self, dl_new_layers)
 
 
 class AlphaCentauri(dl.BinarySource):
