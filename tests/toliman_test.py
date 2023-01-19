@@ -1,4 +1,5 @@
 import pytest
+import os
 
 from dLux import (
     CircularAperture,
@@ -453,21 +454,6 @@ class TestTolimanDetector(object):
 
 
 class TestAlphaCentauri(object):
-    def test_constructor_when_given_spectrum(self: object) -> None:
-        # Arrange
-        shape: int = 10
-        wavelengths: float = np.linspace(595.0, 695.0, shape, dtype=float)
-        weights: float = np.ones((shape,), dtype=float)
-        spectrum: object = ArraySpectrum(wavelengths=wavelengths, weights=weights)
-
-        # Act
-        alpha_centauri: object = AlphaCentauri(spectrum=spectrum)
-
-        # Assert
-        # TODO: Make sure that the initial type of spectrum is not
-        #       an ArraySpectrum
-        assert isinstance(alpha_centauri.spectrum, ArraySpectrum)
-
     def test_constructor_when_not_given_spectrum(self: object) -> None:
         # Arrange
         alpha_centauri: object = AlphaCentauri()

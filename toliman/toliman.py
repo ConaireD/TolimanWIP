@@ -289,6 +289,7 @@ DEFAULT_PUPIL_NPIX: int = 256
 DEFAULT_DETECTOR_NPIX: int = 128
 DEFAULT_NUMBER_OF_ZERNIKES: int = 5
 DEFAULT_MASK_DIR: str = "/home/jordan/Documents/toliman/toliman/assets/mask.npy"
+SPECTRUM_DIR: str = "/home/jordan/Documents/toliman/toliman/assets/spectrum.csv"
 
 TOLIMAN_PRIMARY_APERTURE_DIAMETER: float = 0.13
 TOLIMAN_SECONDARY_MIRROR_DIAMETER: float = 0.032
