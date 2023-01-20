@@ -148,10 +148,10 @@ def _simulate_alpha_cen_spectra(number_of_wavelenths: int = 25) -> None:
         spectra.write("alpha cen b flux (W/m/m)\n")
 
         for i in np.arange(number_of_wavelenths, dtype=int):
-            spectra.write("%f, ".format(alpha_cen_a_waves[i]))
-            spectra.write("%f, ".format(alpha_cen_a_flux[i]))
-            spectra.write("%f, ".format(alpha_cen_b_waves[i]))
-            spectra.write("%f\n".format(alpha_cen_b_flux[i]))
+            spectra.write("{}, ".format(alpha_cen_a_waves[i]))
+            spectra.write("{}, ".format(alpha_cen_a_flux[i]))
+            spectra.write("{}, ".format(alpha_cen_b_waves[i]))
+            spectra.write("{}\n".format(alpha_cen_b_flux[i]))
 
 
 # TODO: Add arguments
@@ -945,18 +945,26 @@ class AlphaCentauri(dl.BinarySource):
         """
         if not spectrum:
             with open(SPECTRUM_DIR, "r") as spectrum:
-                lines: list = open.readlines().remove(0)
+                lines: list = spectrum.readlines()
+                _: str = lines.pop(0)
 
                 strip: callable = lambda _str: _str.strip().split(",")
                 str_to_float: callable = lambda _str: float(_str.strip())
                 entries: list = jax.tree_map(strip, lines)
                 _spectrum: float = jax.tree_map(str_to_float, entries)
 
-            alpha_cen_waves: float = _spectrum[:, (0, 2)]
-            alpha_cen_flux: float = _spectrum[:, (1, 3)]
+            _spectrum: float = np.array(_spectrum)
+
+            alpha_cen_a_waves: float = _spectrum[:, 0]
+            alpha_cen_b_waves: float = _spectrum[:, 2]
+            alpha_cen_a_flux: float = _spectrum[:, 1]
+            alpha_cen_b_flux: float = _spectrum[:, 3]
+
+            alpha_cen_waves: float = np.stack([alpha_cen_a_waves, alpha_cen_b_waves])
+            alpha_cen_flux: float = np.stack([alpha_cen_a_flux, alpha_cen_b_flux])
 
             spectrum: float = dl.CombinedSpectrum(
-                wavelengths=alpha_cen_waves, flux=alpha_cen_flux
+                wavelengths=alpha_cen_waves, weights=alpha_cen_flux
             )
 
         super().__init__(
