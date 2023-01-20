@@ -124,7 +124,7 @@ def _simulate_alpha_cen_spectra(number_of_wavelenths: int = 25) -> None:
         ALPHA_CEN_B_SURFACE_GRAV,
     )
 
-    m: int = alpha_cen_a_waves.size // number_of_wavelenths
+    m: int = alpha_cen_a_spectrum.wave.size // number_of_wavelenths
 
     alpha_cen_a_waves: float = _downsample_along_axis(alpha_cen_a_spectrum.wave, m)
 
@@ -313,7 +313,7 @@ ALPHA_CEN_A_METALICITY: float = 0.2
 ALPHA_CEN_A_SURFACE_GRAV: float = 4.0
 
 ALPHA_CEN_B_SURFACE_TEMP: float = 5260.0
-ALPHA_CEN_B_METALLICITY: float = 0.23
+ALPHA_CEN_B_METALICITY: float = 0.23
 ALPHA_CEN_B_SURFACE_GRAV: float = 4.37
 
 MASK_TOO_LARGE_ERR_MSG = """ 
