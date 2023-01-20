@@ -323,6 +323,9 @@ ALPHA_CEN_B_SURFACE_TEMP: float = 5260.0
 ALPHA_CEN_B_METALICITY: float = 0.23
 ALPHA_CEN_B_SURFACE_GRAV: float = 4.37
 
+FILTER_MIN_WAVELENGTH: float = 595.
+FILTER_MAX_WAVELENGTH: float = 695.
+
 MASK_TOO_LARGE_ERR_MSG = """ 
 The mask you have loaded had a higher resolution than the pupil. 
 A method of resolving this has not yet been created. Either 
