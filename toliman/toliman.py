@@ -324,8 +324,8 @@ ALPHA_CEN_B_SURFACE_TEMP: float = 5260.0
 ALPHA_CEN_B_METALICITY: float = 0.23
 ALPHA_CEN_B_SURFACE_GRAV: float = 4.37
 
-FILTER_MIN_WAVELENGTH: float = 595.
-FILTER_MAX_WAVELENGTH: float = 695.
+FILTER_MIN_WAVELENGTH: float = 595e-09
+FILTER_MAX_WAVELENGTH: float = 695e-09
 FILTER_DEFAULT_RES: int = 24
 
 BACKGROUND_DIR: str = "toliman/assets/background.csv"
@@ -1024,14 +1024,15 @@ class Background(dl.MultiPointSource):
 
         # TODO: Better error handling if BACKGROUND_DIR is not valid
         with open(BACKGROUND_DIR, "r") as background:
-            lines: list = background.readlines().remove(0)
+            lines: list = background.readlines()
+            _: str = lines.pop(0)
             strip: callable = lambda _str: _str.strip().split(",")
             str_to_float: callable = lambda _str: float(_str.strip())
             entries: list = jax.tree_map(strip, lines)
-            _background: float = jax.tree_map(str_to_float, entries)
+            _background: float = np.array(jax.tree_map(str_to_float, entries))
 
             if number_of_bg_stars:
-                _background: float = _background[:number_of_stars]
+                _background: float = _background[:number_of_bg_stars]
 
         position: float = _background[:, (0, 1)]
         flux: float = _background[:, 2]
