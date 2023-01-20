@@ -13,6 +13,7 @@ __all__ = [
     "Background",
     "_contains_instance",
     "_simulate_alpha_cen_spectra",
+    "_simulate_background_stars",
 ]
 
 
@@ -198,7 +199,7 @@ def _simulate_background_stars() -> None:
     bg_stars_flux_crop: float = bg_stars_flux[in_range]
     bg_stars_rel_flux_crop: float = bg_stars_flux_crop / alpha_cen_flux
 
-    with open("datasheets/bg_stars.csv", "w") as sheet:
+    with open("toliman/assets/background.csv", "w") as sheet:
         sheet.write("ra,dec,rel_flux\n")
         for row in np.arange(sample_len):
             sheet.write(f"{bg_stars_ra_crop[row]},")
@@ -325,6 +326,9 @@ ALPHA_CEN_B_SURFACE_GRAV: float = 4.37
 
 FILTER_MIN_WAVELENGTH: float = 595.
 FILTER_MAX_WAVELENGTH: float = 695.
+FILTER_DEFAULT_RES: int = 24
+
+BACKGROUND_DIR: str = "toliman/assets/background.csv"
 
 MASK_TOO_LARGE_ERR_MSG = """ 
 The mask you have loaded had a higher resolution than the pupil. 
@@ -1015,7 +1019,7 @@ class Background(dl.MultiPointSource):
                 wavelengths=np.linspace(
                     FILTER_MIN_WAVELENGTH, FILTER_MAX_WAVELENGTH, FILTER_DEFAULT_RES
                 ),
-                fluxes=np.ones((FILTER_DEFAULT_RES,), dtype=float),
+                weights=np.ones((FILTER_DEFAULT_RES,), dtype=float),
             )
 
         # TODO: Better error handling if BACKGROUND_DIR is not valid
@@ -1032,4 +1036,4 @@ class Background(dl.MultiPointSource):
         position: float = _background[:, (0, 1)]
         flux: float = _background[:, 2]
 
-        super().__init__(position=position, flux=flux, spectrum=spectrum)
+        super().__init__(position=position, weights=flux, spectrum=spectrum)
