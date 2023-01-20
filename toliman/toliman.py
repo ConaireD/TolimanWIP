@@ -124,17 +124,24 @@ def _simulate_alpha_cen_spectra(number_of_wavelenths: int = 25) -> None:
         ALPHA_CEN_B_SURFACE_GRAV,
     )
 
-    m: int = alpha_cen_a_spectrum.wave.size // number_of_wavelenths
+    template: float = np.zeros(108000, dtype=float)
 
-    alpha_cen_a_waves: float = _downsample_along_axis(alpha_cen_a_spectrum.wave, m)
+    alpha_cen_a_waves_full: float = template.at[:107998].set(alpha_cen_a_spectrum.wave)
+    alpha_cen_a_flux_full: float = template.at[:107998].set(alpha_cen_a_spectrum.flux)
+    alpha_cen_b_waves_full: float = template.at[:107998].set(alpha_cen_b_spectrum.wave)
+    alpha_cen_b_flux_full: float = template.at[:107998].set(alpha_cen_b_spectrum.flux)
 
-    alpha_cen_a_flux: float = _downsample_along_axis(alpha_cen_a_spectrum.flux, m)
+    m: int = 108000 // number_of_wavelenths
 
-    alpha_cen_b_waves: float = _downsample_along_axis(alpha_cen_b_spectrum.wave, m)
+    alpha_cen_a_waves: float = _downsample_along_axis(alpha_cen_a_waves_full, m)
 
-    alpha_cen_b_flux: float = _downsample_along_axis(alpha_cen_b_spectrum.flux, m)
+    alpha_cen_a_flux: float = _downsample_along_axis(alpha_cen_a_flux_full, m)
 
-    with open("assets/spectra.csv", "w") as spectra:
+    alpha_cen_b_waves: float = _downsample_along_axis(alpha_cen_b_waves_full, m)
+
+    alpha_cen_b_flux: float = _downsample_along_axis(alpha_cen_b_flux_full, m)
+
+    with open("toliman/assets/spectra.csv", "w") as spectra:
         spectra.write("alpha cen a waves (m), ")
         spectra.write("alpha cen a flux (W/m/m), ")
         spectra.write("alpha cen b waves (m), ")
