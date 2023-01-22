@@ -189,8 +189,8 @@ def _simulate_background_stars() -> None:
     bg_stars_dec: float = np.array(bg_stars.results["dec"]) - bg_dec
     bg_stars_flux: float = np.array(bg_stars.results["flux"])
 
-    ra_in_range: float = np.abs(bg_stars_ra - bg_ra) < bg_win
-    dec_in_range: float = np.abs(bg_stars_dec - bg_dec) < bg_win
+    ra_in_range: float = np.abs(bg_stars_ra) < bg_win
+    dec_in_range: float = np.abs(bg_stars_dec) < bg_win
     in_range: float = ra_in_range & dec_in_range
     sample_len: float = in_range.sum()
 
@@ -198,6 +198,8 @@ def _simulate_background_stars() -> None:
     bg_stars_dec_crop: float = bg_stars_dec[in_range]
     bg_stars_flux_crop: float = bg_stars_flux[in_range]
     bg_stars_rel_flux_crop: float = bg_stars_flux_crop / alpha_cen_flux
+
+    print(sample_len)
 
     with open("toliman/assets/background.csv", "w") as sheet:
         sheet.write("ra,dec,rel_flux\n")
@@ -1031,10 +1033,14 @@ class Background(dl.MultiPointSource):
             entries: list = jax.tree_map(strip, lines)
             _background: float = np.array(jax.tree_map(str_to_float, entries))
 
+            print(_background.shape)
+
             if number_of_bg_stars:
                 _background: float = _background[:number_of_bg_stars]
 
-        position: float = _background[:, (0, 1)]
+        position_x: float = _background[:, 0]
+        position_y: float = _background[:, 1]
+        position: float = np.stack([position_x, position_y])
         flux: float = _background[:, 2]
 
         super().__init__(position=position, weights=flux, spectrum=spectrum)
