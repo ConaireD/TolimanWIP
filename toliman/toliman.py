@@ -565,7 +565,7 @@ class TolimanOptics(dl.Optics, CollectionInterface):
                     raise NotImplementedError(MASK_TOO_LARGE_ERR_MSG)
                 if loaded_width % pixels_in_pupil == 0:
                     downsample_by: int = loaded_width // pixels_in_pupil
-                    mask: float = _downsample(loaded_mask, downsample_by)
+                    mask: float = _downsample_square_grid(loaded_mask, downsample_by)
                 else:
                     raise ValueError(MASK_SAMPLING_ERR_MSG)
             else:
