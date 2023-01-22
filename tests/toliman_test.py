@@ -98,6 +98,7 @@ class TestTolimanOptics(object):
         optics: list = toliman.to_optics_list()
         assert _contains_instance(optics, AddOPD)
 
+    @pytest.mark.software
     def test_constructor_when_mask_file_is_incorrect(self: object) -> None:
         # Incorrect file address error.
         # TODO: Make sure that this file does not exist
@@ -107,6 +108,7 @@ class TestTolimanOptics(object):
         with pytest.raises(ValueError):
             toliman: object = TolimanOptics(path_to_mask="i/don't/exist.npy")
 
+    @pytest.mark.software
     def test_constructor_when_aberrated(self: object) -> None:
         # Arrange/Act
         toliman: object = TolimanOptics(simulate_aberrations=True)
@@ -115,6 +117,7 @@ class TestTolimanOptics(object):
         # Assert
         assert _contains_instance(optics, StaticAberratedAperture)
 
+    @pytest.mark.software
     def test_constructor_when_not_aberrated(self: object) -> None:
         # Arrange/Act
         toliman: object = TolimanOptics(simulate_aberrations=False)
@@ -123,11 +126,13 @@ class TestTolimanOptics(object):
         # Assert
         assert not _contains_instance(optics, StaticAberratedAperture)
 
+    @pytest.mark.software
     def test_constructor_when_polish_is_simulated(self: object) -> None:
         # Arrange/Act/Assert
         with pytest.raises(NotImplementedError):
             toliman: object = TolimanOptics(simulate_polish=True)
 
+    @pytest.mark.software
     def test_constructor_when_polish_is_not_simulated(self: object) -> None:
         # Arrange/Act
         toliman: object = TolimanOptics(simulate_polish=False)
@@ -136,11 +141,13 @@ class TestTolimanOptics(object):
         # Assert
         assert not _contains_instance(optics, GeometricAberrations)
 
+    @pytest.mark.software
     def test_constructor_when_using_fresnel(self: object) -> None:
         # Operate in Fresnel mode
         with pytest.raises(NotImplementedError):
             toliman: object = TolimanOptics(operate_in_fresnel_mode=True)
 
+    @pytest.mark.software
     def test_constructor_when_not_using_fresnel(self: object) -> None:
         # Arrange/Act
         toliman: object = TolimanOptics(operate_in_fresnel_mode=False)
@@ -150,6 +157,7 @@ class TestTolimanOptics(object):
         # Assert
         assert not _contains_instance(optics, FresnelPropagator)
 
+    @pytest.mark.software
     def test_insert_when_type_is_incorrect(self: object) -> None:
         # Arrange
         toliman: object = TolimanOptics()
@@ -157,6 +165,7 @@ class TestTolimanOptics(object):
             # Act/Assert
             toliman.insert(0, 1)
 
+    @pytest.mark.software
     def test_insert_when_index_is_too_long(self: object) -> None:
         # Arrange
         toliman: object = TolimanOptics()
@@ -169,6 +178,7 @@ class TestTolimanOptics(object):
         with pytest.raises(ValueError):
             toliman.insert(wrong_index, element_to_insert)
 
+    @pytest.mark.software
     def test_insert_when_index_is_negative(self: object) -> None:
         # Arrange
         toliman: object = TolimanOptics()
@@ -178,6 +188,7 @@ class TestTolimanOptics(object):
         with pytest.raises(ValueError):
             toliman.insert(-1, element_to_insert)
 
+    @pytest.mark.software
     def test_insert_when_correct(self: object) -> None:
         # Arrange
         toliman: object = TolimanOptics()
@@ -192,6 +203,7 @@ class TestTolimanOptics(object):
         new_optics: list = toliman.to_optics_list()
         assert _contains_instance(new_optics, HexagonalAperture)
 
+    @pytest.mark.software
     def test_remove_when_index_is_too_long(self: object) -> None:
         # Arrange
         toliman: object = TolimanOptics()
@@ -203,6 +215,7 @@ class TestTolimanOptics(object):
         with pytest.raises(ValueError):
             toliman.remove(wrong_index)
 
+    @pytest.mark.software
     def test_remove_when_index_is_negative(self: object) -> None:
         # Arrange
         toliman: object = TolimanOptics()
@@ -211,6 +224,7 @@ class TestTolimanOptics(object):
         with pytest.raises(ValueError):
             toliman.remove(-1)
 
+    @pytest.mark.software
     def test_remove_when_correct(self: object) -> None:
         # Arrange
         toliman: object = TolimanOptics()
@@ -223,6 +237,7 @@ class TestTolimanOptics(object):
         # Assert
         assert not _contains_instance(new_optics, CreateWavefront)
 
+    @pytest.mark.software
     def test_append_when_type_is_incorrect(self: object) -> None:
         # Arrange
         toliman: object = TolimanOptics()
@@ -231,6 +246,7 @@ class TestTolimanOptics(object):
         with pytest.raises(ValueError):
             toliman.append(1)
 
+    @pytest.mark.software
     def test_append_when_correct(self: object) -> None:
         # Arrange
         toliman: object = TolimanOptics()
@@ -243,6 +259,7 @@ class TestTolimanOptics(object):
         # Assert
         assert _contains_instance(optics, CircularAperture)
 
+    @pytest.mark.software
     def test_pop_removes_element(self: object) -> None:
         # Arrange
         toliman: object = TolimanOptics()
@@ -257,6 +274,7 @@ class TestTolimanOptics(object):
 
 
 class TestTolimanDetector(object):
+    @pytest.mark.software
     def test_constructor_when_jittered(self: object) -> None:
         # Arrange/Act
         detector: object = TolimanDetector(simulate_jitter=True)
@@ -265,6 +283,7 @@ class TestTolimanDetector(object):
         # Assert
         assert _contains_instance(optics, ApplyJitter)
 
+    @pytest.mark.software
     def test_constructor_when_not_jittered(self: object) -> None:
         # Arrange/Act
         detector: object = TolimanDetector(simulate_jitter=False)
@@ -273,6 +292,7 @@ class TestTolimanDetector(object):
         # Assert
         assert not _contains_instance(optics, ApplyJitter)
 
+    @pytest.mark.software
     def test_constructor_when_jitter_is_repeated(self: object) -> None:
         # Arrange
         jitter: object = ApplyJitter(2.0)
@@ -283,6 +303,7 @@ class TestTolimanDetector(object):
                 simulate_jitter=True, extra_detector_layers=[jitter]
             )
 
+    @pytest.mark.software
     def test_constructor_when_saturated(self: object) -> None:
         # Arrange/Act
         detector: object = TolimanDetector(simulate_saturation=True)
@@ -291,6 +312,7 @@ class TestTolimanDetector(object):
         # Assert
         assert _contains_instance(optics, ApplySaturation)
 
+    @pytest.mark.software
     def test_constructor_when_not_saturated(self: object) -> None:
         # Arrange/Act
         detector: object = TolimanDetector(simulate_saturation=False)
@@ -299,6 +321,7 @@ class TestTolimanDetector(object):
         # Assert
         assert not _contains_instance(optics, ApplySaturation)
 
+    @pytest.mark.software
     def test_constructor_when_saturation_is_repeated(self: object) -> None:
         # Arrange
         saturation: object = ApplySaturation(2)
@@ -309,6 +332,7 @@ class TestTolimanDetector(object):
                 simulate_saturation=True, extra_detector_layers=[saturation]
             )
 
+    @pytest.mark.software
     def test_constructor_when_pixels_respond(self: object) -> None:
         # Arrange/Act
         detector: object = TolimanDetector(simulate_pixel_response=True)
@@ -317,6 +341,7 @@ class TestTolimanDetector(object):
         # Assert
         assert _contains_instance(optics, ApplyPixelResponse)
 
+    @pytest.mark.software
     def test_constructor_when_pixels_dont_respond(self: object) -> None:
         # Arrange/Act
         detector: object = TolimanDetector(simulate_pixel_response=False)
@@ -325,6 +350,7 @@ class TestTolimanDetector(object):
         # Assert
         assert not _contains_instance(optics, ApplyPixelResponse)
 
+    @pytest.mark.software
     def test_constructor_when_pixel_response_is_repeated(self: object) -> None:
         # Arrange
         pixel_response: object = ApplySaturation(2)
@@ -335,6 +361,7 @@ class TestTolimanDetector(object):
                 simulate_pixel_response=True, extra_detector_layers=[pixel_response]
             )
 
+    @pytest.mark.software
     def test_constructor_when_correct(self: object) -> None:
         # Arrange/Act
         detector: object = TolimanDetector()
@@ -345,6 +372,7 @@ class TestTolimanDetector(object):
         assert _contains_instance(optics, ApplySaturation)
         assert _contains_instance(optics, ApplyPixelResponse)
 
+    @pytest.mark.software
     def test_constructor_when_empty(self: object) -> None:
         # Arrange/Act/Assert
         with pytest.raises(ValueError):
@@ -354,6 +382,7 @@ class TestTolimanDetector(object):
                 simulate_pixel_response=False,
             )
 
+    @pytest.mark.software
     def test_insert_when_type_is_incorrect(self: object) -> None:
         # Arrange
         detector: object = TolimanDetector()
@@ -362,6 +391,7 @@ class TestTolimanDetector(object):
         with pytest.raises(ValueError):
             detector.insert(0, 1)
 
+    @pytest.mark.software
     def test_insert_when_index_is_too_long(self: object) -> None:
         # Arrange
         detector: object = TolimanDetector()
@@ -374,6 +404,7 @@ class TestTolimanDetector(object):
         with pytest.raises(ValueError):
             detector.insert(too_long, element_to_insert)
 
+    @pytest.mark.software
     def test_insert_when_index_is_negative(self: object) -> None:
         # Arrange
         detector: object = TolimanDetector()
@@ -383,6 +414,7 @@ class TestTolimanDetector(object):
         with pytest.raises(ValueError):
             detector.insert(-1, element_to_insert)
 
+    @pytest.mark.software
     def test_insert_when_correct(self: object) -> None:
         # Arrange
         detector: object = TolimanDetector()
@@ -395,6 +427,7 @@ class TestTolimanDetector(object):
         # Assert
         assert _contains_instance(optics, AddConstant)
 
+    @pytest.mark.software
     def test_remove_when_index_is_too_long(self: object) -> None:
         # Arrange
         detector: object = TolimanDetector()
@@ -406,6 +439,7 @@ class TestTolimanDetector(object):
         with pytest.raises(ValueError):
             detector.remove(too_long)
 
+    @pytest.mark.software
     def test_remove_when_index_is_negative(self: object) -> None:
         # Arrange
         detector: object = TolimanDetector()
@@ -414,6 +448,7 @@ class TestTolimanDetector(object):
         with pytest.raises(ValueError):
             detector.remove(-1)
 
+    @pytest.mark.software
     def test_remove_when_correct(self: object) -> None:
         # Arrange
         detector: object = TolimanDetector()
@@ -425,6 +460,7 @@ class TestTolimanDetector(object):
         # Assert
         assert not _contains_instance(optics, ApplyJitter)
 
+    @pytest.mark.software
     def test_append_when_type_is_incorrect(self: object) -> None:
         # Arrange
         detector: object = TolimanDetector()
@@ -433,6 +469,7 @@ class TestTolimanDetector(object):
         with pytest.raises(ValueError):
             detector.append(1)
 
+    @pytest.mark.software
     def test_append_when_correct(self: object) -> None:
         # Arrange
         detector: object = TolimanDetector()
@@ -445,6 +482,7 @@ class TestTolimanDetector(object):
         # Assert
         assert _contains_instance(new_optics, AddConstant)
 
+    @pytest.mark.software
     def test_pop_when_correct(self: object) -> None:
         # Arrange
         detector: object = TolimanDetector()
@@ -460,6 +498,7 @@ class TestTolimanDetector(object):
 
 
 class TestAlphaCentauri(object):
+    @pytest.mark.software
     def test_constructor_when_not_given_spectrum(self: object) -> None:
         # Arrange
         alpha_centauri: object = AlphaCentauri()
@@ -470,6 +509,7 @@ class TestAlphaCentauri(object):
 
 # TODO: Make sure that the stars are correctly thinned randomly.
 class TestBackground(object):
+    @pytest.mark.software
     def test_constructor_when_all_used(self: object) -> None:
         # Arrange/Act
         background: object = Background()
@@ -477,6 +517,7 @@ class TestBackground(object):
         # Assert
         assert background.fluxes.size > 10
 
+    @pytest.mark.software
     def test_constructor_when_thinned(self: object) -> None:
         # Arrange/Act
         background: object = Background(number_of_bg_stars=10)
