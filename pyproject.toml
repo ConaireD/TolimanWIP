@@ -47,8 +47,8 @@ black = "^22.12.0"
 
 [tool.pytest.ini_options]
 markers = [
-    software = "mark tests as error catching.",
-    physical = "mark tests as checking correctness."
+    "software: mark tests as error catching.",
+    "physical: mark tests as checking correctness."
 ]
 
 

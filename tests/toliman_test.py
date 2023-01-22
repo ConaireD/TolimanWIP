@@ -47,6 +47,7 @@ class FresnelPropagator(object):
 
 
 class TestTolimanOptics(object):
+    @pytest.mark.software
     def test_constructor_when_static(self: object) -> None:
         # Arrange/Act
         static_toliman: object = TolimanOptics(operate_in_static_mode=True)
@@ -55,6 +56,7 @@ class TestTolimanOptics(object):
         optics: list = static_toliman.to_optics_list()
         assert _contains_instance(optics, StaticAperture)
 
+    @pytest.mark.software
     def test_constructor_when_not_static(self: object) -> None:
         # Arrange/Act
         dynamic_toliman: object = TolimanOptics(operate_in_static_mode=False)
@@ -63,16 +65,19 @@ class TestTolimanOptics(object):
         optics: list = dynamic_toliman.to_optics_list()
         assert not _contains_instance(optics, StaticAperture)
 
+    @pytest.mark.software
     def test_constructor_when_mask_too_large(self: object) -> None:
         with pytest.raises(NotImplementedError):
             # Arrange/Act/Assert
             toliman: object = TolimanOptics(pixels_in_pupil=2048)
 
+    @pytest.mark.software
     def test_constructor_when_mask_incorrectly_sampled(self: object) -> None:
         # Arrange/Act/Assert
         with pytest.raises(ValueError):
             toliman: object = TolimanOptics(pixels_in_pupil=125)
 
+    @pytest.mark.software
     def test_constructor_when_mask_is_correct(self: object) -> None:
         # Arrange/Act
         toliman: object = TolimanOptics(pixels_in_pupil=256)
@@ -81,6 +86,7 @@ class TestTolimanOptics(object):
         optics: list = toliman.to_optics_list()
         assert _contains_instance(optics, AddOPD)
 
+    @pytest.mark.software
     def test_constructor_when_mask_is_correct_at_max(self: object) -> None:
         # TODO: Load the mask to get the correct size
         mask: float = np.load("/home/jordan/Documents/toliman/toliman/assets/mask.npy")
