@@ -515,7 +515,7 @@ class TestBackground(object):
         background: object = Background()
 
         # Assert
-        assert background.fluxes.size > 10
+        assert background.flux.size > 10
 
     @pytest.mark.software
     def test_constructor_when_thinned(self: object) -> None:
@@ -523,4 +523,4 @@ class TestBackground(object):
         background: object = Background(number_of_bg_stars=10)
 
         # Assert
-        assert background.fluxes.size == 10
+        assert background.flux.size == 10

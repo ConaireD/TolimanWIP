@@ -1038,9 +1038,7 @@ class Background(dl.MultiPointSource):
             if number_of_bg_stars:
                 _background: float = _background[:number_of_bg_stars]
 
-        position_x: float = _background[:, 0]
-        position_y: float = _background[:, 1]
-        position: float = np.stack([position_x, position_y])
+        position: float = _background[:, (0, 1)]
         flux: float = _background[:, 2]
 
-        super().__init__(position=position, weights=flux, spectrum=spectrum)
+        super().__init__(position=position, flux=flux, spectrum=spectrum)
