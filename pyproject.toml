@@ -45,6 +45,13 @@ pydocstyle = "^6.3.0"
 black = "^22.12.0"
 
 
+[tool.pytest.ini_options]
+markers = [
+    software = "mark tests as error catching.",
+    physical = "mark tests as checking correctness."
+]
+
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
