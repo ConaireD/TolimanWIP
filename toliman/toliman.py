@@ -17,6 +17,23 @@ __all__ = [
 ]
 
 def _read_csv_to_jax_array(_file_name: str) -> float:
+    """
+    Read a CSV using `jax`.
+
+    This is a private function and following convention it assumes that the 
+    file exists. There is no error checking!
+
+    Parameters
+    ----------
+    _file_name: str
+        The name of the file to read.
+
+    Returns
+    -------
+    arr: float
+        The information in the CSV. The headings are not returned and so it 
+        is up to you to keep track of what each column is.
+    """
     with open(_file_name, "r") as file:
         lines: list = file.readlines()
         _: str = lines.pop(0)
