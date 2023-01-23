@@ -980,16 +980,7 @@ class AlphaCentauri(dl.BinarySource):
             can be used to simulate the spectrum.
         """
         if not spectrum:
-            with open(SPECTRUM_DIR, "r") as spectrum:
-                lines: list = spectrum.readlines()
-                _: str = lines.pop(0)
-
-                strip: callable = lambda _str: _str.strip().split(",")
-                str_to_float: callable = lambda _str: float(_str.strip())
-                entries: list = jax.tree_map(strip, lines)
-                _spectrum: float = jax.tree_map(str_to_float, entries)
-
-            _spectrum: float = np.array(_spectrum)
+            _spectrum: float = _read_csv_to_jax_array(SPECTRUM_DIR) 
 
             alpha_cen_a_waves: float = _spectrum[:, 0]
             alpha_cen_b_waves: float = _spectrum[:, 2]
@@ -1052,18 +1043,10 @@ class Background(dl.MultiPointSource):
             )
 
         # TODO: Better error handling if BACKGROUND_DIR is not valid
-        with open(BACKGROUND_DIR, "r") as background:
-            lines: list = background.readlines()
-            _: str = lines.pop(0)
-            strip: callable = lambda _str: _str.strip().split(",")
-            str_to_float: callable = lambda _str: float(_str.strip())
-            entries: list = jax.tree_map(strip, lines)
-            _background: float = np.array(jax.tree_map(str_to_float, entries))
+        _background: float = _read_csv_to_jax_array(BACKGROUND_DIR)
 
-            print(_background.shape)
-
-            if number_of_bg_stars:
-                _background: float = _background[:number_of_bg_stars]
+        if number_of_bg_stars:
+            _background: float = _background[:number_of_bg_stars]
 
         position: float = _background[:, (0, 1)]
         flux: float = _background[:, 2]
