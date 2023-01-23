@@ -1,55 +1,25 @@
-"""md
-
-## Overview
-This will be an overview with some deatiled end to end examples.
-
-::: toliman.TolimanOptics
-    handler: python
-    options:
-        docstring_style: numpy
-        show_source: False
-        merge_init_into_class: True
-        inherited_members: True
-
-::: toliman.TolimanDetector
-    handler: python
-    options:
-        docstring_style: numpy
-        show_source: False
-        merge_init_into_class: True
-        inherited_members: True
-
-::: toliman.AlphaCentauri
-    handler: python
-    options:
-        docstring_style: numpy
-        show_source: False
-        merge_init_into_class: True
-        inherited_members: True
-
-::: toliman.Background
-    handler: python 
-    options:
-        docstring_style: numpy
-        show_source: False
-        merge_init_into_class: True
-        inherited_members: True
-
-"""
 import jax.numpy as np
 import jax
 import dLux as dl
 import equinox as eqx
 import abc
+import os
 
 __author__ = "Jordan Dennis"
-__all__ = ["TolimanDetector", "TolimanOptics", "AlphaCentauri", "Background", "_contains_instance"]
+__all__ = [
+    "TolimanDetector",
+    "TolimanOptics",
+    "AlphaCentauri",
+    "Background",
+    "_contains_instance",
+    "_simulate_alpha_cen_spectra",
+    "_simulate_background_stars",
+]
 
 
 def _contains_instance(_list: list, _type: type) -> bool:
     """
-    Check to see if a list constains an element of a certain
-    type.
+    Check to see if a list constains an element of a certain type.
 
     Parameters
     ----------
@@ -72,7 +42,7 @@ def _contains_instance(_list: list, _type: type) -> bool:
 
 def _downsample_square_grid(arr: float, m: int) -> float:
     """
-    Resample a square array by a factor of `m`. `
+    Resample a square array by a factor of `m`.
 
     Parameters
     ----------
@@ -128,8 +98,9 @@ def _downsample_along_axis(arr: float, m: int, axis: int = 0) -> float:
 
 def _simulate_alpha_cen_spectra(number_of_wavelenths: int = 25) -> None:
     """
-    This function will simulate the spectrum of the alpha centauri
-    binary using `pysynphot`. The output is saved to a file so that
+    Simulate the spectrum of the alpha centauri binary using `pysynphot`.
+
+    The output is saved to a file so that
     it can be used again later without having to be reloaded.
 
     Parameters
@@ -154,35 +125,43 @@ def _simulate_alpha_cen_spectra(number_of_wavelenths: int = 25) -> None:
         ALPHA_CEN_B_SURFACE_GRAV,
     )
 
-    m: int = alpha_cen_a_waves.size // number_of_wavelenths
+    template: float = np.zeros(108000, dtype=float)
 
-    alpha_cen_a_waves: float = _downsample_along_axis(alpha_cen_a_spectrum.wave, m)
+    alpha_cen_a_waves_full: float = template.at[:107998].set(alpha_cen_a_spectrum.wave)
+    alpha_cen_a_flux_full: float = template.at[:107998].set(alpha_cen_a_spectrum.flux)
+    alpha_cen_b_waves_full: float = template.at[:107998].set(alpha_cen_b_spectrum.wave)
+    alpha_cen_b_flux_full: float = template.at[:107998].set(alpha_cen_b_spectrum.flux)
 
-    alpha_cen_a_flux: float = _downsample_along_axis(alpha_cen_a_spectrum.flux, m)
+    m: int = 108000 // number_of_wavelenths
 
-    alpha_cen_b_waves: float = _downsample_along_axis(alpha_cen_b_spectrum.wave, m)
+    alpha_cen_a_waves: float = _downsample_along_axis(alpha_cen_a_waves_full, m)
 
-    alpha_cen_b_flux: float = _downsample_along_axis(alpha_cen_b_spectrum.flux, m)
+    alpha_cen_a_flux: float = _downsample_along_axis(alpha_cen_a_flux_full, m)
 
-    with open("assets/spectra.csv", "w") as spectra:
+    alpha_cen_b_waves: float = _downsample_along_axis(alpha_cen_b_waves_full, m)
+
+    alpha_cen_b_flux: float = _downsample_along_axis(alpha_cen_b_flux_full, m)
+
+    with open("toliman/assets/spectra.csv", "w") as spectra:
         spectra.write("alpha cen a waves (m), ")
         spectra.write("alpha cen a flux (W/m/m), ")
         spectra.write("alpha cen b waves (m), ")
         spectra.write("alpha cen b flux (W/m/m)\n")
 
         for i in np.arange(number_of_wavelenths, dtype=int):
-            spectra.write("%f, ".format(alpha_cen_a_waves[i]))
-            spectra.write("%f, ".format(alpha_cen_a_flux[i]))
-            spectra.write("%f, ".format(alpha_cen_b_waves[i]))
-            spectra.write("%f\n".format(alpha_cen_b_flux[i]))
+            spectra.write("{}, ".format(alpha_cen_a_waves[i]))
+            spectra.write("{}, ".format(alpha_cen_a_flux[i]))
+            spectra.write("{}, ".format(alpha_cen_b_waves[i]))
+            spectra.write("{}\n".format(alpha_cen_b_flux[i]))
 
 
 # TODO: Add arguments
 # TODO: optimise
 def _simulate_background_stars() -> None:
     """
-    This function samples the Gaia database for a typical sample
-    of background stars. The primary use of this function is to
+    Sample the Gaia database for typical background stars.
+
+    The primary use of this function is to
     build a sample that can be used to look for biases.
     """
     from astroquery.gaia import Gaia
@@ -210,8 +189,8 @@ def _simulate_background_stars() -> None:
     bg_stars_dec: float = np.array(bg_stars.results["dec"]) - bg_dec
     bg_stars_flux: float = np.array(bg_stars.results["flux"])
 
-    ra_in_range: float = np.abs(bg_stars_ra - bg_ra) < bg_win
-    dec_in_range: float = np.abs(bg_stars_dec - bg_dec) < bg_win
+    ra_in_range: float = np.abs(bg_stars_ra) < bg_win
+    dec_in_range: float = np.abs(bg_stars_dec) < bg_win
     in_range: float = ra_in_range & dec_in_range
     sample_len: float = in_range.sum()
 
@@ -220,7 +199,9 @@ def _simulate_background_stars() -> None:
     bg_stars_flux_crop: float = bg_stars_flux[in_range]
     bg_stars_rel_flux_crop: float = bg_stars_flux_crop / alpha_cen_flux
 
-    with open("datasheets/bg_stars.csv", "w") as sheet:
+    print(sample_len)
+
+    with open("toliman/assets/background.csv", "w") as sheet:
         sheet.write("ra,dec,rel_flux\n")
         for row in np.arange(sample_len):
             sheet.write(f"{bg_stars_ra_crop[row]},")
@@ -253,7 +234,7 @@ def _simulate_data(model: object, scale: float) -> float:
 
 def pixel_response(shape: float, threshold: float, seed: int = 1) -> float:
     """
-    A convinience wrapper for generating a pixel reponse array.
+    Simulate pixel reponses.
 
     Parameters
     ----------
@@ -275,7 +256,7 @@ def pixel_response(shape: float, threshold: float, seed: int = 1) -> float:
 
 def photon_noise(psf: float, seed: int = 0) -> float:
     """
-    A convinience wrapper for generating photon noise.
+    Simulate photon noise.
 
     Parameters
     ----------
@@ -318,10 +299,12 @@ def latent_detector_noise(scale: float, shape: float, seed: int = 0) -> float:
 DEFAULT_PUPIL_NPIX: int = 256
 DEFAULT_DETECTOR_NPIX: int = 128
 DEFAULT_NUMBER_OF_ZERNIKES: int = 5
+DEFAULT_MASK_DIR: str = "/home/jordan/Documents/toliman/toliman/assets/mask.npy"
+SPECTRUM_DIR: str = "/home/jordan/Documents/toliman/toliman/assets/spectra.csv"
 
 TOLIMAN_PRIMARY_APERTURE_DIAMETER: float = 0.13
 TOLIMAN_SECONDARY_MIRROR_DIAMETER: float = 0.032
-TOLIMAN_DETECTOR_PIXEL_SIZE: float = 0.375
+TOLIMAN_DETECTOR_PIXEL_SIZE: float = dl.utils.arcseconds_to_radians(0.375)
 TOLIMAN_WIDTH_OF_STRUTS: float = 0.01
 TOLIMAN_NUMBER_OF_STRUTS: int = 3
 
@@ -340,8 +323,14 @@ ALPHA_CEN_A_METALICITY: float = 0.2
 ALPHA_CEN_A_SURFACE_GRAV: float = 4.0
 
 ALPHA_CEN_B_SURFACE_TEMP: float = 5260.0
-ALPHA_CEN_B_METALLICITY: float = 0.23
+ALPHA_CEN_B_METALICITY: float = 0.23
 ALPHA_CEN_B_SURFACE_GRAV: float = 4.37
+
+FILTER_MIN_WAVELENGTH: float = 595e-09
+FILTER_MAX_WAVELENGTH: float = 695e-09
+FILTER_DEFAULT_RES: int = 24
+
+BACKGROUND_DIR: str = "toliman/assets/background.csv"
 
 MASK_TOO_LARGE_ERR_MSG = """ 
 The mask you have loaded had a higher resolution than the pupil. 
@@ -393,7 +382,7 @@ class CollectionInterface(abc.ABC):
     @abc.abstractmethod
     def to_optics_list(self: object) -> list:
         """
-        Get the optical elements that make up the object as a list. 
+        Get the optical elements that make up the object as a list.
 
         Returns
         -------
@@ -418,11 +407,6 @@ class CollectionInterface(abc.ABC):
         toliman: TolimanOptics
             A new `TolimanOptics` instance with the applied update.
         """
-        if not isinstance(optic, dl.OpticalLayer):
-            raise ValueError("Inserted optics must be optical layers.")
-
-        new_layers: list = self.layers.copy().insert(index, optic)
-        return eqx.tree_at(lambda x: x.layers, self, new_layers)
 
     @abc.abstractmethod
     def remove(self: object, index: int) -> object:
@@ -439,11 +423,6 @@ class CollectionInterface(abc.ABC):
         toliman: TolimanOptics
             A new `TolimanOptics` instance with the applied update.
         """
-        if not isinstance(optic, dl.OpticalLayer):
-            raise ValueError("Inserted optics must be optical layers.")
-
-        new_layers: list = self.layers.copy().remove(optic)
-        return eqx.tree_at(lambda x: x.layers, self, new_layers)
 
     @abc.abstractmethod
     def append(self: object, optic: object) -> object:
@@ -453,7 +432,7 @@ class CollectionInterface(abc.ABC):
         Parameters
         ----------
         optic: object
-            The optic to include. It must be a subclass of the 
+            The optic to include. It must be a subclass of the
             `dLux.OpticalLayer`.
 
         Returns
@@ -462,14 +441,28 @@ class CollectionInterface(abc.ABC):
             The new optical system.
         """
 
+    @abc.abstractmethod
+    def pop(self: object) -> object:
+        """
+        Remove the last element in the optical system.
+
+        Please note that this differs from the `.pop` method of the
+        `list` class because it does not return the popped element.
+
+        Returns
+        -------
+        optics: object
+            The optical system with the layer removed.
+        """
+
+
 # TODO: I need to work out how to do the regularisation internally so
 #       that the values which are returned are always correct.
-class TolimanOptics(dl.Optics, ExtendableModule):
+class TolimanOptics(dl.Optics, CollectionInterface):
     """
-    TolimanOptics
-    -------------
-    Simulates the optical system of the TOLIMAN telescope. It is
-    designed to occupy the `optics` kwarg of `dl.Instrument`.
+    Simulates the optical system of the TOLIMAN telescope.
+
+    It is designed to occupy the `optics` kwarg of `dl.Instrument`.
     The `TolimanOptics` provides a default implementation that
     can be extended using the `.add` method. There are also
     several ways that the `TolimanOptics` can be initialised.
@@ -487,18 +480,20 @@ class TolimanOptics(dl.Optics, ExtendableModule):
 
     def __init__(
         self: object,
-        simulate_polish: bool = True,
+        simulate_polish: bool = False,
         simulate_aberrations: bool = True,
         operate_in_fresnel_mode: bool = False,
         operate_in_static_mode: bool = True,
         number_of_zernikes: int = DEFAULT_NUMBER_OF_ZERNIKES,
         pixels_in_pupil: int = DEFAULT_PUPIL_NPIX,
         pixels_on_detector: int = DEFAULT_DETECTOR_NPIX,
-        path_to_mask: str = "assets/mask.npy",
+        path_to_mask: str = DEFAULT_MASK_DIR,
         path_to_filter: str = "assets/filter.npy",
         path_to_polish: str = "assets/polish.npy",
     ) -> object:
         """
+        Simulate the Toliman telescope.
+
         Parameters
         ----------
         simulate_polish: bool = True
@@ -553,7 +548,7 @@ class TolimanOptics(dl.Optics, ExtendableModule):
             static_toliman_pupil: object = dl.StaticAperture(
                 dyn_toliman_pupil,
                 npixels=pixels_in_pupil,
-                pixel_scale=TOLIMAN_PRIMARY_APERTURE_DIAMETER / pixels_in_pupil,
+                diameter=TOLIMAN_PRIMARY_APERTURE_DIAMETER,
             )
 
             toliman_layers.append(static_toliman_pupil)
@@ -572,7 +567,7 @@ class TolimanOptics(dl.Optics, ExtendableModule):
                     raise NotImplementedError(MASK_TOO_LARGE_ERR_MSG)
                 if loaded_width % pixels_in_pupil == 0:
                     downsample_by: int = loaded_width // pixels_in_pupil
-                    mask: float = _downsample(loaded_mask, downsample_by)
+                    mask: float = _downsample_square_grid(loaded_mask, downsample_by)
                 else:
                     raise ValueError(MASK_SAMPLING_ERR_MSG)
             else:
@@ -584,7 +579,7 @@ class TolimanOptics(dl.Optics, ExtendableModule):
         except IOError as ioe:
             raise ValueError(MASK_IMPORT_ERR_MSG)
 
-        toliman_model.append(dl.AddOPD(mask))
+        toliman_layers.append(dl.AddOPD(mask))
 
         # Generating the Zernikes
         # TODO: Make zernike_coefficients a function
@@ -595,13 +590,14 @@ class TolimanOptics(dl.Optics, ExtendableModule):
 
             toliman_aberrations: object = dl.StaticAberratedAperture(
                 dl.AberratedAperture(
-                    nolls,
-                    coeffs,
-                    dl.CircularAperture(TOLIMAN_PRIMARY_APERTURE_DIAMETER / 2.0),
+                    noll_inds=nolls,
+                    coefficients=coeffs,
+                    aperture=dl.CircularAperture(
+                        TOLIMAN_PRIMARY_APERTURE_DIAMETER / 2.0
+                    ),
                 ),
-                coefficients=coeffs,
                 npixels=pixels_in_pupil,
-                pixel_scale=TOLIMAN_PRIMARY_APERTURE_DIAMETER / pixels_in_pupil,
+                diameter=TOLIMAN_PRIMARY_APERTURE_DIAMETER,
             )
 
             toliman_layers.append(toliman_aberrations)
@@ -615,7 +611,7 @@ class TolimanOptics(dl.Optics, ExtendableModule):
         toliman_body: object
         if not operate_in_fresnel_mode:
             toliman_body: object = dl.AngularMFT(
-                detector_npix, dl.utils.arcseconds_to_radians(pixels_in_detector)
+                pixels_on_detector, TOLIMAN_DETECTOR_PIXEL_SIZE
             )
         else:
             raise NotImplementedError(FRESNEL_USE_ERR_MSG)
@@ -627,11 +623,128 @@ class TolimanOptics(dl.Optics, ExtendableModule):
 
         super().__init__(layers=toliman_layers)
 
+    def to_optics_list(self: object) -> list:
+        """
+        Get the optical elements that make up the object as a list.
 
-class TolimanDetector(dl.Detector, ExtendableModule):
+        Returns
+        -------
+        optics: list
+            The optical layers in order in a list.
+        """
+        return list(self.layers.values())
+
+    def insert(self: object, optic: object, index: int) -> object:
+        """
+        Add an additional layer to the optical system.
+
+        Parameters
+        ----------
+        optic: object
+            A `dLux.OpticalLayer` to include in the model.
+        index: int
+            Where in the list of layers to add optic.
+
+        Returns
+        -------
+        toliman: TolimanOptics
+            A new `TolimanOptics` instance with the applied update.
+        """
+        correct_type: bool = False
+        if isinstance(optic, dl.optics.OpticalLayer):
+            correct_type: bool = True
+        elif isinstance(optic, dl.apertures.ApertureLayer):
+            correct_type: bool = True
+
+        if not correct_type:
+            raise ValueError("Inserted optics must be optical layers.")
+
+        if index < 0:
+            raise ValueError("`index` must be positive.")
+
+        new_layers: list = self.to_optics_list()
+        _: None = new_layers.insert(index, optic)
+        dl_new_layers: dict = dl.utils.list_to_dictionary(new_layers)
+        return eqx.tree_at(lambda x: x.layers, self, dl_new_layers)
+
+    def remove(self: object, index: int) -> object:
+        """
+        Take a layer from the optical system.
+
+        Parameters
+        ----------
+        index: int
+            Where in the list of layers to remove an optic.
+
+        Returns
+        -------
+        toliman: TolimanOptics
+            A new `TolimanOptics` instance with the applied update.
+        """
+        if index < 0:
+            raise ValueError("`index` must be positive.")
+
+        new_layers: list = self.to_optics_list()
+        length: int = len(new_layers)
+
+        if index > length:
+            raise ValueError("`index` must be within the optical system.")
+
+        _: None = new_layers.pop(index)
+        dl_new_layers: dict = dl.utils.list_to_dictionary(new_layers)
+        return eqx.tree_at(lambda x: x.layers, self, dl_new_layers)
+
+    def append(self: object, optic: object) -> object:
+        """
+        Place a new optic at the end of the optical system.
+
+        Parameters
+        ----------
+        optic: object
+            The optic to include. It must be a subclass of the
+            `dLux.OpticalLayer`.
+
+        Returns
+        -------
+        optics: object
+            The new optical system.
+        """
+        correct_type: bool = False
+        if isinstance(optic, dl.optics.OpticalLayer):
+            correct_type: bool = True
+        elif isinstance(optic, dl.apertures.ApertureLayer):
+            correct_type: bool = True
+
+        if not correct_type:
+            raise ValueError("Inserted optics must be optical layers.")
+
+        new_layers: list = self.to_optics_list()
+        _: None = new_layers.append(optic)
+        dl_new_layers: dict = dl.utils.list_to_dictionary(new_layers)
+        return eqx.tree_at(lambda x: x.layers, self, dl_new_layers)
+
+    def pop(self: object) -> object:
+        """
+        Remove the last element in the optical system.
+
+        Please note that this differs from the `.pop` method of
+        the `list` class  because it does not return the popped element.
+
+        Returns
+        -------
+        optics: object
+            The optical system with the layer removed.
+        """
+        new_layers: list = self.to_optics_list()
+        _: object = new_layers.pop()
+        dl_new_layers: dict = dl.utils.list_to_dictionary(new_layers)
+        return eqx.tree_at(lambda x: x.layers, self, dl_new_layers)
+
+
+class TolimanDetector(dl.Detector, CollectionInterface):
     """
-    TolimanDetector
-    ---------------
+    Represents the Toliman detector.
+
     A default implementation of a generic detector that is designed
     to be used with the `dLux.Instrument`.
 
@@ -651,6 +764,8 @@ class TolimanDetector(dl.Detector, ExtendableModule):
         extra_detector_layers: list = [],
     ) -> object:
         """
+        Simulate the Toliman detector.
+
         Parameters
         ----------
         simulate_jitter: bool = True
@@ -677,7 +792,7 @@ class TolimanDetector(dl.Detector, ExtendableModule):
         if simulate_saturation:
             detector_layers.append(dl.ApplySaturation(DEFAULT_DETECTOR_SATURATION))
 
-            if _contains_instance(detector_layers, dl.ApplySaturation):
+            if _contains_instance(extra_detector_layers, dl.ApplySaturation):
                 raise ValueError(DETECTOR_REPEATED_ERR_MSG)
 
         if simulate_pixel_response:
@@ -690,7 +805,7 @@ class TolimanDetector(dl.Detector, ExtendableModule):
                 )
             )
 
-            if _contains_instance(detector_layers, dl.ApplyPixelResponse):
+            if _contains_instance(extra_detector_layers, dl.ApplyPixelResponse):
                 raise ValueError(DETECTOR_REPEATED_ERR_MSG)
 
         detector_layers.extend(extra_detector_layers)
@@ -700,11 +815,119 @@ class TolimanDetector(dl.Detector, ExtendableModule):
         else:
             raise ValueError(DETECTOR_EMPTY_ERR_MSG)
 
+    def to_optics_list(self: object) -> list:
+        """
+        Get the optical elements that make up the object as a list.
+
+        Returns
+        -------
+        optics: list
+            The optical layers in order in a list.
+        """
+        return list(self.layers.values())
+
+    def insert(self: object, optic: object, index: int) -> object:
+        """
+        Add an additional layer to the optical system.
+
+        Parameters
+        ----------
+        optic: object
+            A `dLux.OpticalLayer` to include in the model.
+        index: int
+            Where in the list of layers to add optic.
+
+        Returns
+        -------
+        toliman: TolimanOptics
+            A new `TolimanOptics` instance with the applied update.
+        """
+        if not isinstance(optic, dl.detectors.DetectorLayer):
+            raise ValueError("Inserted optics must be optical layers.")
+
+        if index < 0:
+            raise ValueError("`index` must be positive.")
+
+        new_layers: list = self.to_optics_list()
+        length: int = len(new_layers)
+
+        if index > length:
+            raise ValueError("`index` is outside the layers.")
+        
+        _: None = new_layers.insert(index, optic)
+        dl_new_layers: dict = dl.utils.list_to_dictionary(new_layers)
+        return eqx.tree_at(lambda x: x.layers, self, dl_new_layers)
+
+    def remove(self: object, index: int) -> object:
+        """
+        Take a layer from the optical system.
+
+        Parameters
+        ----------
+        index: int
+            Where in the list of layers to remove an optic.
+
+        Returns
+        -------
+        toliman: TolimanOptics
+            A new `TolimanOptics` instance with the applied update.
+        """
+        if index < 0:
+            raise ValueError("`index` must be positive.")
+
+        new_layers: list = self.to_optics_list()
+        length: int = len(new_layers)
+
+        if index > length:
+            raise ValueError("`index` must be within the detector.")
+
+        _: None = new_layers.pop(index)
+        dl_new_layers: dict = dl.utils.list_to_dictionary(new_layers)
+        return eqx.tree_at(lambda x: x.layers, self, dl_new_layers)
+
+    def append(self: object, optic: object) -> object:
+        """
+        Place a new optic at the end of the optical system.
+
+        Parameters
+        ----------
+        optic: object
+            The optic to include. It must be a subclass of the
+            `dLux.OpticalLayer`.
+
+        Returns
+        -------
+        optics: object
+            The new optical system.
+        """
+        if not isinstance(optic, dl.detectors.DetectorLayer):
+            raise ValueError("Inserted optics must be a detector layer.")
+
+        new_layers: list = self.to_optics_list()
+        _: None = new_layers.append(optic)
+        dl_new_layers: dict = dl.utils.list_to_dictionary(new_layers)
+        return eqx.tree_at(lambda x: x.layers, self, dl_new_layers)
+
+    def pop(self: object) -> object:
+        """
+        Remove the last element in the optical system.
+
+        Please note that this differs from the `.pop` method of
+        the `list` class  because it does not return the popped element.
+
+        Returns
+        -------
+        optics: object
+            The optical system with the layer removed.
+        """
+        new_layers: list = self.to_optics_list()
+        _: object = new_layers.pop()
+        dl_new_layers: dict = dl.utils.list_to_dictionary(new_layers)
+        return eqx.tree_at(lambda x: x.layers, self, dl_new_layers)
+
 
 class AlphaCentauri(dl.BinarySource):
     """
-    AlphaCentauri
-    -------------
     A convinient representation of the Alpha Centauri binary system.
 
     Examples
@@ -720,6 +943,8 @@ class AlphaCentauri(dl.BinarySource):
 
     def __init__(self: object, spectrum: float = None) -> object:
         """
+        Simulate Alpha Centauri.
+
         Parameters
         ----------
         spectrum: float = None
@@ -729,18 +954,26 @@ class AlphaCentauri(dl.BinarySource):
         """
         if not spectrum:
             with open(SPECTRUM_DIR, "r") as spectrum:
-                lines: list = open.readlines().remove(0)
+                lines: list = spectrum.readlines()
+                _: str = lines.pop(0)
 
                 strip: callable = lambda _str: _str.strip().split(",")
                 str_to_float: callable = lambda _str: float(_str.strip())
                 entries: list = jax.tree_map(strip, lines)
                 _spectrum: float = jax.tree_map(str_to_float, entries)
 
-            alpha_cen_waves: float = _spectrum[:, (0, 2)]
-            alpha_cen_flux: float = _spectrum[:, (1, 3)]
+            _spectrum: float = np.array(_spectrum)
+
+            alpha_cen_a_waves: float = _spectrum[:, 0]
+            alpha_cen_b_waves: float = _spectrum[:, 2]
+            alpha_cen_a_flux: float = _spectrum[:, 1]
+            alpha_cen_b_flux: float = _spectrum[:, 3]
+
+            alpha_cen_waves: float = np.stack([alpha_cen_a_waves, alpha_cen_b_waves])
+            alpha_cen_flux: float = np.stack([alpha_cen_a_flux, alpha_cen_b_flux])
 
             spectrum: float = dl.CombinedSpectrum(
-                wavelengths=alpha_cen_waves, flux=alpha_cen_flux
+                wavelengths=alpha_cen_waves, weights=alpha_cen_flux
             )
 
         super().__init__(
@@ -755,10 +988,9 @@ class AlphaCentauri(dl.BinarySource):
 
 class Background(dl.MultiPointSource):
     """
-    Background
-    ----------
-    Simplies the creation of a sample of background stars. The
-    sample of background stars is pulled from the Gaia database
+    Simplies the creation of a sample of background stars.
+
+    The sample of background stars is pulled from the Gaia database
     but there is some voodoo involved in regularising the data.
     Use the `_simulate_background_stars` function to generate
     alternative samples.
@@ -775,6 +1007,8 @@ class Background(dl.MultiPointSource):
         self: object, number_of_bg_stars: int = None, spectrum: object = None
     ) -> object:
         """
+        Simulate background stars.
+
         Parameters
         ----------
         number_of_bg_stars: int = None
@@ -787,19 +1021,22 @@ class Background(dl.MultiPointSource):
                 wavelengths=np.linspace(
                     FILTER_MIN_WAVELENGTH, FILTER_MAX_WAVELENGTH, FILTER_DEFAULT_RES
                 ),
-                fluxes=np.ones((FILTER_DEFAULT_RES,), dtype=float),
+                weights=np.ones((FILTER_DEFAULT_RES,), dtype=float),
             )
 
         # TODO: Better error handling if BACKGROUND_DIR is not valid
         with open(BACKGROUND_DIR, "r") as background:
-            lines: list = background.readlines().remove(0)
+            lines: list = background.readlines()
+            _: str = lines.pop(0)
             strip: callable = lambda _str: _str.strip().split(",")
             str_to_float: callable = lambda _str: float(_str.strip())
             entries: list = jax.tree_map(strip, lines)
-            _background: float = jax.tree_map(str_to_float, entries)
+            _background: float = np.array(jax.tree_map(str_to_float, entries))
+
+            print(_background.shape)
 
             if number_of_bg_stars:
-                _background: float = _background[:number_of_stars]
+                _background: float = _background[:number_of_bg_stars]
 
         position: float = _background[:, (0, 1)]
         flux: float = _background[:, 2]
