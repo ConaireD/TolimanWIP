@@ -304,7 +304,7 @@ SPECTRUM_DIR: str = "/home/jordan/Documents/toliman/toliman/assets/spectra.csv"
 
 TOLIMAN_PRIMARY_APERTURE_DIAMETER: float = 0.13
 TOLIMAN_SECONDARY_MIRROR_DIAMETER: float = 0.032
-TOLIMAN_DETECTOR_PIXEL_SIZE: float = 0.375
+TOLIMAN_DETECTOR_PIXEL_SIZE: float = dl.utils.arcseconds_to_radians(0.375)
 TOLIMAN_WIDTH_OF_STRUTS: float = 0.01
 TOLIMAN_NUMBER_OF_STRUTS: int = 3
 
@@ -611,7 +611,7 @@ class TolimanOptics(dl.Optics, CollectionInterface):
         toliman_body: object
         if not operate_in_fresnel_mode:
             toliman_body: object = dl.AngularMFT(
-                pixels_on_detector, dl.utils.arcseconds_to_radians(pixels_on_detector)
+                pixels_on_detector, TOLIMAN_DETECTOR_PIXEL_SIZE
             )
         else:
             raise NotImplementedError(FRESNEL_USE_ERR_MSG)
