@@ -272,6 +272,12 @@ class TestTolimanOptics(object):
         # Assert
         assert optics[-1] != new_optics[-1]
 
+    @pytest.mark.physical
+    def test_psf_central(self: object) -> None:
+
+    @pytest.mark.physical
+    def test_mask_correct_order_of_magnitude(self: object) -> None:
+
 
 class TestTolimanDetector(object):
     @pytest.mark.software
@@ -506,6 +512,12 @@ class TestAlphaCentauri(object):
         # Act/Assert
         assert isinstance(alpha_centauri.spectrum, CombinedSpectrum)
 
+    @pytest.mark.software
+    def test_constructor_when_csv_empty(self: object) -> None:
+
+    @pytest.mark.physical
+    def test_spectrum_in_filter_range(self: object) -> None:
+
 
 # TODO: Make sure that the stars are correctly thinned randomly.
 class TestBackground(object):
@@ -514,8 +526,14 @@ class TestBackground(object):
         # Arrange/Act
         background: object = Background()
 
+        # TODO: Get the length of the csv and check against that.
+
         # Assert
         assert background.flux.size > 10
+
+    @pytest.mark.software
+    def test_constructor_when_csv_empty(self: object) -> None:
+        # TODO: Make an empty csv and read it in. 
 
     @pytest.mark.software
     def test_constructor_when_thinned(self: object) -> None:
