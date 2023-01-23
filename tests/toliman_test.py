@@ -47,6 +47,7 @@ class FresnelPropagator(object):
 
 
 class TestTolimanOptics(object):
+    @pytest.mark.xdist_group("2")
     @pytest.mark.software
     def test_constructor_when_static(self: object) -> None:
         # Arrange/Act
@@ -77,6 +78,7 @@ class TestTolimanOptics(object):
         with pytest.raises(ValueError):
             toliman: object = TolimanOptics(pixels_in_pupil=125)
 
+    @pytest.mark.xdist_group("1")
     @pytest.mark.software
     def test_constructor_when_mask_is_correct(self: object) -> None:
         # Arrange/Act
@@ -108,6 +110,7 @@ class TestTolimanOptics(object):
         with pytest.raises(ValueError):
             toliman: object = TolimanOptics(path_to_mask="i/don't/exist.npy")
 
+    @pytest.mark.xdist_group("4")
     @pytest.mark.software
     def test_constructor_when_aberrated(self: object) -> None:
         # Arrange/Act
@@ -141,6 +144,7 @@ class TestTolimanOptics(object):
         # Assert
         assert not _contains_instance(optics, GeometricAberrations)
 
+    @pytest.mark.xdist_group("3")
     @pytest.mark.software
     def test_constructor_when_using_fresnel(self: object) -> None:
         # Operate in Fresnel mode
