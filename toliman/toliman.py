@@ -16,6 +16,16 @@ __all__ = [
     "_simulate_background_stars",
 ]
 
+def _read_csv_to_jax_array(_file_name: str) -> float:
+    with open(_file_name, "r") as file:
+        lines: list = file.readlines()
+        _: str = lines.pop(0)
+        strip: callable = lambda _str: _str.strip().split(",")
+        str_to_float: callable = lambda _str: float(_str.strip())
+        entries: list = jax.tree_map(strip, lines)
+        _file: float = jax.tree_map(str_to_float, entries)
+
+    return np.array(_file)
 
 def _contains_instance(_list: list, _type: type) -> bool:
     """
