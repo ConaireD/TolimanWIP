@@ -190,6 +190,11 @@ def _simulate_alpha_cen_spectra(number_of_wavelenths: int = 25) -> None:
         The number of wavelengths that you wish to use for the simulation.
         The are taken from the `pysynphot` output by binning.
     """
+    def convert_flam_to_watts_per_hz(flam: float) -> float:
+        m_per_cm: float = 1e-2
+        j_per_erg: float = 1e-7
+        nm_per_angstrom: float = 10
+        return flam * j_per_erg * nm_per_angstrom / m_per_cm ** 2 
 
     import pysynphot
 
@@ -210,7 +215,7 @@ def _simulate_alpha_cen_spectra(number_of_wavelenths: int = 25) -> None:
     # TODO: This whole function violates dry because it repeats 
     #       the same steps for the two different stars.
 
-    alpha_cen_a_flux: float = alpha_cen_a_spectrum.flux * 1e-7 / 1e-2 ** 2 * 10
+    alpha_cen_a_flux: float = alpha_cen_a_spectrum.flux * 
     alpha_cen_a_waves: float = alpha_cen_a_spectrum.wave * 1e-10
     alpha_cen_b_flux: float = alpha_cen_b_spectrum.flux * 1e-7 / 1e-2 ** 2 * 10
     alpha_cen_b_waves: float = alpha_cen_b_spectrum.wave * 1e-10
