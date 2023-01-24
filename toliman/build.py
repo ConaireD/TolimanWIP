@@ -1,11 +1,12 @@
 import os
 import warnings
 import tqdm
+import requests
 
 __author__ = "Jordan Dennis"
 
 HOME: str = "toliman/assets/grid/phoenix"
-PHOENIX_HOME: str = "https://archive.stsci.edu/hlsps/reference-atlases/cdbs/grid/phoenix/"
+PHOENIX_HOME: str = "https://archive.stsci.edu/hlsps/reference-atlases/cdbs/grid/phoenix"
 PHOENIXM00: str = "phoenixm00"
 PHOENIXP03: str = "phoenixp03"
 PHOENIX_PATHS: str = [
@@ -26,7 +27,7 @@ def _is_phoenix_installed() -> bool:
 
     for path in PHOENIX_PATHS:
         rel_path: str = "{}/{}".format(HOME, path)
-        if not os.is_file(path):
+        if not os.path.isfile(path):
             return False
 
     return True
@@ -52,13 +53,27 @@ def _install_phoenix() -> bool:
         if not os.path.exists(rel_path):
             os.mkdir(rel_path)
 
-    for file in tqdm.tqdm(PHOENIX_PATHS):
+    for file in PHOENIX_PATHS:
         path: str = "{}/{}".format(HOME, file)
     
-        if not os.is_file(path):
-            with open(path, "w") as file:
-                url: str = "{}/{}".format(PHOENIX_HOME, file)
-                file.write(requests.request("GET", url))
+        if not os.path.isfile(path):
+            url: str = "{}/{}".format(PHOENIX_HOME, file)
+            response = requests.get(url, stream=True)
+            total_size_in_bytes= int(response.headers.get('content-length', 0))
+            block_size = 1024 #1 Kibibyte
+            progress_bar = tqdm.tqdm(total=total_size_in_bytes, unit='iB', unit_scale=True)
+            with open('test.dat', 'wb') as file:
+                for data in response.iter_content(block_size):
+                    progress_bar.update(len(data))
+                    file.write(data)
+            progress_bar.close()
+
+#            with open(path, "wb") as file_dev:
+#                url: str = "{}/{}".format(PHOENIX_HOME, file)
+#                print("Downloading: {}.".format(url))
+#                response: iter = requests.get(url, stream=True).iter_content(1024)
+#                for data in tqdm.tqdm(response):
+#                    file_dev.write(data)
 
 def main():
     print("Building...")
