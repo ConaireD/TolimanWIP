@@ -14,7 +14,11 @@ __all__ = [
     "_contains_instance",
     "_simulate_alpha_cen_spectra",
     "_simulate_background_stars",
+    "_read_csv_to_jax_array",
 ]
+
+def normalise(arr: float) -> float:
+    return (arr - arr.min()) / arr.ptp()
 
 def _read_csv_to_jax_array(_file_name: str) -> float:
     """
