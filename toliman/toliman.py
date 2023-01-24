@@ -194,13 +194,6 @@ def _simulate_alpha_cen_spectra(number_of_wavelengths: int = 25) -> None:
 
     os.environ["PYSYN_CDBS"] = "/home/jordan/Documents/toliman/toliman/assets"
 
-    # TODO: Is this conversion necessary?
-    def flam_to_watts_per_hz(flam: float) -> float:
-        m_per_cm: float = 1e-2
-        j_per_erg: float = 1e-7
-        nm_per_angstrom: float = 10
-        return flam * j_per_erg * nm_per_angstrom / m_per_cm ** 2 
-
     def angstrom_to_m(angstrom: float) -> float:
         m_per_angstrom: float = 1e-10
         return m_per_angstrom * angstrom
@@ -219,63 +212,42 @@ def _simulate_alpha_cen_spectra(number_of_wavelengths: int = 25) -> None:
         ALPHA_CEN_B_SURFACE_GRAV,
     )
 
-    # TODO: Broadcast this as I am applying the same operations over multiple 
-    #       objects
+    WAVES: int = 0
+    ALPHA_CEN_A: int = 1
+    ALPHA_CEN_B: int = 2
 
-    alpha_cen_a_flux: float = flam_to_watts_per_hz(alpha_cen_a_spectrum.flux)
-    alpha_cen_a_waves: float = angstrom_to_m(alpha_cen_a_spectrum.wave)
-    alpha_cen_b_flux: float = flam_to_watts_per_hz(alpha_cen_b_spectrum.flux)
-    alpha_cen_b_waves: float = angstrom_to_m(alpha_cen_b_spectrum.wave)
+    spectra: float = np.array([
+            angstrom_to_m(alpha_cen_a_spectrum.wave),
+            _normalise(alpha_cen_a_spectrum.flux),
+            _normalise(alpha_cen_b_spectrum.flux),
+        ], dtype=float)
 
-    del alpha_cen_a_spectrum
-    del alpha_cen_b_spectrum
+    del alpha_cen_a_spectrum, alpha_cen_b_spectrum
 
     decision: bool = np.logical_and(
-        (FILTER_MIN_WAVELENGTH < alpha_cen_a_waves),
-        (alpha_cen_a_waves < FILTER_MAX_WAVELENGTH)
+        (FILTER_MIN_WAVELENGTH < spectra[WAVES]),
+        (spectra[WAVES] < FILTER_MAX_WAVELENGTH)
     )
 
-    clipped_alpha_cen_a_waves: float = alpha_cen_a_waves[decision]
-    clipped_alpha_cen_a_flux: float = alpha_cen_a_flux[decision]
-    clipped_alpha_cen_b_waves: float = alpha_cen_b_waves[decision]
-    clipped_alpha_cen_b_flux: float = alpha_cen_b_flux[decision]
+    spectra: float = spectra[:, decision]
 
-    del alpha_cen_a_flux, alpha_cen_a_waves
-    del alpha_cen_b_waves, alpha_cen_b_flux
     del decision
 
-    # Resample into nearest hundred
-    # TODO: Can this self document using a function
     size: int = clipped_alpha_cen_a_waves.size
     resample_size: int = size - size % number_of_wavelengths
-
-    fact_alpha_cen_a_waves: float = clipped_alpha_cen_a_waves[:resample_size]
-    fact_alpha_cen_a_flux: float = clipped_alpha_cen_a_flux[:resample_size]
-    fact_alpha_cen_b_waves: float = clipped_alpha_cen_b_waves[:resample_size]
-    fact_alpha_cen_b_flux: float = clipped_alpha_cen_b_flux[:resample_size]
-
-    del clipped_alpha_cen_a_waves, clipped_alpha_cen_a_flux
-    del clipped_alpha_cen_b_waves, clipped_alpha_cen_b_flux
-    del size
-
+    spectra: float = spectra[:resample_size]
     resample_by: int = resample_size // number_of_wavelengths 
-
-    resampled_alpha_cen_a_waves: float = _downsample_along_axis(fact_alpha_cen_a_waves, resample_by)
-    resampled_alpha_cen_a_flux: float = _downsample_along_axis(fact_alpha_cen_a_flux, resample_by)
-    resampled_alpha_cen_b_waves: float = _downsample_along_axis(fact_alpha_cen_b_waves, resample_by)
-    resampled_alpha_cen_b_flux: float = _downsample_along_axis(fact_alpha_cen_b_flux, resample_by)
+    spectra: float = _downsample_along_axis(spectra, resample_by, axis=1)
 
     with open("toliman/assets/spectra.csv", "w") as spectra:
         spectra.write("alpha cen a waves (m), ")
         spectra.write("alpha cen a flux (W/m/m), ")
-        spectra.write("alpha cen b waves (m), ")
         spectra.write("alpha cen b flux (W/m/m)\n")
 
         for i in np.arange(number_of_wavelengths, dtype=int):
-            spectra.write("{}, ".format(resampled_alpha_cen_a_waves[i]))
-            spectra.write("{}, ".format(resampled_alpha_cen_a_flux[i]))
-            spectra.write("{}, ".format(resampled_alpha_cen_b_waves[i]))
-            spectra.write("{}\n".format(resampled_alpha_cen_b_flux[i]))
+            spectra.write("{}, ".format(spectra[WAVES][i]))
+            spectra.write("{}, ".format(spectra[ALPHA_CEN_A][i]))
+            spectra.write("{}\n".format(spectra[ALPHA_CEN_B][i]))
 
 
 # TODO: Add arguments
