@@ -233,21 +233,21 @@ def _simulate_alpha_cen_spectra(number_of_wavelengths: int = 25) -> None:
 
     del decision
 
-    size: int = clipped_alpha_cen_a_waves.size
+    size: int = spectra[WAVES].size
     resample_size: int = size - size % number_of_wavelengths
-    spectra: float = spectra[:resample_size]
+    spectra: float = spectra[:, :resample_size]
     resample_by: int = resample_size // number_of_wavelengths 
     spectra: float = _downsample_along_axis(spectra, resample_by, axis=1)
 
-    with open("toliman/assets/spectra.csv", "w") as spectra:
-        spectra.write("alpha cen a waves (m), ")
-        spectra.write("alpha cen a flux (W/m/m), ")
-        spectra.write("alpha cen b flux (W/m/m)\n")
+    with open("toliman/assets/spectra.csv", "w") as fspectra:
+        fspectra.write("alpha cen a waves (m), ")
+        fspectra.write("alpha cen a flux (W/m/m), ")
+        fspectra.write("alpha cen b flux (W/m/m)\n")
 
         for i in np.arange(number_of_wavelengths, dtype=int):
-            spectra.write("{}, ".format(spectra[WAVES][i]))
-            spectra.write("{}, ".format(spectra[ALPHA_CEN_A][i]))
-            spectra.write("{}\n".format(spectra[ALPHA_CEN_B][i]))
+            fspectra.write("{}, ".format(spectra[WAVES][i]))
+            fspectra.write("{}, ".format(spectra[ALPHA_CEN_A][i]))
+            fspectra.write("{}\n".format(spectra[ALPHA_CEN_B][i]))
 
 
 # TODO: Add arguments
