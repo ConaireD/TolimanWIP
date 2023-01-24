@@ -27,8 +27,20 @@ def _is_phoenix_installed() -> bool:
 
     return True
 
+
+def _accumulate_path(strings: list, paths: str = []) -> list:
+    if not strings:
+        return paths
+    else:
+        if not paths:
+            paths.append(strings.pop(0))
+        else:
+            paths.append(paths[-1] + "/" + strings.pop(0))
+        return _accumulate_path(strings, paths)
+
 def _install_phoenix() -> bool:
-    if not os.path.exists("toliman/assets/grid/phoenix"):
+    if not os.path.exists(HOME):
+        for 
         if not os.path.exists("toliman"):
             os.mkdir("toliman")
         
