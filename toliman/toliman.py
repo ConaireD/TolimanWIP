@@ -177,7 +177,7 @@ def _downsample_along_axis(arr: float, m: int, axis: int = 0) -> float:
     return arr.reshape(new).sum(-1) / m
 
 
-def _simulate_alpha_cen_spectra(number_of_wavelenths: int = 25) -> None:
+def _simulate_alpha_cen_spectra(number_of_wavelengths: int = 25) -> None:
     """
     Simulate the spectrum of the alpha centauri binary using `pysynphot`.
 
@@ -191,6 +191,8 @@ def _simulate_alpha_cen_spectra(number_of_wavelenths: int = 25) -> None:
         The are taken from the `pysynphot` output by binning.
     """
     import pysynphot
+
+    os.environ["PYSYN_CDBS"] = "/home/jordan/Documents/toliman/toliman/assets"
 
     # TODO: Is this conversion necessary?
     def flam_to_watts_per_hz(flam: float) -> float:
@@ -256,7 +258,7 @@ def _simulate_alpha_cen_spectra(number_of_wavelenths: int = 25) -> None:
     del clipped_alpha_cen_b_waves, clipped_alpha_cen_b_flux
     del size
 
-    resample_by: int = resample_size // number_of_wavelenths 
+    resample_by: int = resample_size // number_of_wavelengths 
 
     resampled_alpha_cen_a_waves: float = _downsample_along_axis(fact_alpha_cen_a_waves, resample_by)
     resampled_alpha_cen_a_flux: float = _downsample_along_axis(fact_alpha_cen_a_flux, resample_by)
@@ -269,7 +271,7 @@ def _simulate_alpha_cen_spectra(number_of_wavelenths: int = 25) -> None:
         spectra.write("alpha cen b waves (m), ")
         spectra.write("alpha cen b flux (W/m/m)\n")
 
-        for i in np.arange(number_of_wavelenths, dtype=int):
+        for i in np.arange(number_of_wavelengths, dtype=int):
             spectra.write("{}, ".format(resampled_alpha_cen_a_waves[i]))
             spectra.write("{}, ".format(resampled_alpha_cen_a_flux[i]))
             spectra.write("{}, ".format(resampled_alpha_cen_b_waves[i]))
