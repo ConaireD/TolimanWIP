@@ -58,22 +58,23 @@ def _install_phoenix() -> bool:
     
         if not os.path.isfile(path):
             url: str = "{}/{}".format(PHOENIX_HOME, file)
-            response = requests.get(url, stream=True)
-            total_size_in_bytes= int(response.headers.get('content-length', 0))
-            block_size = 1024 #1 Kibibyte
-            progress_bar = tqdm.tqdm(total=total_size_in_bytes, unit='iB', unit_scale=True)
-            with open('test.dat', 'wb') as file:
-                for data in response.iter_content(block_size):
-                    progress_bar.update(len(data))
-                    file.write(data)
-            progress_bar.close()
 
-#            with open(path, "wb") as file_dev:
-#                url: str = "{}/{}".format(PHOENIX_HOME, file)
-#                print("Downloading: {}.".format(url))
-#                response: iter = requests.get(url, stream=True).iter_content(1024)
-#                for data in tqdm.tqdm(response):
-#                    file_dev.write(data)
+            with open(path, "wb") as file_dev:
+                url: str = "{}/{}".format(PHOENIX_HOME, file)
+                response: iter = requests.get(url, stream=True)
+                total_size: int = int(response.headers.get('content-length', 0))
+
+                print("Downloading: {}.".format(url))
+
+                progress: object = tqdm.tqdm(
+                    total=total_size,
+                    unit='iB', 
+                    unit_scale=True
+                )
+
+                for data in response.iter_content(1024):
+                    progress.update(len(data))
+                    file_dev.write(data)
 
 def main():
     print("Building...")
