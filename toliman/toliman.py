@@ -20,8 +20,10 @@ __all__ = [
 DEFAULT_PUPIL_NPIX: int = 256
 DEFAULT_DETECTOR_NPIX: int = 128
 DEFAULT_NUMBER_OF_ZERNIKES: int = 5
+
 DEFAULT_MASK_DIR: str = "/home/jordan/Documents/toliman/toliman/assets/mask.npy"
 SPECTRUM_DIR: str = "/home/jordan/Documents/toliman/toliman/assets/spectra.csv"
+BACKGROUND_DIR: str = "toliman/assets/background.csv"
 
 TOLIMAN_PRIMARY_APERTURE_DIAMETER: float = 0.13
 TOLIMAN_SECONDARY_MIRROR_DIAMETER: float = 0.032
@@ -51,9 +53,8 @@ FILTER_MIN_WAVELENGTH: float = 595e-09
 FILTER_MAX_WAVELENGTH: float = 695e-09
 FILTER_DEFAULT_RES: int = 24
 
-BACKGROUND_DIR: str = "toliman/assets/background.csv"
 
-def normalise(arr: float) -> float:
+def _normalise(arr: float) -> float:
     """
     Rescale and array onto [0, 1].
 
@@ -189,6 +190,7 @@ def _simulate_alpha_cen_spectra(number_of_wavelenths: int = 25) -> None:
         The number of wavelengths that you wish to use for the simulation.
         The are taken from the `pysynphot` output by binning.
     """
+
     import pysynphot
 
     alpha_cen_a_spectrum: float = pysynphot.Icat(
@@ -205,22 +207,33 @@ def _simulate_alpha_cen_spectra(number_of_wavelenths: int = 25) -> None:
         ALPHA_CEN_B_SURFACE_GRAV,
     )
 
-    template: float = np.zeros(108000, dtype=float)
+    # TODO: This whole function violates dry because it repeats 
+    #       the same steps for the two different stars.
 
-    alpha_cen_a_waves_full: float = template.at[:107998].set(alpha_cen_a_spectrum.wave)
-    alpha_cen_a_flux_full: float = template.at[:107998].set(alpha_cen_a_spectrum.flux)
-    alpha_cen_b_waves_full: float = template.at[:107998].set(alpha_cen_b_spectrum.wave)
-    alpha_cen_b_flux_full: float = template.at[:107998].set(alpha_cen_b_spectrum.flux)
+    alpha_cen_a_flux: float = alpha_cen_a_spectrum.flux * 1e-7 / 1e-2 ** 2 * 10
+    alpha_cen_a_waves: float = alpha_cen_a_spectrum.wave * 1e-10
+    alpha_cen_b_flux: float = alpha_cen_b_spectrum.flux * 1e-7 / 1e-2 ** 2 * 10
+    alpha_cen_b_waves: float = alpha_cen_b_spectrum.wave * 1e-10
 
-    m: int = 108000 // number_of_wavelenths
+    # TODO: Use constants here for D.R.Y
 
-    alpha_cen_a_waves: float = _downsample_along_axis(alpha_cen_a_waves_full, m)
+    decision: bool = (595e-09 < alpha_cen_a_waves) & (alpha_cen_a_waves < 695e-09)
 
-    alpha_cen_a_flux: float = _downsample_along_axis(alpha_cen_a_flux_full, m)
+    # TODO: The use of the arbitrary 2200 is scaring me. I think what I will do 
+    #       is dynamically work out the approriate sampling. Let me just get it 
+    #       working first.
+    
+    filtered_alpha_cen_a_waves: float = normalise(alpha_cen_a_waves[decision][:2200])
+    filtered_alpha_cen_a_flux: float = normalise(alpha_cen_a_flux[decision][:2200])
+    filtered_alpha_cen_b_waves: float = normalise(alpha_cen_b_waves[decision][:2200])
+    filtered_alpha_cen_b_flux: float = normalise(alpha_cen_b_flux[decision][:2200])
 
-    alpha_cen_b_waves: float = _downsample_along_axis(alpha_cen_b_waves_full, m)
+    resample: int = 44
 
-    alpha_cen_b_flux: float = _downsample_along_axis(alpha_cen_b_flux_full, m)
+    resampled_alpha_cen_a_waves: float = _downsample_along_axis(filtered_alpha_cen_a_waves, resample)
+    resampled_alpha_cen_a_flux: float = _downsample_along_axis(filtered_alpha_cen_a_flux, resample)
+    resampled_alpha_cen_b_waves: float = _downsample_along_axis(filtered_alpha_cen_b_waves, resample)
+    resampled_alpha_cen_b_flux: float = _downsample_along_axis(filtered_alpha_cen_b_flux, resample)
 
     with open("toliman/assets/spectra.csv", "w") as spectra:
         spectra.write("alpha cen a waves (m), ")
@@ -229,10 +242,10 @@ def _simulate_alpha_cen_spectra(number_of_wavelenths: int = 25) -> None:
         spectra.write("alpha cen b flux (W/m/m)\n")
 
         for i in np.arange(number_of_wavelenths, dtype=int):
-            spectra.write("{}, ".format(alpha_cen_a_waves[i]))
-            spectra.write("{}, ".format(alpha_cen_a_flux[i]))
-            spectra.write("{}, ".format(alpha_cen_b_waves[i]))
-            spectra.write("{}\n".format(alpha_cen_b_flux[i]))
+            spectra.write("{}, ".format(resampled_alpha_cen_a_waves[i]))
+            spectra.write("{}, ".format(resampled_alpha_cen_a_flux[i]))
+            spectra.write("{}, ".format(resampled_alpha_cen_b_waves[i]))
+            spectra.write("{}\n".format(resampled_alpha_cen_b_flux[i]))
 
 
 # TODO: Add arguments
