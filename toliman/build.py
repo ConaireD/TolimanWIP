@@ -234,6 +234,21 @@ def _simulate_background_stars() -> None:
             sheet.write(f"{bg_stars_dec_crop[row]},")
             sheet.write(f"{bg_stars_rel_flux_crop[row]}\n")
 
+def _normalise(arr: float) -> float:
+    """
+    Rescale and array onto [0, 1].
+
+    Parameters
+    ----------
+    arr: float
+        Any array.
+
+    Returns
+    -------
+    arr: float
+        An array of floating point numbers over the range [0, 1].
+    """
+    return (arr - arr.min()) / arr.ptp()
 
 
 def main():
