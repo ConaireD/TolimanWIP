@@ -75,6 +75,9 @@ def _accumulate_path(strings: list, paths: str = []) -> list:
         return _accumulate_path(strings, paths)
 
 def _install_phoenix() -> bool:
+    """
+    Install phoenix from the web.
+    """
     if not os.path.exists(HOME):
         for path in _accumulate_path(HOME.split("/")):
             if not os.path.exists(path):
@@ -109,10 +112,22 @@ def _install_phoenix() -> bool:
                     file_dev.write(data)
 
 def main():
-    print("Building...")
+    print("Building `toliman`!")
+    print("-------------------")
+
     if not _is_phoenix_installed():
-        print("Installing phoenix!")
+        print("Installing phoenix...")
         _install_phoenix()
+        print("Done!")
+
+    print("Saving spectral model...")
+    _simulate_alpha_cen_spectra()
+    print("Done!")
+
+    print("Saving background stars...")
+    _simulate_background_stars()
+    print("Done!")
+
 
 
 main()
