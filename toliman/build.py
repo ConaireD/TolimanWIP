@@ -306,6 +306,13 @@ def main():
     _simulate_background_stars()
     print("Done!")
 
+    if not _is_mask_installed():
+        print("Installing mask...")
+        _install_mask()
+        print("Done!")
+
+    print("`toliman` built!")
+
 
 
 main()
