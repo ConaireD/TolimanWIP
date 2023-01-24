@@ -1,5 +1,6 @@
 import os
 import warnings
+import tqdm
 
 __author__ = "Jordan Dennis"
 
@@ -8,14 +9,14 @@ PHOENIX_HOME: str = "https://archive.stsci.edu/hlsps/reference-atlases/cdbs/grid
 PHOENIXM00: str = "phoenixm00"
 PHOENIXP03: str = "phoenixp03"
 PHOENIX_PATHS: str = [
-    "{}/{}_5200.fits".format(PHOENIXM00),
-    "{}/{}_5300.fits".format(PHOENIXM00),
-    "{}/{}_5700.fits".format(PHOENIXM00),
-    "{}/{}_5800.fits".format(PHOENIXM00),
-    "{}/{}_5200.fits".format(PHOENIXP03),
-    "{}/{}_5300.fits".format(PHOENIXP03),
-    "{}/{}_5700.fits".format(PHOENIXP03),
-    "{}/{}_5800.fits".format(PHOENIXP03),
+    "{}/{}_5200.fits".format(PHOENIXM00, PHOENIXM00),
+    "{}/{}_5300.fits".format(PHOENIXM00, PHOENIXM00),
+    "{}/{}_5700.fits".format(PHOENIXM00, PHOENIXM00),
+    "{}/{}_5800.fits".format(PHOENIXM00, PHOENIXM00),
+    "{}/{}_5200.fits".format(PHOENIXP03, PHOENIXP03),
+    "{}/{}_5300.fits".format(PHOENIXP03, PHOENIXP03),
+    "{}/{}_5700.fits".format(PHOENIXP03, PHOENIXP03),
+    "{}/{}_5800.fits".format(PHOENIXP03, PHOENIXP03),
     "catalog.fits"
 ]
 
@@ -24,6 +25,7 @@ def _is_phoenix_installed() -> bool:
         return False
 
     for path in PHOENIX_PATHS:
+        rel_path: str = "{}/{}".format(HOME, path)
         if not os.is_file(path):
             return False
 
@@ -50,7 +52,7 @@ def _install_phoenix() -> bool:
         if not os.path.exists(rel_path):
             os.mkdir(rel_path)
 
-    for file in PHOENIX_PATHS:
+    for file in tqdm.tqdm(PHOENIX_PATHS):
         path: str = "{}/{}".format(HOME, file)
     
         if not os.is_file(path):
@@ -58,4 +60,11 @@ def _install_phoenix() -> bool:
                 url: str = "{}/{}".format(PHOENIX_HOME, file)
                 file.write(requests.request("GET", url))
 
+def main():
+    print("Building...")
+    if not _is_phoenix_installed():
+        print("Installing phoenix!")
+        _install_phoenix()
 
+
+main()
