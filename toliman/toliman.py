@@ -217,6 +217,9 @@ def _simulate_alpha_cen_spectra(number_of_wavelenths: int = 25) -> None:
         ALPHA_CEN_B_SURFACE_GRAV,
     )
 
+    # TODO: Broadcast this as I am applying the same operations over multiple 
+    #       objects
+
     alpha_cen_a_flux: float = flam_to_watts_per_hz(alpha_cen_a_spectrum.flux)
     alpha_cen_a_waves: float = angstrom_to_m(alpha_cen_a_spectrum.wave)
     alpha_cen_b_flux: float = flam_to_watts_per_hz(alpha_cen_b_spectrum.flux)
@@ -235,22 +238,30 @@ def _simulate_alpha_cen_spectra(number_of_wavelenths: int = 25) -> None:
     clipped_alpha_cen_b_waves: float = alpha_cen_b_waves[decision]
     clipped_alpha_cen_b_flux: float = alpha_cen_b_flux[decision]
 
+    del alpha_cen_a_flux, alpha_cen_a_waves
+    del alpha_cen_b_waves, alpha_cen_b_flux
+    del decision
+
     # Resample into nearest hundred
     # TODO: Can this self document using a function
-    size: int = alpha_cen_a_waves.size
-    resample_size: int = size - size % 100
+    size: int = clipped_alpha_cen_a_waves.size
+    resample_size: int = size - size % number_of_wavelengths
 
-    filtered_alpha_cen_a_waves: float = normalise([:resample_size])
-    filtered_alpha_cen_a_flux: float = normalise(alpha_cen_a_flux[decision][:resample_size])
-    filtered_alpha_cen_b_waves: float = normalise(alpha_cen_b_waves[decision][:resample_size])
-    filtered_alpha_cen_b_flux: float = normalise(alpha_cen_b_flux[decision][:resample_size])
+    fact_alpha_cen_a_waves: float = clipped_alpha_cen_a_waves[:resample_size]
+    fact_alpha_cen_a_flux: float = clipped_alpha_cen_a_flux[:resample_size]
+    fact_alpha_cen_b_waves: float = clipped_alpha_cen_b_waves[:resample_size]
+    fact_alpha_cen_b_flux: float = clipped_alpha_cen_b_flux[:resample_size]
 
-    resample: int = 44
+    del clipped_alpha_cen_a_waves, clipped_alpha_cen_a_flux
+    del clipped_alpha_cen_b_waves, clipped_alpha_cen_b_flux
+    del size
 
-    resampled_alpha_cen_a_waves: float = _downsample_along_axis(filtered_alpha_cen_a_waves, resample)
-    resampled_alpha_cen_a_flux: float = _downsample_along_axis(filtered_alpha_cen_a_flux, resample)
-    resampled_alpha_cen_b_waves: float = _downsample_along_axis(filtered_alpha_cen_b_waves, resample)
-    resampled_alpha_cen_b_flux: float = _downsample_along_axis(filtered_alpha_cen_b_flux, resample)
+    resample_by: int = resample_size // number_of_wavelenths 
+
+    resampled_alpha_cen_a_waves: float = _downsample_along_axis(fact_alpha_cen_a_waves, resample_by)
+    resampled_alpha_cen_a_flux: float = _downsample_along_axis(fact_alpha_cen_a_flux, resample_by)
+    resampled_alpha_cen_b_waves: float = _downsample_along_axis(fact_alpha_cen_b_waves, resample_by)
+    resampled_alpha_cen_b_flux: float = _downsample_along_axis(fact_alpha_cen_b_flux, resample_by)
 
     with open("toliman/assets/spectra.csv", "w") as spectra:
         spectra.write("alpha cen a waves (m), ")
