@@ -196,6 +196,10 @@ def _simulate_alpha_cen_spectra(number_of_wavelenths: int = 25) -> None:
         nm_per_angstrom: float = 10
         return flam * j_per_erg * nm_per_angstrom / m_per_cm ** 2 
 
+    def convert_angstrom_to_m(angstrom: float) -> float:
+        m_per_angstrom: float = 1e-10
+        return m_per_angstrom * angstrom
+
     import pysynphot
 
     alpha_cen_a_spectrum: float = pysynphot.Icat(
@@ -215,7 +219,7 @@ def _simulate_alpha_cen_spectra(number_of_wavelenths: int = 25) -> None:
     # TODO: This whole function violates dry because it repeats 
     #       the same steps for the two different stars.
 
-    alpha_cen_a_flux: float = alpha_cen_a_spectrum.flux * 
+    alpha_cen_a_flux: float = convert_flam_to_watts_per_hz(alpha_cen_a_spectrum.flux)
     alpha_cen_a_waves: float = alpha_cen_a_spectrum.wave * 1e-10
     alpha_cen_b_flux: float = alpha_cen_b_spectrum.flux * 1e-7 / 1e-2 ** 2 * 10
     alpha_cen_b_waves: float = alpha_cen_b_spectrum.wave * 1e-10
