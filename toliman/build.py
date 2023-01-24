@@ -75,6 +75,9 @@ def _accumulate_path(strings: list, paths: str = []) -> list:
             paths.append(paths[-1] + "/" + strings.pop(0))
         return _accumulate_path(strings, paths)
 
+def _is_mask_installed() -> bool:
+    return os.path.isfile("{}/mask.npy".format(MASK)
+
 def _install_mask() -> bool:
     """
     Install phoenix from the web.
@@ -85,7 +88,7 @@ def _install_mask() -> bool:
             if not os.path.exists(path):
                 os.mkdir(path)
 
-    with open("{}/{}".format(MASK, "mask.npy", "wb") as file_dev:
+    with open("{}/mask.npy".format(MASK), "wb") as file_dev:
         response: iter = requests.get(MASK_HOME, stream=True)
         total_size: int = int(response.headers.get('content-length', 0))
 
