@@ -190,17 +190,18 @@ def _simulate_alpha_cen_spectra(number_of_wavelenths: int = 25) -> None:
         The number of wavelengths that you wish to use for the simulation.
         The are taken from the `pysynphot` output by binning.
     """
-    def convert_flam_to_watts_per_hz(flam: float) -> float:
+    import pysynphot
+
+    # TODO: Is this conversion necessary?
+    def flam_to_watts_per_hz(flam: float) -> float:
         m_per_cm: float = 1e-2
         j_per_erg: float = 1e-7
         nm_per_angstrom: float = 10
         return flam * j_per_erg * nm_per_angstrom / m_per_cm ** 2 
 
-    def convert_angstrom_to_m(angstrom: float) -> float:
+    def angstrom_to_m(angstrom: float) -> float:
         m_per_angstrom: float = 1e-10
         return m_per_angstrom * angstrom
-
-    import pysynphot
 
     alpha_cen_a_spectrum: float = pysynphot.Icat(
         "phoenix",
@@ -216,26 +217,33 @@ def _simulate_alpha_cen_spectra(number_of_wavelenths: int = 25) -> None:
         ALPHA_CEN_B_SURFACE_GRAV,
     )
 
-    # TODO: This whole function violates dry because it repeats 
-    #       the same steps for the two different stars.
+    alpha_cen_a_flux: float = flam_to_watts_per_hz(alpha_cen_a_spectrum.flux)
+    alpha_cen_a_waves: float = angstrom_to_m(alpha_cen_a_spectrum.wave)
+    alpha_cen_b_flux: float = flam_to_watts_per_hz(alpha_cen_b_spectrum.flux)
+    alpha_cen_b_waves: float = angstrom_to_m(alpha_cen_b_spectrum.wave)
 
-    alpha_cen_a_flux: float = convert_flam_to_watts_per_hz(alpha_cen_a_spectrum.flux)
-    alpha_cen_a_waves: float = alpha_cen_a_spectrum.wave * 1e-10
-    alpha_cen_b_flux: float = alpha_cen_b_spectrum.flux * 1e-7 / 1e-2 ** 2 * 10
-    alpha_cen_b_waves: float = alpha_cen_b_spectrum.wave * 1e-10
+    del alpha_cen_a_spectrum
+    del alpha_cen_b_spectrum
 
-    # TODO: Use constants here for D.R.Y
+    decision: bool = np.logical_and(
+        (FILTER_MIN_WAVELENGTH < alpha_cen_a_waves),
+        (alpha_cen_a_waves < FILTER_MAX_WAVELENGTH)
+    )
 
-    decision: bool = (595e-09 < alpha_cen_a_waves) & (alpha_cen_a_waves < 695e-09)
+    clipped_alpha_cen_a_waves: float = alpha_cen_a_waves[decision]
+    clipped_alpha_cen_a_flux: float = alpha_cen_a_flux[decision]
+    clipped_alpha_cen_b_waves: float = alpha_cen_b_waves[decision]
+    clipped_alpha_cen_b_flux: float = alpha_cen_b_flux[decision]
 
-    # TODO: The use of the arbitrary 2200 is scaring me. I think what I will do 
-    #       is dynamically work out the approriate sampling. Let me just get it 
-    #       working first.
-    
-    filtered_alpha_cen_a_waves: float = normalise(alpha_cen_a_waves[decision][:2200])
-    filtered_alpha_cen_a_flux: float = normalise(alpha_cen_a_flux[decision][:2200])
-    filtered_alpha_cen_b_waves: float = normalise(alpha_cen_b_waves[decision][:2200])
-    filtered_alpha_cen_b_flux: float = normalise(alpha_cen_b_flux[decision][:2200])
+    # Resample into nearest hundred
+    # TODO: Can this self document using a function
+    size: int = alpha_cen_a_waves.size
+    resample_size: int = size - size % 100
+
+    filtered_alpha_cen_a_waves: float = normalise([:resample_size])
+    filtered_alpha_cen_a_flux: float = normalise(alpha_cen_a_flux[decision][:resample_size])
+    filtered_alpha_cen_b_waves: float = normalise(alpha_cen_b_waves[decision][:resample_size])
+    filtered_alpha_cen_b_flux: float = normalise(alpha_cen_b_flux[decision][:resample_size])
 
     resample: int = 44
 
