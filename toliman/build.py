@@ -22,6 +22,14 @@ PHOENIX_PATHS: str = [
 ]
 
 def _is_phoenix_installed() -> bool:
+    """
+    Check if "phoenix" is installed.
+
+    Returns
+    -------
+    installed: bool
+        True if all the phoenix files are present else false.
+    """
     if not os.path.exists(HOME):
         return False
 
