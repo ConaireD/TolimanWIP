@@ -18,6 +18,19 @@ __all__ = [
 ]
 
 def normalise(arr: float) -> float:
+    """
+    Rescale and array onto [0, 1].
+
+    Parameters
+    ----------
+    arr: float
+        Any array.
+
+    Returns
+    -------
+    arr: float
+        An array of floating point numbers over the range [0, 1].
+    """
     return (arr - arr.min()) / arr.ptp()
 
 def _read_csv_to_jax_array(_file_name: str) -> float:
