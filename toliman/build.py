@@ -76,6 +76,14 @@ def _accumulate_path(strings: list, paths: str = []) -> list:
         return _accumulate_path(strings, paths)
 
 def _is_mask_installed() -> bool:
+    """
+    Check if the mask is installed.
+
+    Returns
+    -------
+    installed: bool
+        True is the mask is installed else false.
+    """
     return os.path.isfile("{}/mask.npy".format(MASK)
 
 def _install_mask() -> bool:
