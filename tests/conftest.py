@@ -10,7 +10,7 @@ PHOENIXS: list = [
         for phoe in PHOENIXS
 ]
 
-def _all_true(bools: list, true: bool = True) -> bool:
+def all_true(bools: list, true: bool = True) -> bool:
     if not true:
         return False
     elif not bools:
@@ -22,10 +22,10 @@ def _all_true(bools: list, true: bool = True) -> bool:
             else:
                 return true and bools.pop() and _all_true(bools)
 
-def _is_tensor(tensor: list) -> bool:
+def is_tensor(tensor: list) -> bool:
     def __is_tensor(tensor: list, shape: int) -> bool:
         nests: list = [isinstance(elem, list) for elem in tensor]
-        if not _all_true(nests):
+        if not all_true(nests):
             for nest in nests:
                 if nest:
                     return False
@@ -52,20 +52,23 @@ def tensor_nesting(tensor: list) -> list:
         else:
             _tensor_nesting(tensor[0], level + 1)
 
-    if not _is_tensor(tensor):
+    if not is_tensor(tensor):
         return ValueError
     else:
         return _tensor_nesting(tensor)
             
-simple: list = [[1, 1, 1, 1], [1, 1, 1, 1]]
-simple2: list = [[[1, 1], [1, 1], [1, 1]]]
-comp: list = [[1, 1], [1, 1, 1], [1, [1, 1]]]
+def is_flat_tensor(tensor: list) -> list:
+    nests: list = [isinstance(elem, list) for elem in tensor]
+    for nest in nests:
+        if nest:
+            return False
+    return True
 
 def print_tensor(tensor: list) -> None:
-    max_nesting: int = tensor_nesting(tensor)
-    
     def _print_tensor(tensor: list, nesting: int = 0) -> None:
-        if nesting == max_nesting:
+        if not isinstance(tensor, list):
+            print(nesting * "  " + "{},".format(tensor))
+        elif is_flat_tensor(tensor): 
             print(nesting * "  " + "{},".format(tensor))
         else:
             print(nesting * "  " + "[")
@@ -75,6 +78,13 @@ def print_tensor(tensor: list) -> None:
 
     return _print_tensor(tensor)
 
+simple: list = [[1, 1, 1, 1], [1, 1, 1, 1]]
+simple2: list = [[[1, 1], [1, 1], [1, 1]]]
+comp: list = [[1, 1], [1, 1, 1], [1, [1, 1]]]
+
+print_tensor(simple)
+print_tensor(simple2)
+print_tensor(comp)
 
 def setup_assets():
     pass
