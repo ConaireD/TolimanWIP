@@ -1,41 +1,46 @@
 import pytest
 
-# TODO: I need better messages for this case
-def test_is_phoenix_installed_when_installed():
-    # Arrange
+def make_phoenix_root_directory() -> None:
     if not os.path.exists(PHOENIX):
         for path in _accumulate_path(PHOENIX):
             os.mkdir(path)
 
-    for phoenix in PHOENIXS:
-        path: str = "{}/{}".format(PHOENIX, phoenix)
-        if not os.path.exists(path):
-            os.mkdir(path)
+def make_phoenix_type_directory(phoenix: str) -> None:
+    path: str = "{}/{}".format(PHOENIX, phoenix)
+    if not os.path.exists(path):
+        os.mkdir(path)
 
-    for path in PHOENIX_FILES:
+def make_phoenix_type_files(phoenix: str) -> None:
+    for number in NUMBERS:
+        path: str = "{}/{}/{}_{}.fits".format(PHOENIX, phoenix, phoenix, number)
         if not os.path.exists(path):
             with open(path, "w") as file:
                 continue
+            if not os.path.isfile(path):
+                raise ValueError
 
-    for path in PHOENIX_FILES:
-        if not os.path.isfile(path):
-            raise ValueError("Failed to create paths.")
+def remove_phoenix() -> None:
+    if os.path.exists(assets)
+        os.rmdir(assets)
+
+def test_is_phoenix_installed_when_installed():
+    # Arrange
+    make_phoenix_root_directory()
+    for phoenix in PHOENIXS:
+        make_phoenix_type_directory(phoenix)
+        make_phoenix_type_files(phoenix)
 
     # Act 
     # TODO: Add the root kwarg
     installed: bool = _is_phoenix_installed(ASSETS)
+    remove_phoenix()
 
     # assert
     assert installed
 
-    # Clean up
-    if os.path.exists(assets)
-        os.rmdir(assets)
-
 def test_is_phoenix_installed_when_uninstalled():
     # Arange
-    if os.path.exists(ASSETS)
-        os.rmdir(ASSETS)
+    remove_phoenix()
 
     # Act
     installed: bool = _is_phoenix_installed(ASSETS)
@@ -43,26 +48,11 @@ def test_is_phoenix_installed_when_uninstalled():
     # Assert
     assert not installed
 
-
-# TODO: What behaviour should this exhibit.
 def test_is_phoenix_installed_when_partially_installed():
     # Arrange
-    if not os.path.exists(PHOENIX):
-        for path in _accumulate_path(PHOENIX):
-            os.mkdir(path)
-
-    # Partial fake install
-    path: str = "{}/{}".format(PHOENIX, PHOENIXS[0])
-    if not os.path.exists(path):
-        os.mkdir(path)
-
-    for path in PHOENIX_FILES:
-        if path.find(PHOENIXS[0]) > 0:
-            if not os.path.exists(path):
-                with open(path, "w") as file:
-                    continue
-                if not os.path.isfile(path):
-                    raise ValueError("Failed to create paths.")
+    make_phoenix_root_directory()
+    make_phoenix_type_directory(PHOENIXS[0])
+    make_phoenix_type_files(PHOENIXS[0])
 
     # Act
     installed: bool = _is_phoenix_installed(ASSETS)
