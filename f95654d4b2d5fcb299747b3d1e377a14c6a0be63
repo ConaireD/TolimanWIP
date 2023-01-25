@@ -1,0 +1,1 @@
+Now curiously the use of `pytest.mark.parametrise` may be detrimetnal since `phoenix` is installed every time. I need to investigate more advanced usage of this feature with closures.
