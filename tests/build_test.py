@@ -1,4 +1,6 @@
 import pytest
+import os
+import shutil
 
 from toliman.build import (
     _is_phoenix_installed,
@@ -19,13 +21,18 @@ PHOENIX_FILES: list = [
 
 def make_phoenix_root_directory() -> None:
     if not os.path.exists(PHOENIX):
-        for path in _accumulate_path(PHOENIX):
-            os.mkdir(path)
+        for path in _accumulate_path(PHOENIX.split("/")):
+            if not os.path.exists(path):
+                os.mkdir(path)
+            if not os.path.exists(path):
+                raise ValueError
 
 def make_phoenix_type_directory(phoenix: str) -> None:
     path: str = "{}/{}".format(PHOENIX, phoenix)
     if not os.path.exists(path):
         os.mkdir(path)
+    if not os.path.exists(path):
+        raise ValueError
 
 def make_phoenix_type_files(phoenix: str) -> None:
     for number in NUMBERS:
@@ -36,9 +43,17 @@ def make_phoenix_type_files(phoenix: str) -> None:
             if not os.path.isfile(path):
                 raise ValueError
 
+def make_phoenix_catalog() -> None:
+    path: str = "{}/catalog.fits".format(PHOENIX)
+    if not os.path.exists(path):
+        with open(path, "w") as file:
+            pass
+        if not os.path.isfile(path):
+            raise ValueError
+
 def remove_phoenix() -> None:
     if os.path.exists(ASSETS):
-        os.rmdir(ASSETS)
+        shutil.rmtree(ASSETS)
 
 def test_is_phoenix_installed_when_installed():
     # Arrange
@@ -46,6 +61,7 @@ def test_is_phoenix_installed_when_installed():
     for phoenix in PHOENIXS:
         make_phoenix_type_directory(phoenix)
         make_phoenix_type_files(phoenix)
+        make_phoenix_catalog()
 
     # Act 
     # TODO: Add the root kwarg
@@ -70,6 +86,7 @@ def test_is_phoenix_installed_when_partially_installed():
     make_phoenix_root_directory()
     make_phoenix_type_directory(PHOENIXS[0])
     make_phoenix_type_files(PHOENIXS[0])
+    make_phoenix_catalog()
 
     # Act
     installed: bool = _is_phoenix_installed(ASSETS)

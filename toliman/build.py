@@ -6,7 +6,7 @@ import requests
 __author__ = "Jordan Dennis"
 __all__ = ["_is_phoenix_installed", "_install_phoenix", "_accumulate_path"]
 
-HOME: str = "toliman/assets/grid/phoenix"
+HOME: str = "grid/phoenix"
 PHOENIX_HOME: str = "https://archive.stsci.edu/hlsps/reference-atlases/cdbs/grid/phoenix"
 MASK_HOME: str = "https://github.com/ConaireD/TolimanWIP/raw/mask/mask.npy"
 PHOENIXM00: str = "phoenixm00"
@@ -23,7 +23,7 @@ PHOENIX_PATHS: str = [
     "catalog.fits"
 ]
 
-def _is_phoenix_installed() -> bool:
+def _is_phoenix_installed(root: str) -> bool:
     """
     Check if "phoenix" is installed.
 
@@ -32,12 +32,14 @@ def _is_phoenix_installed() -> bool:
     installed: bool
         True if all the phoenix files are present else false.
     """
-    if not os.path.exists(HOME):
+    home_path: str = "{}/{}".format(root, HOME)
+    if not os.path.exists(home_path):
         return False
 
     for path in PHOENIX_PATHS:
-        rel_path: str = "{}/{}".format(HOME, path)
-        if not os.path.isfile(path):
+        rel_path: str = "{}/{}".format(home_path, path)
+        if not os.path.isfile(rel_path):
+            print(rel_path)
             return False
 
     return True
