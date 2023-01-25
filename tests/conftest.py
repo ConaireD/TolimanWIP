@@ -10,42 +10,42 @@ PHOENIXS: list = [
         for phoe in PHOENIXS
 ]
 
-def tensor_nesting(tensor: list) -> list: 
-    def _all_true(bools: list, true: bool = True) -> bool:
-        if not true:
-            return False
-        elif not bools:
-            return True
-        else:
-            for elem in bools:
-                if isinstance(elem, list):
-                    return true and _all_true(elem, true)
-                else:
-                    return true and bools.pop() and _all_true(bools)
-
-    def _is_tensor(tensor: list) -> bool:
-        def __is_tensor(tensor: list, shape: int) -> bool:
-            nests: list = [isinstance(elem, list) for elem in tensor]
-            if not _all_true(nests):
-                for nest in nests:
-                    if nest:
-                        return False
-                return len(tensor) == shape
+def _all_true(bools: list, true: bool = True) -> bool:
+    if not true:
+        return False
+    elif not bools:
+        return True
+    else:
+        for elem in bools:
+            if isinstance(elem, list):
+                return true and _all_true(elem, true)
             else:
-                true: bool = True
-                length: int = len(tensor[0])
-                for nested in tensor:
-                    true: bool = true and _is_tensor(nested, length)
+                return true and bools.pop() and _all_true(bools)
 
-                return true
-        if isinstance(tensor[0], list):
-            return __is_tensor(tensor, len(tensor[0]))
-        else: 
-            for elem in tensor:
-                if isinstance(elem, list):
+def _is_tensor(tensor: list) -> bool:
+    def __is_tensor(tensor: list, shape: int) -> bool:
+        nests: list = [isinstance(elem, list) for elem in tensor]
+        if not _all_true(nests):
+            for nest in nests:
+                if nest:
                     return False
-            return True
+            return len(tensor) == shape
+        else:
+            true: bool = True
+            length: int = len(tensor[0])
+            for nested in tensor:
+                true: bool = true and _is_tensor(nested, length)
 
+            return true
+    if isinstance(tensor[0], list):
+        return __is_tensor(tensor, len(tensor[0]))
+    else: 
+        for elem in tensor:
+            if isinstance(elem, list):
+                return False
+        return True
+
+def tensor_nesting(tensor: list) -> list: 
     def _tensor_nesting(tensor: list, level: int = 0) -> int:
         if not isinstance(tensor[0], list):
             return level 
