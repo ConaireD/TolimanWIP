@@ -1,6 +1,6 @@
 import os 
 
-ASSETS: str = "toliman/assets"
+ASSETS: str = "tests/assets"
 PHOENIX: str = "{}/grid/phoenix".format(ASSETS)
 PHOENIXS: str = ["phoenixm00", "phoenixp03"]
 NUMBERS: list = [5200, 5300, 5700, 5800]
@@ -78,16 +78,16 @@ def print_tensor(tensor: list) -> None:
 
     return _print_tensor(tensor)
 
-simple: list = [[1, 1, 1, 1], [1, 1, 1, 1]]
-simple2: list = [[[1, 1], [1, 1], [1, 1]]]
-comp: list = [[1, 1], [1, 1, 1], [1, [1, 1]]]
+def setup_assets() -> None:
+    # Creating files so that they are skipped on install.
+    for path in PHOENIXS:
+        if not os.path.exists(path):
+            with open(path, "w") as file:
+                continue
 
-print_tensor(simple)
-print_tensor(simple2)
-print_tensor(comp)
+    for path in PHOENIXS:
+        if not os.path.isfile(path):
+            raise ValueError("Failed to create paths.")
 
-def setup_assets():
-    pass
-
-def _teardown_assets():
-    pass
+def _teardown_assets() -> None:
+    os.rmdir(ASSETS)    
