@@ -105,32 +105,33 @@ def _install_mask() -> bool:
 
         print("Downloading: {}.".format(MASK_HOME))
 
-#        progress: object = tqdm.tqdm(
-#            total=total_size,
-#            unit='iB', 
-#            unit_scale=True
-#        )
+        progress: object = tqdm.tqdm(
+            total=total_size,
+            unit='iB', 
+            unit_scale=True
+        )
 
         for data in response.iter_content(1024):
-#            progress.update(len(data))
+            progress.update(len(data))
             file_dev.write(data)
 
-def _install_phoenix() -> bool:
+def _install_phoenix(root: str) -> bool:
     """
     Install the mask from the web.
     """
-    if not os.path.exists(HOME):
-        for path in _accumulate_path(HOME.split("/")):
+    home_path: str = "{}/{}".format(root, HOME)
+    if not os.path.exists(home_path):
+        for path in _accumulate_path(home_path.split("/")):
             if not os.path.exists(path):
                 os.mkdir(path)
 
     for path in [PHOENIXM00, PHOENIXP03]:
-        rel_path: str = "{}/{}".format(HOME, path)
+        rel_path: str = "{}/{}".format(home_path, path)
         if not os.path.exists(rel_path):
             os.mkdir(rel_path)
 
     for file in PHOENIX_PATHS:
-        path: str = "{}/{}".format(HOME, file)
+        path: str = "{}/{}".format(home_path, file)
     
         if not os.path.isfile(path):
             url: str = "{}/{}".format(PHOENIX_HOME, file)
