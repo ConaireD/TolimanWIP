@@ -61,12 +61,10 @@ def test_is_phoenix_installed_when_partially_installed():
     assert not installed
 
     # Clean Up
-    if os.path.exists(assets)
-        os.rmdir(assets)
+    remove_phoenix()
 
-# TODO: This should be parametrisable
 @pytest.mark.parametrise("file", PHOENIX_FILES)
-def test_install_phoenix_creates_file(file: list) -> None:
+def test_install_phoenix_creates_file(file: str) -> None:
     # Arrange
     if not _is_phoenix_installed(ASSETS):
         _install_phoenix(ASSETS)
@@ -78,9 +76,25 @@ def test_install_phoenix_creates_file(file: list) -> None:
     if file == PHOENIX_FILES[-1]:
         remove_phoenix()
 
-# TODO: This should be parametrisable
-def test_install_phoenix_file_is_readable():
+@pytest.mark.parametrise("file", PHOENIX_FILES)
+def test_install_phoenix_file_is_readable(file: str):
+    # Arrange
+    if not _is_phoenix_installed(ASSETS):
+        _install_phoenix(ASSETS)
 
+    import astropy
+
+    # Act/assert
+    try:
+        with astropy.io.fits.open(file) as fits:
+            assert True
+    except IOError as ioe:
+        assert False
+
+    # Clean up
+    if file == PHOENIX_FILES[-1]:
+        remove_phoenix()
+    
 def test_accumulate_path_when_empty():
 # TODO: This should be parametrizable
 def test_accumulate_path_when_correct():
