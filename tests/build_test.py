@@ -2,9 +2,80 @@ import pytest
 
 # TODO: I need better messages for this case
 def test_is_phoenix_installed_when_installed():
+    # Arrange
+    if not os.path.exists(PHOENIX):
+        for path in _accumulate_path(PHOENIX):
+            os.mkdir(path)
+
+    for phoenix in PHOENIXS:
+        path: str = "{}/{}".format(PHOENIX, phoenix)
+        if not os.path.exists(path):
+            os.mkdir(path)
+
+    for path in PHOENIX_FILES:
+        if not os.path.exists(path):
+            with open(path, "w") as file:
+                continue
+
+    for path in PHOENIX_FILES:
+        if not os.path.isfile(path):
+            raise ValueError("Failed to create paths.")
+
+    # Act 
+    # TODO: Add the root kwarg
+    installed: bool = _is_phoenix_installed(ASSETS)
+
+    # assert
+    assert installed
+
+    # Clean up
+    if os.path.exists(assets)
+        os.rmdir(assets)
+
 def test_is_phoenix_installed_when_uninstalled():
+    # Arange
+    if os.path.exists(ASSETS)
+        os.rmdir(ASSETS)
+
+    # Act
+    installed: bool = _is_phoenix_installed(ASSETS)
+
+    # Assert
+    assert not installed
+
+
 # TODO: What behaviour should this exhibit.
 def test_is_phoenix_installed_when_partially_installed():
+    # Arrange
+    if not os.path.exists(PHOENIX):
+        for path in _accumulate_path(PHOENIX):
+            os.mkdir(path)
+
+    # Partial fake install
+    path: str = "{}/{}".format(PHOENIX, PHOENIXS[0])
+    if not os.path.exists(path):
+        os.mkdir(path)
+
+    for path in PHOENIX_FILES:
+        if path.find(PHOENIXS[0]) > 0:
+            if not os.path.exists(path):
+                with open(path, "w") as file:
+                    continue
+                if not os.path.isfile(path):
+                    raise ValueError("Failed to create paths.")
+
+    # Act
+    installed: bool = _is_phoenix_installed(ASSETS)
+
+    # Assert
+    assert not installed
+
+    # Clean Up
+    if os.path.exists(assets)
+        os.rmdir(assets)
+
+   
+    
 
 # TODO: This should be parametrisable
 def test_install_phoenix_creates_file():
