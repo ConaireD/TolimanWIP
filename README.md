@@ -2,7 +2,10 @@ TOLIMAN
 =======
 The goal of the TOLIMAN mission is to answer the question: is there a planet
 around Alpha Centauri? The critical advance represented by the TOLIMAN 
-telescope is its ability to assess a specific star. Until now telescopes have
-been designed to survey many stars and confirm (with biases) which ones may 
-have exoplanets. None have chosen a star and tried to resolutely and without 
-question find all and any exoplanets in orbit. 
+telescope is its ability to assess a specific star. The TOLIMAN mission aims to detect the 
+gravitational reflex motion of the host star induced by an Earth mass companion. For nearby stars 
+the expected signal strength is expected to
+be sub-µas - well below the diffraction limit of most telescopes. To achieve this TOLIMAN
+will be launched into space with new technologies that will attempt to beat this limit.
+This page contains the forwards model that will be used to extract any signals.
+
