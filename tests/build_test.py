@@ -64,11 +64,18 @@ def test_is_phoenix_installed_when_partially_installed():
     if os.path.exists(assets)
         os.rmdir(assets)
 
-   
-    
-
 # TODO: This should be parametrisable
-def test_install_phoenix_creates_file():
+@pytest.mark.parametrise(file = PHOENIX_FILES)
+def test_install_phoenix_creates_file(file: list) -> None:
+    # Arrange
+    remove_phoenix()
+
+    # Act
+    _install_phoenix(ASSETS)
+
+    # Act/Assert
+    assert os.path.isfile(file)
+
 # TODO: This should be parametrisable
 def test_install_phoenix_file_is_readable():
 
