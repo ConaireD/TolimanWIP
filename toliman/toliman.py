@@ -12,8 +12,6 @@ __all__ = [
     "AlphaCentauri",
     "Background",
     "_contains_instance",
-    "_simulate_alpha_cen_spectra",
-    "_simulate_background_stars",
     "_read_csv_to_jax_array",
 ]
 

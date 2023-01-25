@@ -4,6 +4,7 @@ import tqdm
 import requests
 
 __author__ = "Jordan Dennis"
+__all__ = ["_is_phoenix_installed", "_install_phoenix", "_accumulate_path"]
 
 HOME: str = "toliman/assets/grid/phoenix"
 PHOENIX_HOME: str = "https://archive.stsci.edu/hlsps/reference-atlases/cdbs/grid/phoenix"
@@ -84,7 +85,7 @@ def _is_mask_installed() -> bool:
     installed: bool
         True is the mask is installed else false.
     """
-    return os.path.isfile("{}/mask.npy".format(MASK)
+    return os.path.isfile("{}/mask.npy".format(MASK))
 
 def _install_mask() -> bool:
     """
@@ -102,14 +103,14 @@ def _install_mask() -> bool:
 
         print("Downloading: {}.".format(MASK_HOME))
 
-        progress: object = tqdm.tqdm(
-            total=total_size,
-            unit='iB', 
-            unit_scale=True
-        )
+#        progress: object = tqdm.tqdm(
+#            total=total_size,
+#            unit='iB', 
+#            unit_scale=True
+#        )
 
         for data in response.iter_content(1024):
-            progress.update(len(data))
+#            progress.update(len(data))
             file_dev.write(data)
 
 def _install_phoenix() -> bool:
@@ -139,14 +140,14 @@ def _install_phoenix() -> bool:
 
                 print("Downloading: {}.".format(url))
 
-                progress: object = tqdm.tqdm(
-                    total=total_size,
-                    unit='iB', 
-                    unit_scale=True
-                )
+#                progress: object = tqdm.tqdm(
+#                    total=total_size,
+#                    unit='iB', 
+#                    unit_scale=True
+#                )
 
                 for data in response.iter_content(1024):
-                    progress.update(len(data))
+#                    progress.update(len(data))
                     file_dev.write(data)
 
 def _simulate_alpha_cen_spectra(number_of_wavelengths: int = 25) -> None:
@@ -289,7 +290,7 @@ def _normalise(arr: float) -> float:
     return (arr - arr.min()) / arr.ptp()
 
 
-def main():
+def build():
     print("Building `toliman`!")
     print("-------------------")
 
@@ -312,7 +313,3 @@ def main():
         print("Done!")
 
     print("`toliman` built!")
-
-
-
-main()

@@ -1,5 +1,22 @@
 import pytest
 
+from toliman.build import (
+    _is_phoenix_installed,
+    _install_phoenix,
+    _accumulate_path,
+)
+
+# TODO: Make into fixtures
+ASSETS: str = "tests/assets"
+PHOENIX: str = "{}/grid/phoenix".format(ASSETS)
+PHOENIXS: str = ["phoenixm00", "phoenixp03"]
+NUMBERS: list = [5200, 5300, 5700, 5800]
+PHOENIX_FILES: list = [
+    "{}/{}/{}_{}.fits".format(PHOENIX, phoe, phoe, num) 
+        for num in NUMBERS 
+        for phoe in PHOENIXS
+]
+
 def make_phoenix_root_directory() -> None:
     if not os.path.exists(PHOENIX):
         for path in _accumulate_path(PHOENIX):
@@ -20,8 +37,8 @@ def make_phoenix_type_files(phoenix: str) -> None:
                 raise ValueError
 
 def remove_phoenix() -> None:
-    if os.path.exists(assets)
-        os.rmdir(assets)
+    if os.path.exists(ASSETS):
+        os.rmdir(ASSETS)
 
 def test_is_phoenix_installed_when_installed():
     # Arrange
@@ -63,7 +80,7 @@ def test_is_phoenix_installed_when_partially_installed():
     # Clean Up
     remove_phoenix()
 
-@pytest.mark.parametrise("file", PHOENIX_FILES)
+@pytest.mark.parametrize("file", PHOENIX_FILES)
 def test_install_phoenix_creates_file(file: str) -> None:
     # Arrange
     if not _is_phoenix_installed(ASSETS):
@@ -76,7 +93,7 @@ def test_install_phoenix_creates_file(file: str) -> None:
     if file == PHOENIX_FILES[-1]:
         remove_phoenix()
 
-@pytest.mark.parametrise("file", PHOENIX_FILES)
+@pytest.mark.parametrize("file", PHOENIX_FILES)
 def test_install_phoenix_file_is_readable(file: str):
     # Arrange
     if not _is_phoenix_installed(ASSETS):
@@ -95,37 +112,37 @@ def test_install_phoenix_file_is_readable(file: str):
     if file == PHOENIX_FILES[-1]:
         remove_phoenix()
     
-def test_accumulate_path_when_empty():
-# TODO: This should be parametrizable
-def test_accumulate_path_when_correct():
-
-# TODO: These should all only run if the first test passes.
-def test_install_mask_creates_file():
-def test_install_mask_is_readable():
-def test_install_mask_is_correct_shape():
-
-def test_is_mask_installed_when_false():
-def test_is_mask_installed_when_true():
-
-# TODO: Parametrize across multiple ndim.
-def test_normalise_when_correct():
-# TODO: Parametrize across a few different types.
-def test_normalise_with_wrong_type():
-
-def test_simulate_background_stars_has_correct_default_nrows():
-def test_simulate_background_stars_has_correct_nrows():
-def test_simulate_background_stars_has_correct_ncols():
-def test_simulate_background_stars_is_numeric():
-
-def test_simulate_alpha_cen_spectrum_has_correct_default_nrows():
-def test_simulate_alpha_cen_spectrum_has_correct_nrows():
-def test_simulate_alpha_cen_spectrum_has_correct_ncols():
-def test_simulate_alpha_cen_spectrum_is_numeric():
-
-def test_build_makes_background_csv():
-def test_build_makes_spectra_csv():
-def test_build_makes_phoenix_when_not_installed():
-def test_build_doesnt_make_phoenix_when_installed():
-def test_build_makes_mask_npy_when_not_installed():
-def test_build_doesnt_make_mask_npy_when_installed()
+#def test_accumulate_path_when_empty():
+## TODO: This should be parametrizable
+#def test_accumulate_path_when_correct():
+#
+## TODO: These should all only run if the first test passes.
+#def test_install_mask_creates_file():
+#def test_install_mask_is_readable():
+#def test_install_mask_is_correct_shape():
+#
+#def test_is_mask_installed_when_false():
+#def test_is_mask_installed_when_true():
+#
+## TODO: Parametrize across multiple ndim.
+#def test_normalise_when_correct():
+## TODO: Parametrize across a few different types.
+#def test_normalise_with_wrong_type():
+#
+#def test_simulate_background_stars_has_correct_default_nrows():
+#def test_simulate_background_stars_has_correct_nrows():
+#def test_simulate_background_stars_has_correct_ncols():
+#def test_simulate_background_stars_is_numeric():
+#
+#def test_simulate_alpha_cen_spectrum_has_correct_default_nrows():
+#def test_simulate_alpha_cen_spectrum_has_correct_nrows():
+#def test_simulate_alpha_cen_spectrum_has_correct_ncols():
+#def test_simulate_alpha_cen_spectrum_is_numeric():
+#
+#def test_build_makes_background_csv():
+#def test_build_makes_spectra_csv():
+#def test_build_makes_phoenix_when_not_installed():
+#def test_build_doesnt_make_phoenix_when_installed():
+#def test_build_makes_mask_npy_when_not_installed():
+#def test_build_doesnt_make_mask_npy_when_installed()
 
