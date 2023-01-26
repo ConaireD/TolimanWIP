@@ -4,22 +4,17 @@ import os
 import paths
 
 __author__ = "Jordan Dennis"
-__all__ = ["_is_phoenix_installed", "_install_phoenix"]
+__all__ = ["is_phoenix_installed", "install_phoenix"]
 
 HOME: str = "grid/phoenix"
 URL: str = "https://archive.stsci.edu/hlsps/reference-atlases/cdbs/grid/phoenix"
 M00: str = "phoenixm00"
 P03: str = "phoenixp03"
-PATHS: str = [
-    "{}/{}_5200.fits".format(PHOENIXM00, PHOENIXM00),
-    "{}/{}_5300.fits".format(PHOENIXM00, PHOENIXM00),
-    "{}/{}_5700.fits".format(PHOENIXM00, PHOENIXM00),
-    "{}/{}_5800.fits".format(PHOENIXM00, PHOENIXM00),
-    "{}/{}_5200.fits".format(PHOENIXP03, PHOENIXP03),
-    "{}/{}_5300.fits".format(PHOENIXP03, PHOENIXP03),
-    "{}/{}_5700.fits".format(PHOENIXP03, PHOENIXP03),
-    "{}/{}_5800.fits".format(PHOENIXP03, PHOENIXP03),
-    "catalog.fits"
+NUMS: list = [5200, 5300, 5700, 5900]
+PATHS: str = ["catalog.fits"] + [
+    "{}/{}_{}.fits".format(HOME, phoenix_t, phoenix_t, num) 
+        for num in NUMS 
+        for phoenix_t in [M00, P03]
 ]
 
 
@@ -32,42 +27,43 @@ def is_phoenix_installed(root: str) -> bool:
     installed: bool
         True if all the phoenix files are present else false.
     """
-    home_path: str = "{}/{}".format(root, HOME)
-    if not os.path.exists(home_path):
+    home: str = "{}/{}".format(root, HOME)
+    if not os.path.exists(home):
         return False
 
-    for path in PHOENIX_PATHS:
-        rel_path: str = "{}/{}".format(home_path, path)
-        if not os.path.isfile(rel_path):
-            print(rel_path)
+    for path in PATHS:
+        file: str = "{}/{}".format(home, path)
+        if not os.path.isfile(file):
             return False
 
     return True
+
+def http_stream(url: str)
 
 def install_phoenix(root: str) -> bool:
     """
     Install the mask from the web.
     """
-    home_path: str = "{}/{}".format(root, HOME)
-    if not os.path.exists(home_path):
-        for path in _accumulate_path(home_path.split("/")):
+    home: str = "{}/{}".format(root, HOME)
+    if not os.path.exists(home):
+        for path in paths.accumulate(home.split("/")):
             if not os.path.exists(path):
                 os.mkdir(path)
 
-    for path in [PHOENIXM00, PHOENIXP03]:
-        rel_path: str = "{}/{}".format(home_path, path)
+    for path in [M00, P03]:
+        rel_path: str = "{}/{}".format(home, path)
         if not os.path.exists(rel_path):
             os.mkdir(rel_path)
 
-    for file in PHOENIX_PATHS:
-        path: str = "{}/{}".format(home_path, file)
+    for file in PATHS:
+        path: str = "{}/{}".format(home, file)
     
         if not os.path.isfile(path):
-            url: str = "{}/{}".format(PHOENIX_HOME, file)
+            url: str = "{}/{}".format(HOME, file)
 
             with open(path, "wb") as file_dev:
-                url: str = "{}/{}".format(PHOENIX_HOME, file)
-                response: iter = requests.get(url, stream=True)
+                url: str = "{}/{}".format(HOME, file)
+                response: iter = requests.get(url)
                 total_size: int = int(response.headers.get('content-length', 0))
 
                 print("Downloading: {}.".format(url))
