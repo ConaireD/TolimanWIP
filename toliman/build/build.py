@@ -5,8 +5,6 @@ import tqdm
 import requests
 
 __author__ = "Jordan Dennis"
-__all__ = ["_is_phoenix_installed", "_install_phoenix", "_accumulate_path"]
-
 
 def build():
     print("Building `toliman`!")

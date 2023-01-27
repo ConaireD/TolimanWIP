@@ -1,7 +1,7 @@
 import os
-import paths
-import https
-import pysynphot
+import toliman.build.paths as paths
+import toliman.build.https as https
+import warnings
 
 __author__ = "Jordan Dennis"
 __all__ = [
@@ -10,6 +10,8 @@ __all__ = [
     "make_phoenix_dirs",
     "make_phoenix_spectra",
     "save_phoenix_spectra",
+    "clip_phoenix_spectra",
+    "resample_phoenix_spectra",
 ]
 
 HOME: str = "grid/phoenix"
@@ -21,9 +23,9 @@ WAVES: int = 0
 ALPHA_CEN_A: int = 1
 ALPHA_CEN_B: int = 2
 PATHS: str = ["catalog.fits"] + [
-    "{}/{}_{}.fits".format(HOME, phoenix_t, phoenix_t, num) 
+    "{}/{}_{}.fits".format(pnx, pnx, num) 
         for num in NUMS 
-        for phoenix_t in [M00, P03]
+        for pnx in [M00, P03]
 ]
 
 def is_phoenix_installed(root: str) -> bool:
@@ -84,14 +86,10 @@ def make_phoenix_dirs(root: str) -> None:
             if not os.path.exists(path):
                 os.mkdir(path)
 
-    paths: list = [
-        paths.concat(home, pnx) 
-            for pnx in [M00, P03]
-    ]
-
-    for path in paths:
-        if not os.path.exists(rel_path):
-            os.mkdir(rel_path)
+    for pnx in [M00, P03]:
+        path: str = paths.concat([home, pnx])
+        if not os.path.exists(path):
+            os.mkdir(path)
 
 def install_phoenix(root: str, /, full: bool = False) -> bool:
     """
@@ -116,17 +114,19 @@ def install_phoenix(root: str, /, full: bool = False) -> bool:
     """
     make_phoenix_dirs(root)
 
+    if not full:
+        warnings.warn("full = False")
+
     for file in PATHS:
-        path: str = paths.concat([home, file])
+        path: str = paths.concat([root, HOME, file])
         url: str = paths.concat([URL, file])
 
         print("Downloading: {}.".format(url))
 
         if full:
-            download_file_from_https(file, url)
+            https.download_file_from_https(path, url)
         else: 
-            warning.warn("full = False")
-            download_byte_from_https(file, url)
+            https.download_byte_from_https(path, url)
 
 def set_phoenix_environ(root: str) -> None:
     """
@@ -156,6 +156,7 @@ def set_phoenix_environ(root: str) -> None:
 
     os.environ[SYN] = root
 
+# TODO: Document
 def make_phoenix_spectra(root: str, number_of_wavelengths: int) -> float:
     """
     Generate the spectra using phoenix.
@@ -167,6 +168,8 @@ def make_phoenix_spectra(root: str, number_of_wavelengths: int) -> float:
     ALPHA_CEN_B: int = 2
 
     """
+    import pysynphot
+
     set_phoenix_environment(root)
 
     alpha_cen_a_spectrum: float = pysynphot.Icat(

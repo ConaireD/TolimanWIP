@@ -1,5 +1,12 @@
 import os 
 
+__author__ = "Jordan Dennis"
+__all__ = [
+    "accumulate",
+    "concat",
+]
+
+
 def accumulate(strings: list, paths: str = []) -> list:
     """
     Incrementally build a path from a list.
@@ -30,7 +37,7 @@ def accumulate(strings: list, paths: str = []) -> list:
         if not paths:
             paths.append(strings.pop(0))
         else:
-            paths.append(concat(paths[-1], strings.pop(0)))
+            paths.append(concat([paths[-1], strings.pop(0)]))
         return accumulate(strings, paths)
 
 def concat(paths: list) -> str:

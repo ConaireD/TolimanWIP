@@ -1,5 +1,15 @@
 import requests
 import os
+import warnings
+
+__author__ = "Jordan Dennis"
+__all__ = [
+    "get_https_stream",
+    "download_file_from_https",
+    "download_byte_from_https",
+]
+
+BYTE: int = 1024
 
 def get_https_stream(url: str) -> object:
     """
@@ -27,8 +37,10 @@ def get_https_stream(url: str) -> object:
     """
     response: iter = requests.get(url, stream=True)
     
-    if not stream.response_code == 200:
+    if not response.status_code == 200:
         raise ValueError
+
+    return response
 
 def download_file_from_https(path: str, url: object) -> None:
     """
@@ -61,13 +73,13 @@ def download_file_from_https(path: str, url: object) -> None:
         warnings.warn("`path` exists. Skipping download.")
         return None
 
-    response: iter = get_https_stream(url)
+    response: iter = get_https_stream(url).iter_content(BYTE)
 
     with open(path, "wb") as file:
         for data in response:
             file.write(data)
 
-def download_byte_from_https(file: str, stream: object) -> None:
+def download_byte_from_https(path: str, url: object) -> None:
     """
     Download a single byte of a file from the internet.
 
@@ -98,8 +110,7 @@ def download_byte_from_https(file: str, stream: object) -> None:
         warnings.warn("`path` exists. Skipping download.")
         return None
 
-    response: iter = get_https_stream(url)
+    response: iter = get_https_stream(url).iter_content(BYTE)
 
     with open(path, "wb") as file:
-        file.write(next(stream))
-
+        file.write(next(response))
