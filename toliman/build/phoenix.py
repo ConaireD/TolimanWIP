@@ -2,6 +2,7 @@ import os
 import paths
 import https
 import pysynphot
+import dataclasses
 
 __author__ = "Jordan Dennis"
 __all__ = [
@@ -153,7 +154,15 @@ def set_phoenix_environ(root: str) -> None:
 
     os.environ[SYN] = root
 
-def make_phoenix_spectra(root: str, number_of_wavelengths: int) -> float:
+@dataclasses.dataclass
+class PhoenixSpectra(object):
+    """
+    """
+    wavelengths: float
+    alpha_cen_a_fluxes: float
+    alpha_cen_b_fluxes: float
+
+def make_phoenix_spectra(root: str) -> float:
     """
     Generate the spectra using phoenix.
 
@@ -180,15 +189,13 @@ def make_phoenix_spectra(root: str, number_of_wavelengths: int) -> float:
         ALPHA_CEN_B_SURFACE_GRAV,
     )
 
-    spectra: float = np.array([
-            math.angstrom_to_m(alpha_cen_a_spectrum.wave),
-            math.normalise(alpha_cen_a_spectrum.flux),
-            math.normalise(alpha_cen_b_spectrum.flux),
-        ], dtype=float)
+    return PhoenixSpectra(
+        wavelengths = alpha_cen_a_spectrum.wave,
+        alpha_cen_a_spectrum = math.normalise(alpha_cen_a_spectrum.flux),
+        alpha_cen_b_spectrum = math.normalise(alpha_cen_b_spectrum.flux),
+    )
 
-    return spectra
-
-def clip_phoenix_spectra(spectra: float) -> float:
+def clip_phoenix_spectra(spectra: object) -> object:
     """
     Select the spectra within the filter.
 
@@ -203,14 +210,12 @@ def clip_phoenix_spectra(spectra: float) -> float:
     spectra: float
         The spectra within the filter. 
     """
-    WAVES: int = 0
-
     decision: bool = np.logical_and(
-        (FILTER_MIN_WAVELENGTH < spectra[WAVES]),
-        (spectra[WAVES] < FILTER_MAX_WAVELENGTH)
+        (FILTER_MIN_WAVELENGTH < spectra.wavelengths),
+        (spectra.wavelengths < FILTER_MAX_WAVELENGTH)
     )
 
-    return spectra[:, decision]
+    return PhoenixSpectra[:, decision]
 
 def resample_phoenix_spectra(spectra: float, number_of_wavelengths: int) -> float:
     """
