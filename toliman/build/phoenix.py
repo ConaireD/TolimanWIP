@@ -51,18 +51,92 @@ def get_https_stream(url: str) -> object:
     ----------
     url: str 
         The website to visit.
+
+    Returns
+    -------
+    stream: object 
+        An iterable representing the website data.
+
+    Examples
+    --------
+    >>> get_https_stream("https:/im/not/real.com")
+    ::: ValueError
     """
     response: iter = requests.get(url, stream=True)
     
     if not stream.response_code == 200:
         raise ValueError
 
-def download_file_from_https(path: str, stream: object) -> None:
+def download_file_from_https(path: str, url: object) -> None:
+    """
+    Download a file from the internet.
+
+    This will save a file on the internet to `path`. It is assumed 
+    that `path` does not currently exist. If it does a warning is 
+    given and the download is skipped.
+
+    Parameters
+    ----------
+    path: str
+        The location to save the file to.
+    url: str
+        The address of the information on the internet.
+
+    Examples
+    --------
+    >>> import os
+    >>> os.mkdir("tmp")
+    >>> with open("tmp/text.txt", "w") as file:
+    >>>     pass
+    >>> download_file_from_https("tmp/text.txt", "github.com")
+    ::: "`path` exists. Skipping download"
+    >>> download_file_from_https("tmp/github.txt", "github.com")
+    >>> os.path.isfile("tmp/github.txt")
+    ::: True
+    """
+    if os.path.isfile(path):
+        warnings.warn("`path` exists. Skipping download.")
+        return None
+
+    response: iter = get_https_stream(url)
+
     with open(path, "wb") as file:
-        for data in stream:
+        for data in response:
             file.write(data)
 
 def download_byte_from_https(file: str, stream: object) -> None:
+    """
+    Download a single byte of a file from the internet.
+
+    This will save the first byte of a file on the internet to `path`.
+    If `path` already points to a file a warning is printed and the 
+    download is skipped.
+
+    Parameters
+    ----------
+    path: str
+        The location to save the file to.
+    url: str
+        The address of the information on the internet.
+
+    Examples
+    --------
+    >>> import os
+    >>> os.mkdir("tmp")
+    >>> with open("tmp/text.txt", "w") as file:
+    >>>     pass
+    >>> download_byte_from_https("tmp/text.txt", "github.com")
+    ::: "`path` exists. Skipping download"
+    >>> download_byte_from_https("tmp/github.txt", "github.com")
+    >>> os.path.isfile("tmp/github.txt")
+    ::: True
+    """
+    if os.path.isfile(path):
+        warnings.warn("`path` exists. Skipping download.")
+        return None
+
+    response: iter = get_https_stream(url)
+
     with open(path, "wb") as file:
         file.write(next(stream))
 
@@ -86,9 +160,7 @@ def install_phoenix(root: str, /, full: bool = False) -> bool:
     for file in PATHS:
         path: str = "{}/{}".format(home, file)
     
-        if not os.path.isfile(path):
             url: str = "{}/{}".format(URL, file)
-            response: iter = get_https_stream(url)
 
             print("Downloading: {}.".format(url))
 
