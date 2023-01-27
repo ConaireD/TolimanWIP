@@ -21,8 +21,7 @@ def accumulate(strings: list, paths: str = []) -> list:
 
     Examples
     --------
-    >>> strings: list = ["root", "dev", "null"]
-    >>> _accumulate_path(strings)
+    >>> _accumulate_path(["root", "dev", "null"])
     ::: ["root", "root/dev", "root/dev/null"]
     """
     if not strings:
@@ -31,5 +30,26 @@ def accumulate(strings: list, paths: str = []) -> list:
         if not paths:
             paths.append(strings.pop(0))
         else:
-            paths.append(paths[-1] + "/" + strings.pop(0))
-        return _accumulate_path(strings, paths)
+            paths.append(concat(paths[-1], strings.pop(0)))
+        return accumulate(strings, paths)
+
+def concat(paths: list) -> str:
+    """
+    Fuse paths together.
+
+    Parameters
+    ----------
+    paths: list
+        A list of paths/files to concatenate.
+
+    Returns
+    -------
+    path: str
+        A path made from the other paths.
+
+    Examples
+    --------
+    >>> concat(["root", "dev", "null"])
+    ::: "root/dev/null"`
+    """
+    return "/".join(paths)

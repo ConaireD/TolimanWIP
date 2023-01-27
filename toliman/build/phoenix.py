@@ -27,12 +27,12 @@ def is_phoenix_installed(root: str) -> bool:
     installed: bool
         True if all the phoenix files are present else false.
     """
-    home: str = "{}/{}".format(root, HOME)
+    home: str = paths.concat([root, HOME])
     if not os.path.exists(home):
         return False
 
     for path in PATHS:
-        file: str = "{}/{}".format(home, path)
+        file: str = paths.concat([home, path])
         if not os.path.isfile(file):
             return False
 
@@ -66,18 +66,15 @@ def download_byte_from_https(file: str, stream: object) -> None:
     with open(path, "wb") as file:
         file.write(next(stream))
 
-def concatenate(paths: list) -> str:
-    return "{}/{}".format(*paths)
-
 def make_phoenix_dirs(root: str) -> None:
-    home: str = "{}/{}".format(root, HOME)
+    home: str = paths.concat([root, HOME])
     if not os.path.exists(home):
         for path in paths.accumulate(home.split("/")):
             if not os.path.exists(path):
                 os.mkdir(path)
 
     for path in [M00, P03]:
-        rel_path: str = "{}/{}".format(home, path)
+        rel_path: str = paths.concat([home, path])
         if not os.path.exists(rel_path):
             os.mkdir(rel_path)
 
