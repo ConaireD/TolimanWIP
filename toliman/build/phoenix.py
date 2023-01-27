@@ -66,10 +66,10 @@ def download_byte_from_https(file: str, stream: object) -> None:
     with open(path, "wb") as file:
         file.write(next(stream))
 
-def install_phoenix(root: str, /, full: bool = False) -> bool:
-    """
-    Install the mask from the web.
-    """
+def concatenate(paths: list) -> str:
+    return "{}/{}".format(*paths)
+
+def make_phoenix_dirs(root: str) -> None:
     home: str = "{}/{}".format(root, HOME)
     if not os.path.exists(home):
         for path in paths.accumulate(home.split("/")):
@@ -81,6 +81,11 @@ def install_phoenix(root: str, /, full: bool = False) -> bool:
         if not os.path.exists(rel_path):
             os.mkdir(rel_path)
 
+def install_phoenix(root: str, /, full: bool = False) -> bool:
+    """
+    Install the mask from the web.
+    """
+
     for file in PATHS:
         path: str = "{}/{}".format(home, file)
     
@@ -88,11 +93,13 @@ def install_phoenix(root: str, /, full: bool = False) -> bool:
             url: str = "{}/{}".format(URL, file)
             response: iter = get_https_stream(url)
 
-            if full:
-                print("Downloading: {}.".format(url))
+            print("Downloading: {}.".format(url))
 
+            if full:
+                download_file_from_https(file, response)
             else: 
-                print("Downloading: {}".format(url))
+                warning.warn("full = False")
+                download_byte_from_https(file, response)
 
 def simulate_alpha_cen_spectra(number_of_wavelengths: int = 25) -> None:
     """
