@@ -39,13 +39,32 @@ def is_phoenix_installed(root: str) -> bool:
     return True
 
 def get_https_stream(url: str) -> object:
+    """
+    Load a website as an iterable.
+
+    This function is used to lazily load a website. Although the total 
+    runtime may be slower it allows for much faster tests by permitting
+    only a small chunk of the website to be downloaded at a time.
+    `get_https_stream` raises a `ValueError` upon a failure.
+
+    Parameters
+    ----------
+    url: str 
+        The website to visit.
+    """
     response: iter = requests.get(url, stream=True)
     
-def is_https_valid(stream: object) -> bool:
-    if stream.response_code == 200:
-        return True
+    if not stream.response_code == 200:
+        raise ValueError
 
-    return False
+def download_file_from_https(path: str, stream: object) -> None:
+    with open(path, "wb") as file:
+        for data in stream:
+            file.write(data)
+
+def download_byte_from_https(file: str, stream: object) -> None:
+    with open(path, "wb") as file:
+        file.write(next(stream))
 
 def install_phoenix(root: str, /, full: bool = False) -> bool:
     """
@@ -66,31 +85,14 @@ def install_phoenix(root: str, /, full: bool = False) -> bool:
         path: str = "{}/{}".format(home, file)
     
         if not os.path.isfile(path):
-            url: str = "{}/{}".format(HOME, file)
-
-            url: str = "{}/{}".format(HOME, file)
+            url: str = "{}/{}".format(URL, file)
             response: iter = get_https_stream(url)
-
-            if not is_https_valid(response):
-                raise ValueError
 
             if full:
                 print("Downloading: {}.".format(url))
 
-                with open(path, "wb") as file_dev:
-                    for data in response.iter_content(1024):
-                        file_dev.write(data)
             else: 
                 print("Downloading: {}".format(url))
-                warnings.warn(
-                    "`full = False` so only the first 1kB of data " +\
-                    "will be downloaded."
-                )
-
-                data: iter = reponse.iter_content(1024)
-
-                with open(path, "wb") as file_dev:
-                    file_dev.write(next(data))
 
 def simulate_alpha_cen_spectra(number_of_wavelengths: int = 25) -> None:
     """
