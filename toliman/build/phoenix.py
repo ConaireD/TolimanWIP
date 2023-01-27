@@ -47,7 +47,7 @@ def is_https_valid(stream: object) -> bool:
 
     return False
 
-def install_phoenix(root: str) -> bool:
+def install_phoenix(root: str, /, full: bool = False) -> bool:
     """
     Install the mask from the web.
     """
@@ -68,22 +68,29 @@ def install_phoenix(root: str) -> bool:
         if not os.path.isfile(path):
             url: str = "{}/{}".format(HOME, file)
 
-            with open(path, "wb") as file_dev:
-                url: str = "{}/{}".format(HOME, file)
-                response: iter = requests.get(url)
-                total_size: int = int(response.headers.get('content-length', 0))
+            url: str = "{}/{}".format(HOME, file)
+            response: iter = get_https_stream(url)
 
+            if not is_https_valid(response):
+                raise ValueError
+
+            if full:
                 print("Downloading: {}.".format(url))
 
-                progress: object = tqdm.tqdm(
-                    total=total_size,
-                    unit='iB', 
-                    unit_scale=True
+                with open(path, "wb") as file_dev:
+                    for data in response.iter_content(1024):
+                        file_dev.write(data)
+            else: 
+                print("Downloading: {}".format(url))
+                warnings.warn(
+                    "`full = False` so only the first 1kB of data " +\
+                    "will be downloaded."
                 )
 
-                for data in response.iter_content(1024):
-                    progress.update(len(data))
-                    file_dev.write(data)
+                data: iter = reponse.iter_content(1024)
+
+                with open(path, "wb") as file_dev:
+                    file_dev.write(next(data))
 
 def simulate_alpha_cen_spectra(number_of_wavelengths: int = 25) -> None:
     """
