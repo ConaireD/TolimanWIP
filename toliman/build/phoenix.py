@@ -38,7 +38,14 @@ def is_phoenix_installed(root: str) -> bool:
 
     return True
 
-def http_stream(url: str)
+def get_https_stream(url: str) -> object:
+    response: iter = requests.get(url, stream=True)
+    
+def is_https_valid(stream: object) -> bool:
+    if stream.response_code == 200:
+        return True
+
+    return False
 
 def install_phoenix(root: str) -> bool:
     """
