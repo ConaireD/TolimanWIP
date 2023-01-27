@@ -17,6 +17,9 @@ URL: str = "https://archive.stsci.edu/hlsps/reference-atlases/cdbs/grid/phoenix"
 M00: str = "phoenixm00"
 P03: str = "phoenixp03"
 NUMS: list = [5200, 5300, 5700, 5900]
+WAVES: int = 0
+ALPHA_CEN_A: int = 1
+ALPHA_CEN_B: int = 2
 PATHS: str = ["catalog.fits"] + [
     "{}/{}_{}.fits".format(HOME, phoenix_t, phoenix_t, num) 
         for num in NUMS 
@@ -203,8 +206,6 @@ def clip_phoenix_spectra(spectra: float) -> float:
     spectra: float
         The spectra within the filter. 
     """
-    WAVES: int = 0
-
     decision: bool = np.logical_and(
         (FILTER_MIN_WAVELENGTH < spectra[WAVES]),
         (spectra[WAVES] < FILTER_MAX_WAVELENGTH)
@@ -237,7 +238,7 @@ def resample_phoenix_spectra(spectra: float, number_of_wavelengths: int) -> floa
     resample_by: int = resample_size // number_of_wavelengths 
     return math.downsample_along_axis(spectra, resample_by, axis=1)
 
-def save_phoenix_spectra(number_of_wavelengths: int = 25) -> None:
+def save_phoenix_spectra(root: str, number_of_wavelengths: int = 25) -> None:
     """
     Simulate the spectrum of the alpha centauri binary using `pysynphot`.
 
@@ -250,13 +251,14 @@ def save_phoenix_spectra(number_of_wavelengths: int = 25) -> None:
         The number of wavelengths that you wish to use for the simulation.
         The are taken from the `pysynphot` output by binning.
     """
-    spectra: float = resample_phoenix_spectraclip_phoenix_spectra(make_phoenix_spectra(root))
+    spectra: float = resample_phoenix_spectra(
+        clip_phoenix_spectra(make_phoenix_spectra(root)),
+        number_of_wavelengths
+    )
 
-    WAVES: int = 0
-    ALPHA_CEN_A: int = 1
-    ALPHA_CEN_B: int = 2
+    file: str = paths.concat([root, "spectra.csv"])
 
-    with open("toliman/assets/spectra.csv", "w") as fspectra:
+    with open(file, "w") as fspectra:
         fspectra.write("alpha cen a waves (m), ")
         fspectra.write("alpha cen a flux (W/m/m), ")
         fspectra.write("alpha cen b flux (W/m/m)\n")
