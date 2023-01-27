@@ -154,6 +154,16 @@ def set_phoenix_environ(root: str) -> None:
     os.environ[SYN] = root
 
 def make_phoenix_spectra(root: str, number_of_wavelengths: int) -> float:
+    """
+    Generate the spectra using phoenix.
+
+    The spectrum is returned in an array so that the leading axis
+    can be indexed via the following convention.
+    WAVES: int = 0
+    ALPHA_CEN_A: int = 1
+    ALPHA_CEN_B: int = 2
+
+    """
     set_phoenix_environment(root)
 
     alpha_cen_a_spectrum: float = pysynphot.Icat(
@@ -170,10 +180,6 @@ def make_phoenix_spectra(root: str, number_of_wavelengths: int) -> float:
         ALPHA_CEN_B_SURFACE_GRAV,
     )
 
-    WAVES: int = 0
-    ALPHA_CEN_A: int = 1
-    ALPHA_CEN_B: int = 2
-
     spectra: float = np.array([
             math.angstrom_to_m(alpha_cen_a_spectrum.wave),
             math.normalise(alpha_cen_a_spectrum.flux),
@@ -181,6 +187,32 @@ def make_phoenix_spectra(root: str, number_of_wavelengths: int) -> float:
         ], dtype=float)
 
     return spectra
+
+def clip_phoenix_spectra(spectra: float) -> float:
+    """
+    Select the spectra within the filter.
+
+    Parameters
+    ----------
+    spectra: float
+        The spectra representing alpha centrauri across the entire 
+        electromagnetic spectrum.
+
+    Returns
+    -------
+    spectra: float
+        The spectra within the filter. 
+    """
+    WAVES: int = 0
+
+    decision: bool = np.logical_and(
+        (FILTER_MIN_WAVELENGTH < spectra[WAVES]),
+        (spectra[WAVES] < FILTER_MAX_WAVELENGTH)
+    )
+
+    return spectra[:, decision]
+
+def resample_phoenix_spectra
 
 
 def save_phoenix_spectra(number_of_wavelengths: int = 25) -> None:
@@ -196,46 +228,11 @@ def save_phoenix_spectra(number_of_wavelengths: int = 25) -> None:
         The number of wavelengths that you wish to use for the simulation.
         The are taken from the `pysynphot` output by binning.
     """
-
-
-    def angstrom_to_m(angstrom: float) -> float:
-        m_per_angstrom: float = 1e-10
-        return m_per_angstrom * angstrom
-
-    alpha_cen_a_spectrum: float = pysynphot.Icat(
-        "phoenix",
-        ALPHA_CEN_A_SURFACE_TEMP,
-        ALPHA_CEN_A_METALICITY,
-        ALPHA_CEN_A_SURFACE_GRAV,
-    )
-
-    alpha_cen_b_spectrum: float = pysynphot.Icat(
-        "phoenix",
-        ALPHA_CEN_B_SURFACE_TEMP,
-        ALPHA_CEN_B_METALICITY,
-        ALPHA_CEN_B_SURFACE_GRAV,
-    )
+    spectra: float = clip_phoenix_spectra(make_phoenix_spectra(root))
 
     WAVES: int = 0
     ALPHA_CEN_A: int = 1
     ALPHA_CEN_B: int = 2
-
-    spectra: float = np.array([
-            angstrom_to_m(alpha_cen_a_spectrum.wave),
-            math.normalise(alpha_cen_a_spectrum.flux),
-            math.normalise(alpha_cen_b_spectrum.flux),
-        ], dtype=float)
-
-    del alpha_cen_a_spectrum, alpha_cen_b_spectrum
-
-    decision: bool = np.logical_and(
-        (FILTER_MIN_WAVELENGTH < spectra[WAVES]),
-        (spectra[WAVES] < FILTER_MAX_WAVELENGTH)
-    )
-
-    spectra: float = spectra[:, decision]
-
-    del decision
 
     size: int = spectra[WAVES].size
     resample_size: int = size - size % number_of_wavelengths
