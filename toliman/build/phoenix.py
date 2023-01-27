@@ -17,7 +17,6 @@ PATHS: str = ["catalog.fits"] + [
         for phoenix_t in [M00, P03]
 ]
 
-
 def is_phoenix_installed(root: str) -> bool:
     """
     Check if "phoenix" is installed.
@@ -39,34 +38,86 @@ def is_phoenix_installed(root: str) -> bool:
     return True
 
 def make_phoenix_dirs(root: str) -> None:
+    """
+    Build the directory structure demanded by `pysynphot`.
+
+    The directory structure that `pysynphot` needs is
+    ```
+    root/
+        grid/
+            phoenix/
+                phoenixm00/
+                phoenixp03/
+    ```
+
+    Parameters
+    ----------
+    root: str
+        The directory in which to build.
+
+    Examples
+    --------
+    >>> import os
+    >>> os.mkdir("tmp")
+    >>> make_phoenix_dirs("tmp")
+    >>> os.path.exists("tmp/grid")
+    ::: True
+    >>> os.path.exists("tmp/grid/phoenix")
+    ::: True
+    >>> os.path.exists("tmp/grid/phoenix/phoenixm00")
+    ::: True
+    >>> os.path.exists("tmp/grid/phoenix/phoenixp03")
+    ::: True
+    """
     home: str = paths.concat([root, HOME])
     if not os.path.exists(home):
         for path in paths.accumulate(home.split("/")):
             if not os.path.exists(path):
                 os.mkdir(path)
 
-    for path in [M00, P03]:
-        rel_path: str = paths.concat([home, path])
+    paths: list = [
+        paths.concat(home, pnx) 
+            for pnx in [M00, P03]
+    ]
+
+    for path in paths:
         if not os.path.exists(rel_path):
             os.mkdir(rel_path)
 
 def install_phoenix(root: str, /, full: bool = False) -> bool:
     """
-    Install the mask from the web.
+    Install phoenix from the web.
+
+    Parameters
+    ----------
+    root: str
+        The directory to use for the install.
+    full: bool
+        True if the entire file is to be downloaded. 
+        False if only the first byte is to be downloaded.
+        False is used for testing purposes only.
+
+    Examples
+    --------
+    >>> import os
+    >>> os.mkdir("tmp")
+    >>> install_phoenix("tmp", full = True)
+    >>> is_phoenix_installed("tmp")
+    ::: True
     """
+    make_phoenix_dirs(root)
 
     for file in PATHS:
-        path: str = "{}/{}".format(home, file)
-    
-            url: str = "{}/{}".format(URL, file)
+        path: str = paths.concat([home, file])
+        url: str = paths.concat([URL, file])
 
-            print("Downloading: {}.".format(url))
+        print("Downloading: {}.".format(url))
 
-            if full:
-                download_file_from_https(file, response)
-            else: 
-                warning.warn("full = False")
-                download_byte_from_https(file, response)
+        if full:
+            download_file_from_https(file, url)
+        else: 
+            warning.warn("full = False")
+            download_byte_from_https(file, url)
 
 def simulate_alpha_cen_spectra(number_of_wavelengths: int = 25) -> None:
     """
