@@ -212,8 +212,30 @@ def clip_phoenix_spectra(spectra: float) -> float:
 
     return spectra[:, decision]
 
-def resample_phoenix_spectra
+def resample_phoenix_spectra(spectra: float, number_of_wavelengths: int) -> float:
+    """
+    Downsample the spectra.
 
+    Reduce the sampling of the spectra to a number that can fit within 
+    the device memory. The downsampling is done by taking averages.
+
+    Parameters
+    ----------
+    spectra: float
+        The full resolution spectra.
+    number_of_wavelengths: int
+        The number of wavelengths to downsample to.
+
+    Returns
+    -------
+    spectra: float
+        The spectra sampled by the number of wavelengths.
+    """
+    size: int = spectra[WAVES].size
+    resample_size: int = size - size % number_of_wavelengths
+    spectra: float = spectra[:, :resample_size]
+    resample_by: int = resample_size // number_of_wavelengths 
+    return math.downsample_along_axis(spectra, resample_by, axis=1)
 
 def save_phoenix_spectra(number_of_wavelengths: int = 25) -> None:
     """
@@ -228,17 +250,11 @@ def save_phoenix_spectra(number_of_wavelengths: int = 25) -> None:
         The number of wavelengths that you wish to use for the simulation.
         The are taken from the `pysynphot` output by binning.
     """
-    spectra: float = clip_phoenix_spectra(make_phoenix_spectra(root))
+    spectra: float = resample_phoenix_spectraclip_phoenix_spectra(make_phoenix_spectra(root))
 
     WAVES: int = 0
     ALPHA_CEN_A: int = 1
     ALPHA_CEN_B: int = 2
-
-    size: int = spectra[WAVES].size
-    resample_size: int = size - size % number_of_wavelengths
-    spectra: float = spectra[:, :resample_size]
-    resample_by: int = resample_size // number_of_wavelengths 
-    spectra: float = _downsample_along_axis(spectra, resample_by, axis=1)
 
     with open("toliman/assets/spectra.csv", "w") as fspectra:
         fspectra.write("alpha cen a waves (m), ")
