@@ -6,8 +6,7 @@ __all__ = [
     "concat",
 ]
 
-
-def accumulate(strings: list, paths: str = []) -> list:
+def accumulate(strings: list) -> list:
     """
     Incrementally build a path from a list.
 
@@ -31,14 +30,18 @@ def accumulate(strings: list, paths: str = []) -> list:
     >>> _accumulate_path(["root", "dev", "null"])
     ::: ["root", "root/dev", "root/dev/null"]
     """
-    if not strings:
-        return paths
-    else:
-        if not paths:
-            paths.append(strings.pop(0))
+    def accumulate(strings: list, paths: list) -> list:
+        if not strings:
+            return paths
         else:
-            paths.append(concat([paths[-1], strings.pop(0)]))
-        return accumulate(strings, paths)
+            if not paths:
+                paths.append(strings.pop(0))
+            else:
+                paths.append(concat([paths[-1], strings.pop(0)]))
+            return accumulate(strings, paths)
+
+    paths: list = []
+    return accumulate(strings, paths)
 
 def concat(paths: list) -> str:
     """
