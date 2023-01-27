@@ -1,10 +1,16 @@
-import sys 
 import os
 import paths
 import https
+import pysynphot
 
 __author__ = "Jordan Dennis"
-__all__ = ["is_phoenix_installed", "install_phoenix"]
+__all__ = [
+    "is_phoenix_installed",
+    "install_phoenix",
+    "make_phoenix_dirs",
+    "make_phoenix_spectra",
+    "save_phoenix_spectra",
+]
 
 HOME: str = "grid/phoenix"
 URL: str = "https://archive.stsci.edu/hlsps/reference-atlases/cdbs/grid/phoenix"
@@ -119,7 +125,65 @@ def install_phoenix(root: str, /, full: bool = False) -> bool:
             warning.warn("full = False")
             download_byte_from_https(file, url)
 
-def simulate_alpha_cen_spectra(number_of_wavelengths: int = 25) -> None:
+def set_phoenix_environ(root: str) -> None:
+    """
+    Make sure that the phoenix environment variables are set.
+
+    `pysynphot` requires that the environment variable `PYSYN_CDBS` is 
+    set before use. This function checks if it is already set and 
+    overrides it if it is, also printing a warning.
+
+    Parameters
+    ----------
+    root: str
+        The location to set in the phoenix environment.
+
+    Examples
+    --------
+    >>> import os
+    >>> os.mkdir("tmp")
+    >>> os.environ["PYSYN_CDBS"] = "tmp"
+    >>> set_phoenix_environment("tmp")
+    ::: PYSYN_CDBS was set to: tmp
+    """
+    SYN: str = "PYSYN_CDBS"
+
+    if not os.environ.get(SYN):
+        warnings.warn("{} was set to: {}".format(SYN, os.environ.get(SYN)))
+
+    os.environ[SYN] = root
+
+def make_phoenix_spectra(root: str, number_of_wavelengths: int) -> float:
+    set_phoenix_environment(root)
+
+    alpha_cen_a_spectrum: float = pysynphot.Icat(
+        "phoenix",
+        ALPHA_CEN_A_SURFACE_TEMP,
+        ALPHA_CEN_A_METALICITY,
+        ALPHA_CEN_A_SURFACE_GRAV,
+    )
+
+    alpha_cen_b_spectrum: float = pysynphot.Icat(
+        "phoenix",
+        ALPHA_CEN_B_SURFACE_TEMP,
+        ALPHA_CEN_B_METALICITY,
+        ALPHA_CEN_B_SURFACE_GRAV,
+    )
+
+    WAVES: int = 0
+    ALPHA_CEN_A: int = 1
+    ALPHA_CEN_B: int = 2
+
+    spectra: float = np.array([
+            math.angstrom_to_m(alpha_cen_a_spectrum.wave),
+            math.normalise(alpha_cen_a_spectrum.flux),
+            math.normalise(alpha_cen_b_spectrum.flux),
+        ], dtype=float)
+
+    return spectra
+
+
+def save_phoenix_spectra(number_of_wavelengths: int = 25) -> None:
     """
     Simulate the spectrum of the alpha centauri binary using `pysynphot`.
 
@@ -132,9 +196,7 @@ def simulate_alpha_cen_spectra(number_of_wavelengths: int = 25) -> None:
         The number of wavelengths that you wish to use for the simulation.
         The are taken from the `pysynphot` output by binning.
     """
-    import pysynphot
 
-    os.environ["PYSYN_CDBS"] = "/home/jordan/Documents/toliman/toliman/assets"
 
     def angstrom_to_m(angstrom: float) -> float:
         m_per_angstrom: float = 1e-10
@@ -160,8 +222,8 @@ def simulate_alpha_cen_spectra(number_of_wavelengths: int = 25) -> None:
 
     spectra: float = np.array([
             angstrom_to_m(alpha_cen_a_spectrum.wave),
-            _normalise(alpha_cen_a_spectrum.flux),
-            _normalise(alpha_cen_b_spectrum.flux),
+            math.normalise(alpha_cen_a_spectrum.flux),
+            math.normalise(alpha_cen_b_spectrum.flux),
         ], dtype=float)
 
     del alpha_cen_a_spectrum, alpha_cen_b_spectrum
