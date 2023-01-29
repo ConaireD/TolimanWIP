@@ -3,10 +3,6 @@ from toliman.build.paths import (
     concat
 )
 
-from pytest.mark import (
-    parametrize
-)
-
 def test_accumulate_on_empty_entry():
     # Arrange
     entry: list = []
