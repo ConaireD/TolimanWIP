@@ -42,11 +42,27 @@ def test_concat_on_empty_entry():
     entry: list = []
 
     # Act
-    out: list = concat(entry)
+    out: str = concat(entry)
 
     # Assert
     assert out == ""
 
 def test_concat_on_single_entry():
+    # Arrange 
+    entry: list = ["hi"]
+
+    # Act
+    out: str = concat(entry)
+
+    #Assert
+    assert out == "hi"
 
 def test_concet_on_multiple_entries(): # TODO: parametrise this
+    # Arrange
+    entry: list = ["hi", "there", "how"]
+
+    # Act
+    out: str = concat(entry)
+
+    # Assert
+    assert out == "hi/there/how"
