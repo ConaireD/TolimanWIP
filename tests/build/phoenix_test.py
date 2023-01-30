@@ -228,3 +228,18 @@ def test_set_phoenix_environ_when_set():
 
     # Assert
     assert os.environ["PYSYN_CDBS"] == ASSETS
+
+def test_make_phoenix_spectra_when_root_valid():
+    # Arrange
+    spectra: float = phoenix.make_phoenix_spectra(".assets")
+
+    # Assert
+    assert spectra.shape[0] == 3
+
+def test_make_phoenix_spectra_when_root_not_valid():
+    # Arrange 
+    remove_phoenix()
+    
+    # Act/Assert
+    with pytest.raises(ValueError):
+        spectra: float = phoenix.make_phoenix_spectra(ASSETS)

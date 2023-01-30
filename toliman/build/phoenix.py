@@ -28,6 +28,18 @@ PATHS: str = ["catalog.fits"] + [
         for pnx in [M00, P03]
 ]
 
+ALPHA_CEN_A_SURFACE_TEMP: float = 5790.0
+ALPHA_CEN_A_METALICITY: float = 0.2
+ALPHA_CEN_A_SURFACE_GRAV: float = 4.0
+
+ALPHA_CEN_B_SURFACE_TEMP: float = 5260.0
+ALPHA_CEN_B_METALICITY: float = 0.23
+ALPHA_CEN_B_SURFACE_GRAV: float = 4.37
+
+FILTER_MIN_WAVELENGTH: float = 595e-09
+FILTER_MAX_WAVELENGTH: float = 695e-09
+FILTER_DEFAULT_RES: int = 24
+
 def is_phoenix_installed(root: str) -> bool:
     """
     Check if "phoenix" is installed.
@@ -154,13 +166,13 @@ def set_phoenix_environ(root: str) -> None:
     """
     SYN: str = "PYSYN_CDBS"
 
-    if not os.environ.get(SYN):
+    if os.environ.get(SYN) == None:
         warnings.warn("{} was set to: {}".format(SYN, os.environ.get(SYN)))
 
     os.environ[SYN] = root
 
 # TODO: Document
-def make_phoenix_spectra(root: str, number_of_wavelengths: int) -> float:
+def make_phoenix_spectra(root: str) -> float:
     """
     Generate the spectra using phoenix.
 
@@ -170,10 +182,17 @@ def make_phoenix_spectra(root: str, number_of_wavelengths: int) -> float:
     ALPHA_CEN_A: int = 1
     ALPHA_CEN_B: int = 2
 
+    Parameters
+    ----------
+    root: str
+        The directory to look for the phoenix files in.
     """
     import pysynphot
 
-    set_phoenix_environment(root)
+    if not is_phoenix_installed(root):
+        raise ValueError
+
+    set_phoenix_environ(root)
 
     alpha_cen_a_spectrum: float = pysynphot.Icat(
         "phoenix",
