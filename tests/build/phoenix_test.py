@@ -6,7 +6,7 @@ ASSETS: str = "tmp"
 PHOENIX: str = "{}/grid/phoenix".format(ASSETS)
 PHOENIXS: str = ["phoenixm00", "phoenixp03"]
 NUMBERS: list = [5200, 5300, 5700, 5800]
-PHOENIX_FILES: list = [
+PHOENIX_FILES: list = ["{}/catalog.fits".format(PHOENIX)] + [
     "{}/{}/{}_{}.fits".format(PHOENIX, phoe, phoe, num) 
         for num in NUMBERS 
         for phoe in PHOENIXS
@@ -44,7 +44,8 @@ def make_phoenix_catalog() -> None:
             pass
 
 def make_phoenix_installed() -> None:
-    os.mkdir(ASSETS)
+    if not os.path.exists(ASSETS):
+        os.mkdir(ASSETS)
     make_phoenix_catalog()
     for phoenix in PHOENIXS:
         make_phoenix_type_files(phoenix)
@@ -131,6 +132,68 @@ def test_make_phoenix_dirs_when_partially_setup():
     assert os.path.exists(paths.concat([ASSETS, "grid/phoenix/phoenixm00"]))
     assert os.path.exists(paths.concat([ASSETS, "grid/phoenix/phoenixp03"]))
     
+    # Clean Up
+    remove_phoenix()
+
+def test_install_phoenix_complete():
+    # Arrange
+    if os.path.exists(ASSETS):
+        shutil.rmtree(ASSETS)
+
+    os.mkdir(ASSETS)
+
+    # Act
+    phoenix.install_phoenix(ASSETS, full = False)
+
+    # Assert
+    for file in PHOENIX_FILES:
+        assert os.path.isfile(file)
+
+    # Clean Up
+    remove_phoenix()
+
+def test_install_phoenix_when_partially_installed():
+    # Arrange
+    if os.path.exists(ASSETS):
+        shutil.rmtree(ASSETS)
+
+    make_phoenix_installed()
+    os.remove(PHOENIX_PATHS[0])
+
+    # Act
+    phoenix.install_phoenix()
+
+    # Assert 
+    for file in PHOENIX_FILES:
+        assert os.path.isfile(file)
+    
+def test_install_phoenix_when_fully_installed():
+    # Arrange
+    entry: str = "Hello world!"
+
+    remove_phoenix()
+    os.mkdir(ASSETS)
+    os.mkdir(paths.concat([ASSETS, "grid"]))
+    os.mkdir(paths.concat([ASSETS, "grid", "phoenix"]))
+    os.mkdir(paths.concat([ASSETS, "grid", "phoenix", "phoenixm00"]))
+    os.mkdir(paths.concat([ASSETS, "grid", "phoenix", "phoenixp03"]))
+
+    for file in PHOENIX_FILES:
+        with open(file, "w") as file:
+            file.write(entry)
+    
+    # Act
+    phoenix.install_phoenix()
+
+    # Assert
+    for file in PHOENIX_FILES:
+        if not os.path.exists(file):
+            raise ValueError
+
+        with open(file, "r") as file:
+            assert file.read() == entry
+
+
     # Clean Up
     remove_phoenix()
 

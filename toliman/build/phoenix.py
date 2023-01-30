@@ -123,10 +123,13 @@ def install_phoenix(root: str, /, full: bool = False) -> bool:
 
         print("Downloading: {}.".format(url))
 
-        if full:
-            https.download_file_from_https(path, url)
-        else: 
-            https.download_byte_from_https(path, url)
+        if os.path.isfile(path):
+            warnings.warn("{} already exists.".format(path))
+        else:
+            if full:
+                https.download_file_from_https(path, url)
+            else: 
+                https.download_byte_from_https(path, url)
 
 def set_phoenix_environ(root: str) -> None:
     """
