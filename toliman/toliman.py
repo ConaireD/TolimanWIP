@@ -15,34 +15,6 @@ __all__ = [
     "_read_csv_to_jax_array",
 ]
 
-def _read_csv_to_jax_array(_file_name: str) -> float:
-    """
-    Read a CSV using `jax`.
-
-    This is a private function and following convention it assumes that the 
-    file exists. There is no error checking!
-
-    Parameters
-    ----------
-    _file_name: str
-        The name of the file to read.
-
-    Returns
-    -------
-    arr: float
-        The information in the CSV. The headings are not returned and so it 
-        is up to you to keep track of what each column is.
-    """
-    with open(_file_name, "r") as file:
-        lines: list = file.readlines()
-        _: str = lines.pop(0)
-        strip: callable = lambda _str: _str.strip().split(",")
-        str_to_float: callable = lambda _str: float(_str.strip())
-        entries: list = jax.tree_map(strip, lines)
-        _file: float = jax.tree_map(str_to_float, entries)
-
-    return np.array(_file)
-
 def _contains_instance(_list: list, _type: type) -> bool:
     """
     Check to see if a list constains an element of a certain type.
