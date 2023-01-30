@@ -207,4 +207,24 @@ def test_install_phoenix_when_fully_installed():
     # Clean Up
     remove_phoenix()
 
+def test_set_phoenix_environ_when_not_set():
+    # Arrange
+    if os.environ.get("PYSYN_CDBS"):
+        os.environ.pop("PYSYN_CDBS")
 
+    # Act
+    phoenix.set_phoenix_environ(ASSETS)
+
+    # Assert
+    assert os.environ["PYSYN_CDBS"] == ASSETS
+
+def test_set_phoenix_environ_when_set():
+    # Arrange
+    if not os.environ.get("PYSYN_CDBS"):
+        os.environ["PYSYN_CDBS"] = "ABCFU"
+
+    # Act
+    phoenix.set_phoenix_environ(ASSETS)
+
+    # Assert
+    assert os.environ["PYSYN_CDBS"] == ASSETS
