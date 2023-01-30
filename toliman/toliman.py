@@ -46,10 +46,10 @@ class TolimanOptics(dl.Optics, collections.CollectionInterface):
         simulate_aberrations: bool = True,
         operate_in_fresnel_mode: bool = False,
         operate_in_static_mode: bool = True,
-        number_of_zernikes: int = DEFAULT_NUMBER_OF_ZERNIKES,
-        pixels_in_pupil: int = DEFAULT_PUPIL_NPIX,
-        pixels_on_detector: int = DEFAULT_DETECTOR_NPIX,
-        path_to_mask: str = DEFAULT_MASK_DIR,
+        number_of_zernikes: int = int(os.environ["DEFAULT_NUMBER_OF_ZERNIKES"]),
+        pixels_in_pupil: int = int(os.environ["DEFAULT_PUPIL_NPIX"]),
+        pixels_on_detector: int = int(os.environ["DEFAULT_DETECTOR_NPIX"]),
+        path_to_mask: str = os.environ["DEFAULT_MASK_DIR"],
         path_to_filter: str = "assets/filter.npy",
         path_to_polish: str = "assets/polish.npy",
     ) -> object:
@@ -87,10 +87,16 @@ class TolimanOptics(dl.Optics, collections.CollectionInterface):
             The file location of a `.npy` file that contains an
             array representation of the secondary mirror polish.
         """
+        TOLIMAN_PRIMARY_APERTURE_DIAMETER: float
+        TOLIMAN_NUMBER_OF_STRUTS: int
+        TOLIMAN_WIDTH_OF_STRUTS: float
+        TOLIMAN_SECONDARY_MIRROR_DIAMETER: float
+        TOLIMAN_DETECTOR_PIXEL_SIZE: int
+
         toliman_layers: list = [
             dl.CreateWavefront(
                 pixels_in_pupil,
-                TOLIMAN_PRIMARY_APERTURE_DIAMETER,
+                float(os.environ["TOLIMAN_PRIMARY_APERTURE_DIAMETER"]),
                 wavefront_type="Angular",
             )
         ]
