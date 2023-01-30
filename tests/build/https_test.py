@@ -76,9 +76,9 @@ def test_download_file_from_https_takes_file():
         raise ValueError
 
     with open(path, "r") as file:
-        source: str = file.read()
+        source: str = file.read().strip()
         assert source.startswith("<!DOCTYPE html>")
-        assert source.endswith("</body>")
+        assert source.endswith("</html>")
 
     # Clean Up
     shutil.rmtree("tmp")
