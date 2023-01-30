@@ -4,6 +4,10 @@ import dLux as dl
 import equinox as eqx
 import abc
 import os
+import toliman.io as io
+import toliman.constants # Runs on import
+import toliman.collections as collections
+import toliman.math as math
 
 __author__ = "Jordan Dennis"
 __all__ = [
@@ -11,160 +15,13 @@ __all__ = [
     "TolimanOptics",
     "AlphaCentauri",
     "Background",
-    "_contains_instance",
-    "_read_csv_to_jax_array",
 ]
 
-def _contains_instance(_list: list, _type: type) -> bool:
-    """
-    Check to see if a list constains an element of a certain type.
-
-    Parameters
-    ----------
-    _list: list
-        The list to search.
-    _type: type
-        The type to check for.
-
-    Returns
-    -------
-    contains: bool
-        True if _type was found else False.
-    """
-    if _list:
-        for _elem in _list:
-            if isinstance(_elem, _type):
-                return True
-    return False
-
-
-MASK_TOO_LARGE_ERR_MSG = """ 
-The mask you have loaded had a higher resolution than the pupil. 
-A method of resolving this has not yet been created. Either 
-change the value of the `DEFAULT_PUPIL_NPIX` constant or use a 
-different mask.
-"""
-
-MASK_SAMPLING_ERR_MSG = """
-The mask you have loaded could not be downsampled onto the pupil. 
-The shape of the mask was ({%i, %i}), but ({%i, %i}) was expected.
-Either change the value of the environment variable 
-`DEFAULT_PUPIL_NPIX` or use a different mask.
-"""
-
-MASK_IMPORT_ERR_MSG = """
-The file address that of the mask did not exist. Make suer that 
-you have a `.npy` representation of the phase mask available 
-and have provided the correct file address to the constructor.
-"""
-
-FRESNEL_USE_ERR_MSG = """
-You have request operation in Fresenl mode. This has not currently 
-been implemented. Once implemented it is not recommended that you 
-use the feature as it is very slow and the zernike terms should 
-be sufficient for most purposes.
-"""
-
-POLISH_USE_ERR_MSG = """
-You have requested that the mirror polish be simulated this has 
-not yet been implemented although it is planned in an upcoming 
-release.
-"""
-
-DETECTOR_EMPTY_ERR_MSG = """
-You have provided no detector layers and not asked for any of the 
-defaults. This implies that the detector does not contain any 
-layers which is not a valid state. If you do not wish to model 
-any detector effects do not provide a detector in construction.
-"""
-
-DETECTOR_REPEATED_ERR_MSG = """
-You have provided a layer that is also a default layer. Make sure 
-that each type of detector is only provided once. 
-"""
-
-
-class CollectionInterface(abc.ABC):
-    @abc.abstractmethod
-    def to_optics_list(self: object) -> list:
-        """
-        Get the optical elements that make up the object as a list.
-
-        Returns
-        -------
-        optics: list
-            The optical layers in order in a list.
-        """
-
-    @abc.abstractmethod
-    def insert(self: object, optic: object, index: int) -> object:
-        """
-        Add an additional layer to the optical system.
-
-        Parameters
-        ----------
-        optic: object
-            A `dLux.OpticalLayer` to include in the model.
-        index: int
-            Where in the list of layers to add optic.
-
-        Returns
-        -------
-        toliman: TolimanOptics
-            A new `TolimanOptics` instance with the applied update.
-        """
-
-    @abc.abstractmethod
-    def remove(self: object, index: int) -> object:
-        """
-        Take a layer from the optical system.
-
-        Parameters
-        ----------
-        index: int
-            Where in the list of layers to remove an optic.
-
-        Returns
-        -------
-        toliman: TolimanOptics
-            A new `TolimanOptics` instance with the applied update.
-        """
-
-    @abc.abstractmethod
-    def append(self: object, optic: object) -> object:
-        """
-        Place a new optic at the end of the optical system.
-
-        Parameters
-        ----------
-        optic: object
-            The optic to include. It must be a subclass of the
-            `dLux.OpticalLayer`.
-
-        Returns
-        -------
-        optics: object
-            The new optical system.
-        """
-
-    @abc.abstractmethod
-    def pop(self: object) -> object:
-        """
-        Remove the last element in the optical system.
-
-        Please note that this differs from the `.pop` method of the
-        `list` class because it does not return the popped element.
-
-        Returns
-        -------
-        optics: object
-            The optical system with the layer removed.
-        """
 
 
 # TODO: I need to work out how to do the regularisation internally so
 #       that the values which are returned are always correct.
-class TolimanOptics(dl.Optics, CollectionInterface):
+class TolimanOptics(dl.Optics, collections.CollectionInterface):
     """
     Simulates the optical system of the TOLIMAN telescope.
 
@@ -270,12 +127,23 @@ class TolimanOptics(dl.Optics, CollectionInterface):
             mask: float
             if not loaded_width == pixels_in_pupil:
                 if loaded_width < pixels_in_pupil:
-                    raise NotImplementedError(MASK_TOO_LARGE_ERR_MSG)
+                    raise NotImplementedError( 
+                        "The mask you have loaded had a higher resolution " +\
+                        "than the pupil. A method of resolving this has not " +\
+                        "yet been created. Either change the value of the " +\
+                        "`DEFAULT_PUPIL_NPIX` constant or use a different mask."
+                    )
                 if loaded_width % pixels_in_pupil == 0:
                     downsample_by: int = loaded_width // pixels_in_pupil
                     mask: float = _downsample_square_grid(loaded_mask, downsample_by)
                 else:
-                    raise ValueError(MASK_SAMPLING_ERR_MSG)
+                    raise ValueError(
+                        "The mask you have loaded could not be downsampled " +\
+                        "onto the pupil. The shape of the mask was " +\
+                        "({%i, %i}). Either change the value of the "
+                        "environment variable `DEFAULT_PUPIL_NPIX` or use " +\
+                        "a different mask.".format(loaded_width, loaded_width)
+                    )
             else:
                 mask: float = loaded_mask
 
@@ -283,7 +151,12 @@ class TolimanOptics(dl.Optics, CollectionInterface):
             del loaded_shape
             del loaded_width
         except IOError as ioe:
-            raise ValueError(MASK_IMPORT_ERR_MSG)
+            raise ValueError(
+                "The file address that of the mask did not exist. " +\
+                "Make sure that you have a `.npy` representation of the " +\
+                "phase mask available and have provided the correct file " +\
+                "address to the constructor."
+            )
 
         toliman_layers.append(dl.AddOPD(mask))
 
@@ -311,7 +184,11 @@ class TolimanOptics(dl.Optics, CollectionInterface):
         toliman_layers.append(dl.NormaliseWavefront())
 
         if simulate_polish:
-            raise NotImplementedError(POLISH_USE_ERR_MSG)
+            raise NotImplementedError(
+                "You have requested that the mirror polish be simulated " +\
+                "this has not yet been implemented although it is planned " +\
+                "in an upcoming release."
+            )
 
         # Adding the propagator
         toliman_body: object
@@ -320,7 +197,13 @@ class TolimanOptics(dl.Optics, CollectionInterface):
                 pixels_on_detector, TOLIMAN_DETECTOR_PIXEL_SIZE
             )
         else:
-            raise NotImplementedError(FRESNEL_USE_ERR_MSG)
+            raise NotImplementedError(
+                "You have request operation in Fresenl mode. This has " +\
+                "not currently been implemented. Once implemented it " +\
+                "is not recommended that you use the feature as it is " +\
+                "very slow and the zernike terms should be sufficient for " +\
+                "most purposes."
+            )
 
         toliman_layers.append(toliman_body)
 
@@ -486,6 +369,11 @@ class TolimanDetector(dl.Detector, CollectionInterface):
         extra_detector_layers: list = []
             Extra detector effects besides the default ones.
         """
+        DETECTOR_REPEATED_ERR_MSG = """
+        You have provided a layer that is also a default layer. Make sure 
+        that each type of detector is only provided once. 
+        """
+
         detector_layers: list = []
 
         if simulate_jitter:
@@ -519,7 +407,13 @@ class TolimanDetector(dl.Detector, CollectionInterface):
         if detector_layers:
             super().__init__(detector_layers)
         else:
-            raise ValueError(DETECTOR_EMPTY_ERR_MSG)
+            raise ValueError(
+                "You have provided no detector layers and not asked " +\
+                "for any of the defaults. This implies that the detector " +\
+                "does not contain any layers which is not a valid state. " +\
+                "If you do not wish to model any detector effects do not " +\
+                "provide a detector in construction."
+            )
 
     def to_optics_list(self: object) -> list:
         """
