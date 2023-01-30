@@ -1,5 +1,7 @@
+import abc
+
 __author__ = "Jordan Dennis"
-__all__ = ["contains_instance"]
+__all__ = ["contains_instance", "CollectionInterface"]
 
 def contains_instance(_list: list, _type: type) -> bool:
     """
@@ -100,5 +102,3 @@ class CollectionInterface(abc.ABC):
         optics: object
             The optical system with the layer removed.
         """
-
-

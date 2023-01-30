@@ -2,7 +2,6 @@ import jax.numpy as np
 import jax
 import dLux as dl
 import equinox as eqx
-import abc
 import os
 import toliman.io as io
 import toliman.constants # Runs on import
