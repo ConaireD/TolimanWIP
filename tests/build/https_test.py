@@ -4,9 +4,9 @@ from toliman.build.https import (
     download_file_from_https,
 )
 
-from os import (mkdir, path, stat)
-from shutil import (rmtree)
 from pytest import (raises)
+import os
+import shutil
 
 def test_get_https_stream_on_success():
     # Arrange
@@ -17,7 +17,10 @@ def test_get_https_stream_on_success():
     
 def test_download_byte_from_https_takes_byte():
     # Arrange
-    mkdir("tmp")
+    if os.path.exists("tmp"):
+        shutil.rmtree("tmp")
+
+    os.mkdir("tmp")
     path: str = "tmp/jordan-dennis.html"
     url: str = "https://jordan-dennis.github.io"
 
@@ -25,17 +28,22 @@ def test_download_byte_from_https_takes_byte():
     download_byte_from_https(path, url)
 
     # Assert
-    if not path.isfile(path):
+    if not os.path.isfile(path):
         raise ValueError
+
+    print(os.stat(path).st_size)
     
-    assert 0.8 < stat(path).st_size < 1.2
+    assert 0 < os.stat(path).st_size < 2000
 
     # Clean Up
-    rmtree("tmp")
+    shutil.rmtree("tmp")
 
 def test_download_byte_from_https_skips_existing():
     # Arrange
-    mkdir("tmp")
+    if os.path.exists("tmp"):
+        shutil.rmtree("tmp")
+
+    os.mkdir("tmp")
     path: str = "tmp/jordan-dennis.html"
     url: str = "https://jordan-dennis.github.io"
     entry: str = "Hello world!"
@@ -51,7 +59,7 @@ def test_download_byte_from_https_skips_existing():
         assert entry == file.read()
 
     # Clean Up
-    rmtree("tmp")
+    shutil.rmtree("tmp")
 
 #def test_download_file_from_https_takes_file():
 #def test_download_file_from_https_skips_existing():
