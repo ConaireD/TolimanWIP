@@ -2,7 +2,7 @@ import pytest
 import toliman.build.phoenix as phoenix
 
 # TODO: Make into fixtures
-ASSETS: str = "tests/.assets"
+ASSETS: str = "tmp"
 PHOENIX: str = "{}/grid/phoenix".format(ASSETS)
 PHOENIXS: str = ["phoenixm00", "phoenixp03"]
 NUMBERS: list = [5200, 5300, 5700, 5800]
@@ -75,3 +75,63 @@ def test_is_phoenix_installed_when_not_installed():
 
     # Assert
     assert not phoenix.is_phoenix_installed()
+
+def test_make_phoenix_dirs_when_not_setup():
+    # Arrange
+    os.mkdir(ASSETS)
+
+    # Act
+    make_phoenix_dirs(ASSETS)
+
+    # Assert
+    assert os.path.exists(paths.concat([ASSETS, "grid"]))
+    assert os.path.exists(paths.concat([ASSETS, "grid/phoenix"]))
+    assert os.path.exists(paths.concat([ASSETS, "grid/phoenix/phoenixm00"]))
+    assert os.path.exists(paths.concat([ASSETS, "grid/phoenix/phoenixp03"]))
+    
+    # Clean Up
+    remove_phoenix()
+
+def test_make_phoenix_dirs_when_setup():
+    # Arrange
+    grid: str = paths.concat([ASSETS, "grid"])
+    phoenix: str = paths.concat([ASSETS, "grid", "phoenix"])
+    phoenixm00: str = paths.concat([ASSETS, "grid", "phoenix", "phoenixm00"])
+    phoenixp03: str = paths.concat([ASSETS, "grid", "phoenix", "phoenixp03"])
+
+    os.mkdir(ASSETS)
+    os.mkdir(grid)
+    os.mkdir(phoenix)
+    os.mkdir(phoenixm00)
+    os.mkdir(phoenixp03)
+
+    # Act
+    make_phoenix_dirs(ASSETS)
+
+    # Assert
+    assert os.path.exists(grid)
+    assert os.path.exists(phoenix)
+    assert os.path.exists(phoenixm00)
+    assert os.path.exists(phoenixp03)
+    
+    # Clean Up
+    remove_phoenix()
+    
+def test_make_phoenix_dirs_when_partially_setup():
+    # Arrange
+    os.mkdir(ASSETS)
+    os.mkdir(paths.concat([ASSETS, "grid"]))
+
+    # Act
+    make_phoenix_dirs(ASSETS)
+
+    # Assert
+    assert os.path.exists(paths.concat([ASSETS, "grid"]))
+    assert os.path.exists(paths.concat([ASSETS, "grid/phoenix"]))
+    assert os.path.exists(paths.concat([ASSETS, "grid/phoenix/phoenixm00"]))
+    assert os.path.exists(paths.concat([ASSETS, "grid/phoenix/phoenixp03"]))
+    
+    # Clean Up
+    remove_phoenix()
+
+
