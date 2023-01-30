@@ -243,3 +243,7 @@ def test_make_phoenix_spectra_when_root_not_valid():
     # Act/Assert
     with pytest.raises(ValueError):
         spectra: float = phoenix.make_phoenix_spectra(ASSETS)
+
+def test_clip_phoenix_spectra_in_range():
+    # Arrange
+    waves: float = np.linspace()

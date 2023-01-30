@@ -15,43 +15,6 @@ __all__ = [
     "_read_csv_to_jax_array",
 ]
 
-DEFAULT_PUPIL_NPIX: int = 256
-DEFAULT_DETECTOR_NPIX: int = 128
-DEFAULT_NUMBER_OF_ZERNIKES: int = 5
-
-DEFAULT_MASK_DIR: str = "/home/jordan/Documents/toliman/toliman/assets/mask.npy"
-SPECTRUM_DIR: str = "/home/jordan/Documents/toliman/toliman/assets/spectra.csv"
-BACKGROUND_DIR: str = "toliman/assets/background.csv"
-
-TOLIMAN_PRIMARY_APERTURE_DIAMETER: float = 0.13
-TOLIMAN_SECONDARY_MIRROR_DIAMETER: float = 0.032
-TOLIMAN_DETECTOR_PIXEL_SIZE: float = dl.utils.arcseconds_to_radians(0.375)
-TOLIMAN_WIDTH_OF_STRUTS: float = 0.01
-TOLIMAN_NUMBER_OF_STRUTS: int = 3
-
-DEFAULT_DETECTOR_JITTER: float = 2.0
-DEFAULT_DETECTOR_SATURATION: float = 2500
-DEFAULT_DETECTOR_THRESHOLD: float = 0.05
-
-ALPHA_CENTAURI_SEPARATION: float = dl.utils.arcseconds_to_radians(8.0)
-ALPHA_CENTAURI_POSITION: float = np.array([0.0, 0.0], dtype=float)
-ALPHA_CENTAURI_MEAN_FLUX: float = 1.0
-ALPHA_CENTAURI_CONTRAST: float = 2.0
-ALPHA_CENTAURI_POSITION_ANGLE: float = 0.0
-
-ALPHA_CEN_A_SURFACE_TEMP: float = 5790.0
-ALPHA_CEN_A_METALICITY: float = 0.2
-ALPHA_CEN_A_SURFACE_GRAV: float = 4.0
-
-ALPHA_CEN_B_SURFACE_TEMP: float = 5260.0
-ALPHA_CEN_B_METALICITY: float = 0.23
-ALPHA_CEN_B_SURFACE_GRAV: float = 4.37
-
-FILTER_MIN_WAVELENGTH: float = 595e-09
-FILTER_MAX_WAVELENGTH: float = 695e-09
-FILTER_DEFAULT_RES: int = 24
-
-
 def _read_csv_to_jax_array(_file_name: str) -> float:
     """
     Read a CSV using `jax`.
