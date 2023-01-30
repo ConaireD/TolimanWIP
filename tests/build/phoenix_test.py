@@ -14,33 +14,32 @@ def make_phoenix_root_directory() -> None:
         for path in _accumulate_path(PHOENIX.split("/")):
             if not os.path.exists(path):
                 os.mkdir(path)
-            if not os.path.exists(path):
-                raise ValueError
 
 def make_phoenix_type_directory(phoenix: str) -> None:
-    path: str = "{}/{}".format(PHOENIX, phoenix)
+    if not os.path.exists(PHOENIX):
+        make_phoenix_root_directory()
+    path: str = paths.concat([PHOENIX, phoenix])
     if not os.path.exists(path):
         os.mkdir(path)
-    if not os.path.exists(path):
-        raise ValueError
 
 def make_phoenix_type_files(phoenix: str) -> None:
+    target: str = paths.concat([PHOENIX, phoenix])
+    if not os.path.exists(target):
+        make_phoenix_type_directory(phoenix)
     for number in NUMBERS:
-        path: str = "{}/{}/{}_{}.fits".format(PHOENIX, phoenix, phoenix, number)
+        path: str = "{}/{}_{}.fits".format(target, phoenix, number)
         if not os.path.exists(path):
             with open(path, "w") as file:
                 continue
-            if not os.path.isfile(path):
-                raise ValueError
 
 def make_phoenix_catalog() -> None:
     path: str = "{}/catalog.fits".format(PHOENIX)
     if not os.path.exists(path):
         with open(path, "w") as file:
             pass
-        if not os.path.isfile(path):
-            raise ValueError
 
 def remove_phoenix() -> None:
     if os.path.exists(ASSETS):
         shutil.rmtree(ASSETS)
+
+def 
