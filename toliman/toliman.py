@@ -4,7 +4,7 @@ import dLux as dl
 import equinox as eqx
 import os
 import toliman.io as io
-import toliman.constants # Runs on import
+import toliman.constants as const # Runs on import
 import toliman.collections as collections
 import toliman.math as math
 
@@ -87,16 +87,16 @@ class TolimanOptics(dl.Optics, collections.CollectionInterface):
             The file location of a `.npy` file that contains an
             array representation of the secondary mirror polish.
         """
-        TOLIMAN_PRIMARY_APERTURE_DIAMETER: float
-        TOLIMAN_NUMBER_OF_STRUTS: int
-        TOLIMAN_WIDTH_OF_STRUTS: float
-        TOLIMAN_SECONDARY_MIRROR_DIAMETER: float
-        TOLIMAN_DETECTOR_PIXEL_SIZE: int
+        PRIMARY_APERTURE_DIAMETER: float = const.get_const_as_type("TOLIMAN_PRIMARY_APERTURE_DIAMETER", float)
+        NUMBER_OF_STRUTS: int = const.get_const_as_type("TOLIMAN_NUMBER_OF_STRUTS", int)
+        WIDTH_OF_STRUTS: float = const.get_const_as_type("TOLIMAN_WIDTH_OF_STRUTS", float)
+        SECONDARY_MIRROR_DIAMETER: float = const.get_const_as_type("TOLIMAN_SECONDARY_MIRROR_DIAMETER", float)
+        DETECTOR_PIXEL_SIZE: int = const.get_const_as_type("TOLIMAN_DETECTOR_PIXEL_SIZE", int)
 
         toliman_layers: list = [
             dl.CreateWavefront(
                 pixels_in_pupil,
-                float(os.environ["TOLIMAN_PRIMARY_APERTURE_DIAMETER"]),
+                TOLIMAN_PRIMARY_APERTURE_DIAMETER,
                 wavefront_type="Angular",
             )
         ]
@@ -379,6 +379,11 @@ class TolimanDetector(dl.Detector, CollectionInterface):
         that each type of detector is only provided once. 
         """
 
+        DEFAULT_DETECTOR_JITTER: float = const.get_const_as_type("DEFAULT_DETECTOR_JITTER", float)
+        DEFAULT_DETECTOR_SATURATION: float = const.get_const_as_type("DEFAULT_DETECTOR_SATURATION", float)
+        DEFAULT_DETECTOR_NPIX: int = const.get_const_as_type("DEFAULT_DETECTOR_NPIX", int)
+        DEFAULT_DETECTOR_THRESHOLD: float = const.get_const_as_type("DEFAULT_DETECTOR_THRESHOLD", float)
+
         detector_layers: list = []
 
         if simulate_jitter:
@@ -572,6 +577,12 @@ class AlphaCentauri(dl.BinarySource):
                 wavelengths=alpha_cen_waves, weights=alpha_cen_flux
             )
 
+        ALPHA_CENTAURI_POSITION: float = const.get_const_as_type("ALPHA_CENTAURI_POSITION", np.array)
+        ALPHA_CENTAURI_MEAN_FLUX: float = const.get_const_as_type("ALPHA_CENTAURI_MEAN_FLUX", float)
+        ALPHA_CENTAURI_CONTRAST: float = const.get_const_as_type("ALPHA_CENTAURI_CONTRAST", float)
+        ALPHA_CENTAURI_SEPARATION: float = const.get_const_as_type("ALPHA_CENTAURI_SEPARATION", float)
+        ALPHA_CENTAURI_POSITION_ANGLE: float = const.get_const_as_type("ALPHA_CENTAURI_POSITION_ANGLE", float)
+
         super().__init__(
             position=ALPHA_CENTAURI_POSITION,
             flux=ALPHA_CENTAURI_MEAN_FLUX,
@@ -612,6 +623,11 @@ class Background(dl.MultiPointSource):
         spectrum: object = None
             A `dl.Spectrum` if the default spectrum is not to be used.
         """
+        FILTER_MIN_WAVELENGTH: float = const.get_const_as_type("FILTER_MIN_WAVELENGTH", float)
+        FILTER_MAX_WAVELENGTH: float = const.get_const_as_type("FILTER_MAX_WAVELENGTH", float)
+        FILTER_DEFAULT_RES: int = const.get_const_as_type("FILTER_DEFAULT_RES", int)
+        
+
         if not spectrum:
             spectrum: object = dl.ArraySpectrum(
                 wavelengths=np.linspace(
