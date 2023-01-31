@@ -1,6 +1,7 @@
 import os
 import toliman.build.paths as paths
 import toliman.build.https as https
+import toliman.math as math
 import warnings
 import jax.numpy as np
 

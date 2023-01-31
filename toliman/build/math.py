@@ -1,4 +1,4 @@
-def _normalise(arr: float) -> float:
+def normalise(arr: float) -> float:
     """
     Rescale and array onto [0, 1].
 
