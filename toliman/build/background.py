@@ -1,6 +1,14 @@
 import os
+import jax.numpy as np
 
-__all__ = ["simulate_background_stars"]
+__author__ = "Jordan Dennis"
+__all__ = [
+    "load_background_stars",
+    "window_background_stars",
+    "flux_relative_to_alpha_cen",
+    "save_background_stars",
+    "simulate_background_stars",
+]
 
 RA: int = 0
 DEC: int = 1
@@ -26,7 +34,10 @@ def load_background_stars(ra: float, dec: float, rad: float) -> float:
     Retrieve a sample of backgound stars from the Gaia database.
 
     Selects the top 12000 stars and contains only the entries that 
-    contain a measured flux.
+    contain a measured flux. A word of caution is don't work near
+    to zero as some of the ra/dec may wrap around to 360, which 
+    causes things to break when recentering. This is not checked 
+    programmatically, but is a painful experience.
 
     Parameters
     ----------
@@ -46,15 +57,18 @@ def load_background_stars(ra: float, dec: float, rad: float) -> float:
 
     Examples
     --------
-    >>> load_background_stars(0.0, 0.0, 2.0)
+    >>> load_background_stars(3.0, 3.0, 2.0)
     """
+    if ra <= rad:
+        warnings.warn("`ra <= rad`. Coordinate wrapping may occur.")
+
     from astroquery.gaia import Gaia
 
     bg_stars: object = Gaia.launch_job(CONICAL_QUERY.format(ra, dec, rad))
 
     return np.array([
-            np.array(bg_stars.results["ra"]) - BG_RA,
-            np.array(bg_stars.results["dec"]) - BG_DEC,
+            np.array(bg_stars.results["ra"]) - ra,
+            np.array(bg_stars.results["dec"]) - dec,
             np.array(bg_stars.results["flux"]),
         ], dtype = float)
 
@@ -147,7 +161,7 @@ def save_background_stars(background: float) -> None:
             sheet.write("{}\n".format(background[FLUX]))
 
 
-def simulate_background_stars(/,
+def simulate_background_stars(
         ra: float = BG_RA, 
         dec: float = BG_DEC,
         width: float = BG_WIN
