@@ -60,6 +60,16 @@ def remove_phoenix() -> None:
     if os.path.exists(ASSETS):
         shutil.rmtree(ASSETS)
 
+def get_spectra(min_: float, max_: float):
+    shape: int = 100
+
+    return np.array([
+            np.linspace(min_, max_, shape),
+            random.normal(random.PRNGKey(0), (shape,)),
+            random.normal(random.PRNGKey(1), (shape,)),
+        ], dtype = float)
+    
+
 def test_is_phoenix_installed_when_fully_installed():
     # Arrange 
     remove_phoenix()
@@ -236,8 +246,6 @@ def test_make_phoenix_spectra_when_root_valid():
     # Arrange
     spectra: float = phoenix.make_phoenix_spectra(".assets")
 
-    print("PYSYN_CDBS", os.environ["PYSYN_CDBS"])
-
     # Assert
     assert spectra.shape[0] == 3
 
@@ -299,16 +307,7 @@ def test_resample_phoenix_spectra_produces_correct_shape():
     FILTER_MIN_WAVELENGTH: float = const.get_const_as_type("FILTER_MIN_WAVELENGTH", float)
     FILTER_MAX_WAVELENGTH: float = const.get_const_as_type("FILTER_MAX_WAVELENGTH", float)
 
-    min_wavelength: float = FILTER_MIN_WAVELENGTH / 2.
-    max_wavelength: float = FILTER_MAX_WAVELENGTH + FILTER_MIN_WAVELENGTH / 2.
-    shape: int = 100
-
-    spectra: float = np.array([
-        np.linspace(min_wavelength, max_wavelength, shape),
-        random.normal(random.PRNGKey(0), (shape,)),
-        random.normal(random.PRNGKey(1), (shape,)),
-    ], dtype = float)
-
+    spectra: float = get_spectra(FILTER_MIN_WAVELENGTH, FILTER_MAX_WAVELENGTH)
     out_shape: int = 10
 
     # Act
