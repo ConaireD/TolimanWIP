@@ -3,20 +3,24 @@ import toliman.constants as const
 import jax.numpy as np
 import jax.random as rng
 
+RA: int = 0
+DEC: int = 1
+FLUX: int = 2
+
 def get_background_stars(ra: float, dec: float, rad: float) -> float:
     NUM: int = 100
 
     def uniform_in_minus_one_to_one(key: int, shape: tuple) -> float:
         return 2.0 * rng.uniform(rng.PRNGKey(key), shape) - 1.0
 
-    ra_sample: float = uniform_in_minus_one_to_one(0, NUM) 
-    dec_samples: float = uniform_in_minus_one_to_one(1, NUM)
+    ra_sample: float = uniform_in_minus_one_to_one(0, (NUM,)) 
+    dec_samples: float = uniform_in_minus_one_to_one(1, (NUM,))
     max_decs: float = np.sqrt(rad ** 2 - ra_sample ** 2)
 
     return np.array([
             (ra - (rad * ra_sample)),
             (dec -(max_decs * dec_samples)),
-            rng.norm(rng.PRNGKey(2), NUM),
+            rng.normal(rng.PRNGKey(2), (NUM,)),
         ], dtype = float)
         
 def test_load_background_stars_has_correct_shape():
@@ -41,4 +45,12 @@ def test_load_background_stars_within_cone():
     assert (hypots <= rad + tol).all()
 
 def test_window_background_stars_in_range():
-    
+    # Arrange
+    bg_stars: float = get_background_stars(3.0, 3.0, 2.0)
+
+    # Act
+    win_bg_stars: float = bg.window_background_stars(bg_stars, np.sqrt(2.0)) 
+
+    # Assert
+    assert (win_bg_stars[RA] <= np.sqrt(2.0)).all()
+    assert (win_bg_stars[DEC] <= np.sqrt(2.0)).all()

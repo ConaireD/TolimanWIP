@@ -95,8 +95,9 @@ def window_background_stars(background: float, width: float) -> float:
     >>> bgstars: float = load_background_stars(0.0, 0.0, 2.0)
     >>> windowed_bgstars: float = window_bg_stars(bgstars, 1.0)
     """
-    in_width: float = np.abs(background[(0, 1)]) < width
-    in_range: float = np.apply_along_axis(np.logical_and, 0, in_width)
+    in_width: float = np.abs(background[(0, 1), :]) < width
+    logical_and: callable = lambda x: np.logical_and(x[0], x[1])
+    in_range: float = np.apply_along_axis(logical_and, 0, in_width)
     return background[:, in_range]
 
 def flux_relative_to_alpha_cen(background: float) -> float:
