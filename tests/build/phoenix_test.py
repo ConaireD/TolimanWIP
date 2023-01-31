@@ -17,6 +17,8 @@ PHOENIX_FILES: list = ["{}/catalog.fits".format(PHOENIX)] + [
         for num in NUMBERS 
         for phoe in PHOENIXS
 ]
+FILTER_MIN_WAVELENGTH: float = const.get_const_as_type("FILTER_MIN_WAVELENGTH", float)
+FILTER_MAX_WAVELENGTH: float = const.get_const_as_type("FILTER_MAX_WAVELENGTH", float)
 
 def make_phoenix_root_directory() -> None:
     if not os.path.exists(PHOENIX):
@@ -259,18 +261,10 @@ def test_make_phoenix_spectra_when_root_not_valid():
 
 def test_clip_phoenix_spectra_in_range():
     # Arrange
-    FILTER_MIN_WAVELENGTH: float = const.get_const_as_type("FILTER_MIN_WAVELENGTH", float)
-    FILTER_MAX_WAVELENGTH: float = const.get_const_as_type("FILTER_MAX_WAVELENGTH", float)
-
     min_wavelength: float = FILTER_MIN_WAVELENGTH / 2.
     max_wavelength: float = FILTER_MAX_WAVELENGTH + FILTER_MIN_WAVELENGTH / 2.
-    shape: int = 100
 
-    spectra: float = np.array([
-        np.linspace(min_wavelength, max_wavelength, shape),
-        random.normal(random.PRNGKey(0), (shape,)),
-        random.normal(random.PRNGKey(1), (shape,)),
-    ], dtype = float)
+    spectra: float = get_spectra(min_wavelength, max_wavelength)
 
     # Act
     out: float = phoenix.clip_phoenix_spectra(spectra)
@@ -281,22 +275,10 @@ def test_clip_phoenix_spectra_in_range():
 
 def test_clip_phoenix_spectra_on_invalid_input():
     # Arrange
-    FILTER_MIN_WAVELENGTH: float = const.get_const_as_type("FILTER_MIN_WAVELENGTH", float)
-
-    min_wavelength: float = 0.0 
-    max_wavelength: float = FILTER_MIN_WAVELENGTH
-    shape: int = 100
-
-    spectra: float = np.array([
-        np.linspace(min_wavelength, max_wavelength, shape),
-        random.normal(random.PRNGKey(0), (shape,)),
-        random.normal(random.PRNGKey(1), (shape,)),
-    ], dtype = float)
+    spectra: float = get_spectra(0.0, FILTER_MIN_WAVELENGTH) 
 
     # Act
     out: float = phoenix.clip_phoenix_spectra(spectra)
-
-    print(out.shape)
 
     # Assert
     assert out.shape[1] == 0
@@ -304,9 +286,6 @@ def test_clip_phoenix_spectra_on_invalid_input():
 # TODO: The way the clipping happens will be a problem for smaller arrays
 # TODO: Implement a get_spectra fixture
 def test_resample_phoenix_spectra_produces_correct_shape():
-    FILTER_MIN_WAVELENGTH: float = const.get_const_as_type("FILTER_MIN_WAVELENGTH", float)
-    FILTER_MAX_WAVELENGTH: float = const.get_const_as_type("FILTER_MAX_WAVELENGTH", float)
-
     spectra: float = get_spectra(FILTER_MIN_WAVELENGTH, FILTER_MAX_WAVELENGTH)
     out_shape: int = 10
 
@@ -316,4 +295,55 @@ def test_resample_phoenix_spectra_produces_correct_shape():
     # Assert
     assert out.shape == (3, out_shape)
     
-    
+def test_save_phoenix_spectra_makes_file():
+    # Arrange
+    spectra: float = get_spectra(FILTER_MIN_WAVELENGTH, FILTER_MAX_WAVELENGTH)
+
+    if os.path.isdir(ASSETS): 
+        shutil.rmtree(ASSETS)
+     
+    os.mkdir(ASSETS)
+
+    # Act
+    phoenix.save_phoenix_spectra("tmp", spectra)
+
+    # Assert
+    assert os.path.isfile("tmp/spectra.csv")
+
+def test_save_phoenix_spectra_has_headings():
+    # Arrange
+    spectra: float = get_spectra(FILTER_MIN_WAVELENGTH, FILTER_MAX_WAVELENGTH)
+
+    if os.path.isdir(ASSETS): 
+        shutil.rmtree(ASSETS)
+     
+    os.mkdir(ASSETS)
+
+    # Act
+    phoenix.save_phoenix_spectra("tmp", spectra)
+
+    # Assert
+    with open("tmp/spectra.csv", "r") as file:
+        header: str = next(file)
+        titles: list = header.strip().split(",")
+
+        assert titles[0].strip() == "alpha cen a waves (m)"
+        assert titles[1].strip() == "alpha cen a flux (W/m/m)"
+        assert titles[2].strip() == "alpha cen b flux (W/m/m)"
+
+def test_save_phoenix_spectra_has_correct_lines():
+    # Arrange
+    spectra: float = get_spectra(FILTER_MIN_WAVELENGTH, FILTER_MAX_WAVELENGTH)
+
+    if os.path.isdir(ASSETS): 
+        shutil.rmtree(ASSETS)
+     
+    os.mkdir(ASSETS)
+
+    # Act
+    phoenix.save_phoenix_spectra("tmp", spectra)
+
+    # Assert
+    with open("tmp/spectra.csv", "r") as file:
+        num_lines: int = len(file.readlines())
+        assert num_lines == 101
