@@ -115,19 +115,46 @@ def flux_relative_to_alpha_cen(background: float) -> float:
             background[FLUX] / ALPHA_CEN_FLUX
         ], dtype = float)
 
+def save_background_stars(background: float) -> None:
+    """
+    Save the background stars to a prespecified location.
+
+    In order to simplify the interface with programs written using 
+    `toliman` all resource files are stored in a specfic directory
+    `TOLIMAN_HOME`.
+
+    Parameters
+    ----------
+    background: float, [deg, deg, W/m/m]
+        The coordinates (ra, dec) and fluxes of a sample of background 
+        stars. The indexing convention is [RA, DEC, FLUX] along the 
+        leading axis.
+
+    Examples
+    --------
+    >>> bgstars: float = load_background_stars(0.0, 0.0, 2.0)
+    >>> win_stars: float = window_background_stars(bgstars, 1.0)
+    >>> rel_stars: float = flux_relative_to_alpha_cen(win_stars)
+    >>> save_background_stars(rel_stars)
+    """
+    BG_DIR: str = const.get_const_as_type("BACKGROUND_DIR", str)
+
+    with open(BG_DIR, "w") as sheet:
+        sheet.write("ra,dec,rel_flux\n")
+        for row in np.arange(sample_len):
+            sheet.write("{},".format(background[RA]))
+            sheet.write("{},".format(background[DEC]))
+            sheet.write("{}\n".format(background[FLUX]))
 
 
-def simulate_background_stars() -> None:
+def simulate_background_stars(/,
+        ra: float = BG_RA, 
+        dec: float = BG_DEC,
+        width: float = BG_WIN
+    ) -> None:
     """
     Sample the Gaia database for typical background stars.
 
-    The primary use of this function is to
-    build a sample that can be used to look for biases.
+    This is a convinience function
     """
 
-    with open("toliman/assets/background.csv", "w") as sheet:
-        sheet.write("ra,dec,rel_flux\n")
-        for row in np.arange(sample_len):
-            sheet.write(f"{bg_stars_ra_crop[row]},")
-            sheet.write(f"{bg_stars_dec_crop[row]},")
-            sheet.write(f"{bg_stars_rel_flux_crop[row]}\n")
