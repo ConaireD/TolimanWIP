@@ -264,7 +264,7 @@ def resample_phoenix_spectra(spectra: float, number_of_wavelengths: int) -> floa
     resample_by: int = resample_size // number_of_wavelengths 
     return math.downsample_along_axis(spectra, resample_by, axis=1)
 
-def save_phoenix_spectra(root: str, number_of_wavelengths: int = 25) -> None:
+def save_phoenix_spectra(root: str, spectra: str) -> None:
     """
     Simulate the spectrum of the alpha centauri binary using `pysynphot`.
 
@@ -273,15 +273,12 @@ def save_phoenix_spectra(root: str, number_of_wavelengths: int = 25) -> None:
 
     Parameters
     ----------
-    number_of_wavelengts: int
-        The number of wavelengths that you wish to use for the simulation.
-        The are taken from the `pysynphot` output by binning.
+    root: str
+        The directory to save the file in.
+    spectra: float
+        An array representation of the spectra. This should be 3 by the 
+        number of wavelengths.
     """
-    spectra: float = resample_phoenix_spectra(
-        clip_phoenix_spectra(make_phoenix_spectra(root)),
-        number_of_wavelengths
-    )
-
     file: str = paths.concat([root, "spectra.csv"])
 
     with open(file, "w") as fspectra:
@@ -289,7 +286,7 @@ def save_phoenix_spectra(root: str, number_of_wavelengths: int = 25) -> None:
         fspectra.write("alpha cen a flux (W/m/m), ")
         fspectra.write("alpha cen b flux (W/m/m)\n")
 
-        for i in np.arange(number_of_wavelengths, dtype=int):
+        for i in np.arange(spectra.shape[1], dtype=int):
             fspectra.write("{}, ".format(spectra[WAVES][i]))
             fspectra.write("{}, ".format(spectra[ALPHA_CEN_A][i]))
             fspectra.write("{}\n".format(spectra[ALPHA_CEN_B][i]))
