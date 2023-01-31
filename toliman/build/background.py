@@ -82,7 +82,10 @@ def window_background_stars(background: float, width: float) -> float:
     >>> bgstars: float = load_background_stars(0.0, 0.0, 2.0)
     >>> windowed_bgstars: float = window_bg_stars(bgstars, 1.0)
     """
-    
+    in_width: float = np.abs(background[(0, 1)]) < width
+    in_range: float = np.apply_along_axis(np.logical_and, 0, in_width)
+    return background[:, in_range]
+
 
 def simulate_background_stars() -> None:
     """
@@ -92,9 +95,6 @@ def simulate_background_stars() -> None:
     build a sample that can be used to look for biases.
     """
 
-    ra_in_range: float = np.abs(bg_stars_ra) < bg_win
-    dec_in_range: float = np.abs(bg_stars_dec) < bg_win
-    in_range: float = ra_in_range & dec_in_range
 
     bg_stars_ra_crop: float = bg_stars_ra[in_range]
     bg_stars_dec_crop: float = bg_stars_dec[in_range]
