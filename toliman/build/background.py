@@ -23,6 +23,16 @@ WHERE
 """
 
 def load_background_stars() -> float:
+    """
+    Retrieve a sample of backgound stars from the Gaia database.
+
+    Returns
+    -------
+    background: float
+        A sample of positions (ra, dec), and fluxes of a preselected 
+        background region of sky. The convention is RA along 0, DEC 
+        along 1 and FLUX along 2.
+    """
     from astroquery.gaia import Gaia
 
     bg_stars: object = Gaia.launch_job(CONICAL_QUERY.format(BG_RA, BG_DEC, BG_RAD))
@@ -33,7 +43,8 @@ def load_background_stars() -> float:
             np.array(bg_stars.results["flux"]),
         ], dtype = float)
 
-def window_background_stars(bg_stars_ra: float, bg_stars_dec: float)
+def window_background_stars(background: float) -> float:
+    
 
 def simulate_background_stars() -> None:
     """
