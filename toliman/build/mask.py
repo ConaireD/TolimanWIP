@@ -1,41 +1,87 @@
 import os
+import toliman.build.paths as paths
+import toliman.build.https as https
+import toliman.constants as const
+
+__author__ = "Jordan Dennis"
+__all__ = [
+    "is_mask_installed",
+    "install_mask",
+]
 
 MASK_HOME: str = "https://github.com/ConaireD/TolimanWIP/raw/mask/mask.npy"
+TOLIMAN_HOME: str = const.get_const_as_type("TOLIMAN_HOME", str)
+MASK_FILE: str = "mask.npy"
 
-def _is_mask_installed() -> bool:
+def is_mask_installed(root: str) -> bool:
     """
     Check if the mask is installed.
+
+    Parameters
+    ----------
+    root: str
+        The directory to search for an installation in.
 
     Returns
     -------
     installed: bool
         True is the mask is installed else false.
-    """
-    return os.path.isfile("{}/mask.npy".format(MASK))
 
-def _install_mask() -> bool:
+    Examples
+    --------
+    >>> import os
+    >>> os.mkdir("tmp")
+    >>> is_mask_installed("tmp")
+    ::: False
+    >>> open("tmp/mask.npy", "w").close()
+    >>> is_mask_installed("tmp")
+    ::: True
     """
-    Install phoenix from the web.
+    if not os.path.isdir(root):
+        return False
+        
+    return os.path.isfile(paths.concat([root, MASK_FILE]))
+
+def make_mask_home(root: str) -> None:
     """
-    MASK: str = "toliman/assets"
-    if not os.path.exists(MASK):
-        for path in _accumulate_path(MASK.split("/")):
+    Ensure the root directory exists.
+
+    Parameters
+    ----------
+    root: str
+        The directory to search for an installation in.
+
+    Examples
+    --------
+    >>> import os
+    >>> make_mask_home(".assets")
+    >>> os.path.isdir(".assets")
+    ::: True
+    >>> make_mask_home(".assets/mask/raw")
+    >>> os.path.isdir(".assets/mask/raw")
+    ::: True
+    """
+    if not os.path.exists(root):
+        for path in paths.accumulate_path(root.split("/")):
             if not os.path.exists(path):
                 os.mkdir(path)
 
-    with open("{}/mask.npy".format(MASK), "wb") as file_dev:
-        response: iter = requests.get(MASK_HOME, stream=True)
-        total_size: int = int(response.headers.get('content-length', 0))
+def install_mask(root: str) -> bool:
+    """
+    Install phoenix from the web.
 
-        print("Downloading: {}.".format(MASK_HOME))
+    Parameters
+    ----------
+    root: str
+        The directory to search for an installation in.
 
-        progress: object = tqdm.tqdm(
-            total=total_size,
-            unit='iB', 
-            unit_scale=True
-        )
-
-        for data in response.iter_content(1024):
-            progress.update(len(data))
-            file_dev.write(data)
-
+    Examples
+    --------
+    >>> import os
+    >>> install_mask(".assets")
+    >>> os.path.isfile(".assets/mask.npy")
+    ::: True
+    """
+    make_mask_home(root)
+    path: str = paths.concat([root, MASK_FILE])
+    https.download_file_from_http(path, MASK_HOME)
