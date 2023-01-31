@@ -155,6 +155,33 @@ def simulate_background_stars(/,
     """
     Sample the Gaia database for typical background stars.
 
-    This is a convinience function
+    This is a convinience function for setting up a saved sample of
+    background stars. You may be wondering why we bother saving a 
+    sample instead of reloading it each time? We made this decision 
+    because it takes a while to load from the external database and
+    is unlikely to be changed once you have an appropriate sample.
+    Thus saving the sample decreases the startup time of programs 
+    written using `toliman` at the expense of some disk space.
+
+    Parameters
+    ----------
+    ra: float, deg
+        The right ascension of the section of sky to sample. 
+    dec: float, deg
+        The declination of the section of sky to sample.
+    width: float, deg
+        The width of the square sample to take. 
+
+    Examples
+    --------
+    >>> import toliman.constants as const
+    >>> import os
+    >>> simulate_background_stars()
+    >>> os.path.isfile(const.get_const_as_type("BACKGROUND_DIR", str))
+    ::: True
     """
+    bgstars: float = load_background_stars(ra, dec, width / np.sqrt(2))
+    win_stars: float = window_background_stars(bgstars, width)
+    rel_stars: float = flux_relative_to_alpha_cen(win_stars)
+    save_background_stars(rel_stars)
 
