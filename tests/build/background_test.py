@@ -54,3 +54,13 @@ def test_window_background_stars_in_range():
     # Assert
     assert (win_bg_stars[RA] <= np.sqrt(2.0)).all()
     assert (win_bg_stars[DEC] <= np.sqrt(2.0)).all()
+
+def test_window_background_stars_has_correct_shape():
+    # Arrange
+    bg_stars: float = get_background_stars(3.0, 3.0, 2.0)
+
+    # Act
+    win_bg_stars: float = bg.window_background_stars(bg_stars, np.sqrt(2.0)) 
+
+    # Assert
+    assert win_bg_stars.shape[0] == 3
