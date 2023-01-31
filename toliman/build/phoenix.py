@@ -18,7 +18,7 @@ HOME: str = "grid/phoenix"
 URL: str = "https://archive.stsci.edu/hlsps/reference-atlases/cdbs/grid/phoenix"
 M00: str = "phoenixm00"
 P03: str = "phoenixp03"
-NUMS: list = [5200, 5300, 5700, 5900]
+NUMS: list = [5200, 5300, 5700, 5800]
 WAVES: int = 0
 ALPHA_CEN_A: int = 1
 ALPHA_CEN_B: int = 2
@@ -166,7 +166,7 @@ def set_phoenix_environ(root: str) -> None:
     """
     SYN: str = "PYSYN_CDBS"
 
-    if os.environ.get(SYN) == None:
+    if os.environ.get(SYN) != None:
         warnings.warn("{} was set to: {}".format(SYN, os.environ.get(SYN)))
 
     os.environ[SYN] = root
@@ -187,12 +187,12 @@ def make_phoenix_spectra(root: str) -> float:
     root: str
         The directory to look for the phoenix files in.
     """
-    import pysynphot
-
     if not is_phoenix_installed(root):
         raise ValueError
 
     set_phoenix_environ(root)
+
+    import pysynphot
 
     alpha_cen_a_spectrum: float = pysynphot.Icat(
         "phoenix",
