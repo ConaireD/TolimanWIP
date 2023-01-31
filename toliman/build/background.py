@@ -1,5 +1,6 @@
 import os
 import jax.numpy as np
+import toliman.constants as const
 
 __author__ = "Jordan Dennis"
 __all__ = [
@@ -156,11 +157,10 @@ def save_background_stars(background: float) -> None:
 
     with open(BG_DIR, "w") as sheet:
         sheet.write("ra,dec,rel_flux\n")
-        for row in np.arange(sample_len):
+        for row in np.arange(background[0].size):
             sheet.write("{},".format(background[RA]))
             sheet.write("{},".format(background[DEC]))
             sheet.write("{}\n".format(background[FLUX]))
-
 
 def simulate_background_stars(
         ra: float = BG_RA, 
