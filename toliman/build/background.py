@@ -9,7 +9,6 @@ BG_RA: float = 220.002540961 + 0.1
 BG_DEC: float = -60.8330381775
 ALPHA_CEN_FLUX: float = 1145.4129625806625
 BG_WIN: float = 2.0 / 60.0
-BG_RAD: float = 2.0 / 60.0 * np.sqrt(2.0)
 
 CONICAL_QUERY = """
 SELECT
@@ -86,6 +85,37 @@ def window_background_stars(background: float, width: float) -> float:
     in_range: float = np.apply_along_axis(np.logical_and, 0, in_width)
     return background[:, in_range]
 
+def flux_relative_to_alpha_cen(background: float) -> float:
+    """
+    Convert the flux into relative units.
+
+    Parameters
+    ----------
+    background: float, [deg, deg, W/m/m]
+        The coordinates (ra, dec) and fluxes of a sample of background 
+        stars. The convention is [RA, DEC, FLUX] along the leading 
+        (zeroth) axis.
+
+    Returns 
+    -------
+    background: float, [deg, deg, W/m/m]
+        The coordinates (ra, dec) and fluxes of the sample. The same
+        indexing convention is maintained but the units of the flux 
+        are altered.
+
+    Examples
+    --------
+    >>> bgstars: float = load_background_stars(0.0, 0.0, 2.0)
+    >>> win_stars: float = window_background_stars(bgstars, 1.0)
+    >>> rel_stars: float = flux_relative_to_alpha_cen(win_stars)
+    """
+    return np.array([
+            background[RA], 
+            background[DEC],
+            background[FLUX] / ALPHA_CEN_FLUX
+        ], dtype = float)
+
+
 
 def simulate_background_stars() -> None:
     """
@@ -94,12 +124,6 @@ def simulate_background_stars() -> None:
     The primary use of this function is to
     build a sample that can be used to look for biases.
     """
-
-
-    bg_stars_ra_crop: float = bg_stars_ra[in_range]
-    bg_stars_dec_crop: float = bg_stars_dec[in_range]
-    bg_stars_flux_crop: float = bg_stars_flux[in_range]
-    bg_stars_rel_flux_crop: float = bg_stars_flux_crop / alpha_cen_flux
 
     with open("toliman/assets/background.csv", "w") as sheet:
         sheet.write("ra,dec,rel_flux\n")
