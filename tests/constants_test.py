@@ -55,4 +55,22 @@ def test_get_const_as_type_fails() -> None:
     with pytest.raises(KeyError):
         const.get_const_as_type(PINEAPPLE, str)
 
+def test_is_constant_defined_when_defined() -> None:
+    # Arrange
+    if os.environ.get(PINEAPPLE):
+        os.environ.pop(PINEAPPLE)
+
+    os.environ[PINEAPPLE] = "1"
+
+    # Act
+    assert const.is_const_defined(PINEAPPLE)
+
+def test_is_const_defined_when_not_defined() -> None:
+    # Arrange
+    if os.environ.get(PINEAPPLE):
+        os.environ.pop(PINEAPPLE)
+
+    # Act
+    assert not const.is_const_defined(PINEAPPLE)
+
     
