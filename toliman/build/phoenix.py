@@ -2,6 +2,7 @@ import os
 import toliman.build.paths as paths
 import toliman.build.https as https
 import warnings
+import jax.numpy as np
 
 __author__ = "Jordan Dennis"
 __all__ = [

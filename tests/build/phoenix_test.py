@@ -3,6 +3,9 @@ import shutil
 import os
 import toliman.build.phoenix as phoenix
 import toliman.build.paths as paths
+import toliman.constants as const
+import jax.numpy as np
+import jax.random as random
 
 # TODO: Make into fixtures
 ASSETS: str = "tmp"
@@ -233,6 +236,8 @@ def test_make_phoenix_spectra_when_root_valid():
     # Arrange
     spectra: float = phoenix.make_phoenix_spectra(".assets")
 
+    print("PYSYN_CDBS", os.environ["PYSYN_CDBS"])
+
     # Assert
     assert spectra.shape[0] == 3
 
@@ -246,4 +251,45 @@ def test_make_phoenix_spectra_when_root_not_valid():
 
 def test_clip_phoenix_spectra_in_range():
     # Arrange
-    waves: float = np.linspace()
+    FILTER_MIN_WAVELENGTH: float = const.get_const_as_type("FILTER_MIN_WAVELENGTH", float)
+    FILTER_MAX_WAVELENGTH: float = const.get_const_as_type("FILTER_MAX_WAVELENGTH", float)
+
+    min_wavelength: float = FILTER_MIN_WAVELENGTH / 2.
+    max_wavelength: float = FILTER_MAX_WAVELENGTH + FILTER_MIN_WAVELENGTH / 2.
+    shape: int = 100
+
+    spectra: float = np.array([
+        np.linspace(min_wavelength, max_wavelength, shape),
+        random.normal(random.PRNGKey(0), (shape,)),
+        random.normal(random.PRNGKey(1), (shape,)),
+    ], dtype = float)
+
+    # Act
+    out: float = phoenix.clip_phoenix_spectra(spectra)
+
+    # Assert
+    assert (out[0] >= FILTER_MIN_WAVELENGTH).all()
+    assert (out[0] <= FILTER_MAX_WAVELENGTH).all()
+
+def test_clip_phoenix_spectra_on_invalid_input():
+    # Arrange
+    FILTER_MIN_WAVELENGTH: float = const.get_const_as_type("FILTER_MIN_WAVELENGTH", float)
+
+    min_wavelength: float = 0.0 
+    max_wavelength: float = FILTER_MIN_WAVELENGTH
+    shape: int = 100
+
+    spectra: float = np.array([
+        np.linspace(min_wavelength, max_wavelength, shape),
+        random.normal(random.PRNGKey(0), (shape,)),
+        random.normal(random.PRNGKey(1), (shape,)),
+    ], dtype = float)
+
+    # Act
+    out: float = phoenix.clip_phoenix_spectra(spectra)
+
+    print(out.shape)
+
+    # Assert
+    assert out.shape[1] == 0
+
