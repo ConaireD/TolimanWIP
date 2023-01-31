@@ -293,3 +293,28 @@ def test_clip_phoenix_spectra_on_invalid_input():
     # Assert
     assert out.shape[1] == 0
 
+# TODO: The way the clipping happens will be a problem for smaller arrays
+# TODO: Implement a get_spectra fixture
+def test_resample_phoenix_spectra_produces_correct_shape():
+    FILTER_MIN_WAVELENGTH: float = const.get_const_as_type("FILTER_MIN_WAVELENGTH", float)
+    FILTER_MAX_WAVELENGTH: float = const.get_const_as_type("FILTER_MAX_WAVELENGTH", float)
+
+    min_wavelength: float = FILTER_MIN_WAVELENGTH / 2.
+    max_wavelength: float = FILTER_MAX_WAVELENGTH + FILTER_MIN_WAVELENGTH / 2.
+    shape: int = 100
+
+    spectra: float = np.array([
+        np.linspace(min_wavelength, max_wavelength, shape),
+        random.normal(random.PRNGKey(0), (shape,)),
+        random.normal(random.PRNGKey(1), (shape,)),
+    ], dtype = float)
+
+    out_shape: int = 10
+
+    # Act
+    out: float = phoenix.resample_phoenix_spectra(spectra, out_shape)
+
+    # Assert
+    assert out.shape == (3, out_shape)
+    
+    
