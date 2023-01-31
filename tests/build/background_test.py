@@ -64,3 +64,13 @@ def test_window_background_stars_has_correct_shape():
 
     # Assert
     assert win_bg_stars.shape[0] == 3
+
+def test_flux_relative_to_alpha_cen_has_correct_shape():
+    # Arrange
+    bg_stars: float = get_background_stars(3.0, 3.0, 2.0)
+
+    # Act
+    rel_bg_stars: float = bg.flux_relative_to_alpha_cen(bg_stars)
+
+    # Assert
+    assert rel_bg_stars.shape[0] == 3
