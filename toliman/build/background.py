@@ -22,9 +22,21 @@ WHERE
     phot_g_mean_flux IS NOT NULL
 """
 
-def load_background_stars() -> float:
+def load_background_stars(ra: float, dec: float, rad: float) -> float:
     """
     Retrieve a sample of backgound stars from the Gaia database.
+
+    Selects the top 12000 stars and contains only the entries that 
+    contain a measured flux.
+
+    Parameters
+    ----------
+    ra: float, deg
+        The right ascension of section of sky to survey.
+    dec: float, deg 
+        The declination of the section of sky to survey.
+    rad: float, deg
+        The radius of the conical region to survey. 
 
     Returns
     -------
@@ -32,10 +44,14 @@ def load_background_stars() -> float:
         A sample of positions (ra, dec), and fluxes of a preselected 
         background region of sky. The convention is RA along 0, DEC 
         along 1 and FLUX along 2.
+
+    Examples
+    --------
+    >>> load_background_stars(0.0, 0.0, 2.0)
     """
     from astroquery.gaia import Gaia
 
-    bg_stars: object = Gaia.launch_job(CONICAL_QUERY.format(BG_RA, BG_DEC, BG_RAD))
+    bg_stars: object = Gaia.launch_job(CONICAL_QUERY.format(ra, dec, rad))
 
     return np.array([
             np.array(bg_stars.results["ra"]) - BG_RA,
@@ -43,7 +59,29 @@ def load_background_stars() -> float:
             np.array(bg_stars.results["flux"]),
         ], dtype = float)
 
-def window_background_stars(background: float) -> float:
+def window_background_stars(background: float, width: float) -> float:
+    """
+    Get a square array of background stars.
+
+    Parameters
+    ----------
+    background: float, [deg, deg, W/m/m]
+        Coordinates (ra, dec), and fluxes of a set of stars. The
+        conventions is [RA, DEC, FLUX] along the leading axis.
+    width: float, deg
+        The width of the square region to cut.
+
+    Returns
+    -------
+    background_in_square: float, [deg, deg, W/m/m]
+        The coordinates (ra, dec) and fluxes of a set of background 
+        stars within a square.
+
+    Examples
+    --------
+    >>> bgstars: float = load_background_stars(0.0, 0.0, 2.0)
+    >>> windowed_bgstars: float = window_bg_stars(bgstars, 1.0)
+    """
     
 
 def simulate_background_stars() -> None:
