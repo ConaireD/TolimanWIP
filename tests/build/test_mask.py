@@ -26,7 +26,7 @@ def test_is_mask_installed_when_not_installed() -> None:
     if os.path.isdir(ROOT):
         shutil.rmtree(ROOT)
 
-    os.mdkir(ROOT)
+    os.mkdir(ROOT)
 
     # Act 
     assert not mask.is_mask_installed(ROOT)

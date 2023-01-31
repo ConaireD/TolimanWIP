@@ -19,12 +19,13 @@ from dLux import (
 )
 
 from toliman import (
-    _contains_instance,
     TolimanOptics,
     TolimanDetector,
     AlphaCentauri,
     Background,
 )
+
+from toliman.collections import contains_instance
 
 from jax import (
     numpy as np,
