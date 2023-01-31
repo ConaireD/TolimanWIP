@@ -335,7 +335,7 @@ class TolimanOptics(dl.Optics, collections.CollectionInterface):
         return eqx.tree_at(lambda x: x.layers, self, dl_new_layers)
 
 
-class TolimanDetector(dl.Detector, CollectionInterface):
+class TolimanDetector(dl.Detector, collections.CollectionInterface):
     """
     Represents the Toliman detector.
 

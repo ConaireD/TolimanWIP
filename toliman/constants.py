@@ -37,7 +37,7 @@ def is_const_defined(const: str) -> bool:
     defed: bool
         True if the constant is defined, else False.
     """
-    if os.environ[const]:
+    if os.environ.get(const):
         return True
     return False
 
@@ -71,13 +71,13 @@ set_const("SPECTRUM_DIR", "{}/spectra.csv".format(os.environ["TOLIMAN_HOME"]))
 set_const("BACKGROUND_DIR", "{}/background.csv".format(os.environ["TOLIMAN_HOME"]))
 set_const("TOLIMAN_PRIMARY_APERTURE_DIAMETER", 0.13)
 set_const("TOLIMAN_SECONDARY_MIRROR_DIAMETER", 0.032)
-set_const("TOLIMAN_DETECTOR_PIXEL_SIZE", dl.utilsarcseconds_to_radians(0.375))
+set_const("TOLIMAN_DETECTOR_PIXEL_SIZE", dl.utils.arcseconds_to_radians(0.375))
 set_const("TOLIMAN_WIDTH_OF_STRUTS", 0.01)
 set_const("TOLIMAN_NUMBER_OF_STRUTS", 3)
 set_const("DEFAULT_DETECTOR_JITTER", 2.0)
 set_const("DEFAULT_DETECTOR_SATURATION", 2500)
 set_const("DEFAULT_DETECTOR_THRESHOLD", 0.05)
-set_const("ALPHA_CENTAURI_SEPARATION", dl.utilsarcseconds_to_radians(8.0))
+set_const("ALPHA_CENTAURI_SEPARATION", dl.utils.arcseconds_to_radians(8.0))
 set_const("ALPHA_CENTAURI_POSITION", [0.0, 0.0])
 set_const("ALPHA_CENTAURI_MEAN_FLUX", 1.0)
 set_const("ALPHA_CENTAURI_CONTRAST", 2.0)
