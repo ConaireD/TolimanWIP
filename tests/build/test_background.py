@@ -141,7 +141,7 @@ def test_save_background_stars_has_correct_number_of_lines():
 def test_are_background_stars_installed_when_installed() -> None:
     # Arrange
     if os.path.isdir(ROOT):
-        shutile.rmtree(ROOT)
+        shutil.rmtree(ROOT)
 
     os.mkdir(ROOT)
     open(BG, "w").close()
@@ -152,7 +152,7 @@ def test_are_background_stars_installed_when_installed() -> None:
 def test_are_background_stars_installed_when_not_installed() -> None:
     # Arrange
     if os.path.isdir(ROOT):
-        shutile.rmtree(ROOT)
+        shutil.rmtree(ROOT)
 
     os.mkdir(ROOT)
 
