@@ -117,26 +117,25 @@ def install_toliman(root: str = TOLIMAN_HOME, /, force: bool = False) -> None:
     ::: True
     """
     print(color_str_as_code("Building `toliman`!"))
-    print("-------------------")
 
     if not phoenix.is_phoenix_installed(root) or force:
         print("Installing phoenix...")
         phoenix.install_phoenix(root)
-        phoenix.simulate_alpha_cen_spectra(root)
         print("Done!")
 
-    if not 
-    print("Saving spectral model...")
-    _simulate_alpha_cen_spectra()
-    print("Done!")
+    if not phoenix.is_spectra_installed(root) or force: 
+        print("Installing spectra...")
+        phoenix.install_spectra(root)
+        print("Done!")
 
-    print("Saving background stars...")
-    _simulate_background_stars()
-    print("Done!")
+    if not bg.are_background_stars_installed(root) or force:
+        print("Installing background stars...")
+        bg.install_background_stars(root)
+        print("Done!")
 
-    if not _is_mask_installed():
+    if not mask.is_mask_installed(root) or force:
         print("Installing mask...")
-        _install_mask()
+        mask.install_mask(root)
         print("Done!")
 
     print(color_str_as_code("`toliman` built!"))

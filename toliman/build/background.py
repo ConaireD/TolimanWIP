@@ -131,7 +131,7 @@ def flux_relative_to_alpha_cen(background: float) -> float:
             background[FLUX] / ALPHA_CEN_FLUX
         ], dtype = float)
 
-def save_background_stars(background: float) -> None:
+def save_background_stars(background: float, root: str) -> None:
     """
     Save the background stars to a prespecified location.
 
@@ -153,19 +153,18 @@ def save_background_stars(background: float) -> None:
     >>> rel_stars: float = flux_relative_to_alpha_cen(win_stars)
     >>> save_background_stars(rel_stars)
     """
-    BG_DIR: str = const.get_const_as_type("BACKGROUND_DIR", str)
-
-    with open(BG_DIR, "w") as sheet:
+    with open(paths.concat([root, "background.csv"]), "w") as sheet:
         sheet.write("ra,dec,rel_flux\n")
-        for row in np.arange(background[0].size):
+        for row in np.arange(background[RA].size):
             sheet.write("{},".format(background[RA]))
             sheet.write("{},".format(background[DEC]))
             sheet.write("{}\n".format(background[FLUX]))
 
-def simulate_background_stars(
+def install_background_stars(
+        root: str,
         ra: float = BG_RA, 
         dec: float = BG_DEC,
-        width: float = BG_WIN
+        width: float = BG_WIN,
     ) -> None:
     """
     Sample the Gaia database for typical background stars.
