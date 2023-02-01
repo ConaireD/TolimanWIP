@@ -2,9 +2,7 @@ import pytest
 
 @pytest.fixture
 def inner(outer: callable) -> None:
-    print("<inner>")
-    yield
-    print("</inner>")
+    print("<inner></inner>")
 
 @pytest.fixture
 def outer() -> None:
