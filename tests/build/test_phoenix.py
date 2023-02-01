@@ -7,71 +7,6 @@ import toliman.constants as const
 import jax.numpy as np
 import jax.random as random
 
-# TODO: Make into fixtures
-ASSETS: str = "tmp"
-PHOENIX: str = "{}/grid/phoenix".format(ASSETS)
-PHOENIXS: str = ["phoenixm00", "phoenixp03"]
-NUMBERS: list = [5200, 5300, 5700, 5900]
-PHOENIX_FILES: list = ["{}/catalog.fits".format(PHOENIX)] + [
-    "{}/{}/{}_{}.fits".format(PHOENIX, phoe, phoe, num) 
-        for num in NUMBERS 
-        for phoe in PHOENIXS
-]
-FILTER_MIN_WAVELENGTH: float = const.get_const_as_type("FILTER_MIN_WAVELENGTH", float)
-FILTER_MAX_WAVELENGTH: float = const.get_const_as_type("FILTER_MAX_WAVELENGTH", float)
-
-def make_phoenix_root_directory() -> None:
-    if not os.path.exists(PHOENIX):
-        for path in paths.accumulate(PHOENIX.split("/")):
-            if not os.path.exists(path):
-                os.mkdir(path)
-
-def make_phoenix_type_directory(phoenix: str) -> None:
-    if not os.path.exists(PHOENIX):
-        make_phoenix_root_directory()
-    path: str = paths.concat([PHOENIX, phoenix])
-    if not os.path.exists(path):
-        os.mkdir(path)
-
-def make_phoenix_type_files(phoenix: str) -> None:
-    target: str = paths.concat([PHOENIX, phoenix])
-    if not os.path.exists(target):
-        make_phoenix_type_directory(phoenix)
-    for number in NUMBERS:
-        path: str = "{}/{}_{}.fits".format(target, phoenix, number)
-        if not os.path.exists(path):
-            with open(path, "w") as file:
-                continue
-
-def make_phoenix_catalog() -> None:
-    if not os.path.exists(PHOENIX):
-        make_phoenix_root_directory()
-    path: str = "{}/catalog.fits".format(PHOENIX)
-    if not os.path.exists(path):
-        with open(path, "w") as file:
-            pass
-
-def make_phoenix_installed() -> None:
-    if not os.path.exists(ASSETS):
-        os.mkdir(ASSETS)
-    make_phoenix_catalog()
-    for phoenix in PHOENIXS:
-        make_phoenix_type_files(phoenix)
-
-def remove_phoenix() -> None:
-    if os.path.exists(ASSETS):
-        shutil.rmtree(ASSETS)
-
-def get_spectra(min_: float, max_: float):
-    shape: int = 100
-
-    return np.array([
-            np.linspace(min_, max_, shape),
-            random.normal(random.PRNGKey(0), (shape,)),
-            random.normal(random.PRNGKey(1), (shape,)),
-        ], dtype = float)
-    
-
 def test_is_phoenix_installed_when_fully_installed():
     # Arrange 
     remove_phoenix()
@@ -84,7 +19,7 @@ def test_is_phoenix_installed_when_fully_installed():
     # Clean Up
     remove_phoenix()
 
-def test_is_phoenix_installed_when_fully_installed():
+def test_is_phoenix_installed_when_partially_installed():
     # Arrange 
     remove_phoenix()
     os.mkdir(ASSETS)
