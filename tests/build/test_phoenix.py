@@ -29,32 +29,28 @@ def test_is_phoenix_installed_when_not_installed(
     ) -> None:
     assert not phoenix.is_phoenix_installed(ROOT)
 
-# TODO:
-def test_make_phoenix_dirs_when_not_setup():
-    # Arrange
-    remove_installation()
-    os.mkdir(ROOT)
-
-    # Act
+@pytest.mark.parametrize("root", [ROOT])
+def test_make_phoenix_dirs_when_not_setup(
+        remove_installation: callable,
+    ) -> None:
     phoenix.make_phoenix_dirs(ROOT)
 
-    # Assert
     assert os.path.exists(paths.concat([ROOT, "grid"]))
     assert os.path.exists(paths.concat([ROOT, "grid/phoenix"]))
     assert os.path.exists(paths.concat([ROOT, "grid/phoenix/phoenixm00"]))
     assert os.path.exists(paths.concat([ROOT, "grid/phoenix/phoenixp03"]))
-    
-    # Clean Up
-    remove_installation()
 
-def test_make_phoenix_dirs_when_setup():
+@pytest.mark.parametrize("root", [ROOT])
+def test_make_phoenix_dirs_when_setup(
+        remove_installation: callable,
+        root: str,
+    ) -> None:
     # Arrange
-    grid: str = paths.concat([ROOT, "grid"])
-    phoenixs: str = paths.concat([ROOT, "grid", "phoenix"])
-    phoenixm00: str = paths.concat([ROOT, "grid", "phoenix", "phoenixm00"])
-    phoenixp03: str = paths.concat([ROOT, "grid", "phoenix", "phoenixp03"])
+    grid: str = paths.concat([root, "grid"])
+    phoenixs: str = paths.concat([root, "grid", "phoenix"])
+    phoenixm00: str = paths.concat([root, "grid", "phoenix", "phoenixm00"])
+    phoenixp03: str = paths.concat([root, "grid", "phoenix", "phoenixp03"])
 
-    remove_installation()
     os.mkdir(ROOT)
     os.mkdir(grid)
     os.mkdir(phoenixs)
@@ -65,13 +61,10 @@ def test_make_phoenix_dirs_when_setup():
     phoenix.make_phoenix_dirs(ROOT)
 
     # Assert
-    assert os.path.exists(grid)
-    assert os.path.exists(phoenixs)
-    assert os.path.exists(phoenixm00)
-    assert os.path.exists(phoenixp03)
-    
-    # Clean Up
-    remove_installation()
+    assert os.path.isdir(grid)
+    assert os.path.isdir(phoenixs)
+    assert os.path.isdir(phoenixm00)
+    assert os.path.isdir(phoenixp03)
     
 def test_make_phoenix_dirs_when_partially_setup():
     # Arrange
