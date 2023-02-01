@@ -5,9 +5,10 @@ import toliman.constants as const
 FILTER_MIN_WAVELENGTH: float = const.get_const_as_type("FILTER_MIN_WAVELENGTH", float)
 FILTER_MAX_WAVELENGTH: float = const.get_const_as_type("FILTER_MAX_WAVELENGTH", float)
 
+@pytest.fixture
+def create_fake_phoenix_installation() -> callable:
 def create_fake_phoenix_installation(root: str, full = False) -> None:
-    if os.path.isdir(root):
-        shutil.rmtree(root)
+    remove_installation(root)
     
     numbers: list = [5200, 5300, 5700, 5900]
     phoenix: str = "/".join([root, "grid", "phoenix"])
@@ -24,12 +25,17 @@ def create_fake_phoenix_installation(root: str, full = False) -> None:
             open("{}/phoenixp03_{}.fits".format(phoenixm00, num)).close()
             
 def create_fake_mask_installation(root: str) -> None:
-    if os.path.isdir(root):
-        shutil.rmtree(root)
-
+    remove_installation(root)
     os.makedirs(root)
-
     open("{}/mask.npy".format(root)).close()
     
 def create_fake_background_installation(root: str) -> None:
+    remove_installation(root)
+    os.makedirs(root)
+    open("{}/background.npy".format(root)).close()
 
+def remove_installation(root: str) -> None:
+    if os.path.isdir(root):
+        shutil.rmtree(root)
+
+print("Hello world!")
