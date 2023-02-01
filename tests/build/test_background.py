@@ -11,6 +11,8 @@ import toliman.constants as const
 RA: int = 0
 DEC: int = 1
 FLUX: int = 2
+ROOT: str = "tmp"
+BG: str = "tmp/background.csv"
 
 def get_background_stars(ra: float, dec: float, rad: float) -> float:
     NUM: int = 100
@@ -82,56 +84,77 @@ def test_flux_relative_to_alpha_cen_has_correct_shape():
 
 def test_save_background_stars_creates_file():
     # Arrange
-    if os.path.isdir("tmp"):
-        shutil.rmtree("tmp")
+    if os.path.isdir(ROOT):
+        shutil.rmtree(ROOT)
 
-    os.mkdir("tmp")
+    os.mkdir(ROOT)
     bg_stars: float = get_background_stars(3.0, 3.0, 2.0)
 
     # Act
-    bg.save_background_stars(bg_stars, "tmp")
+    bg.save_background_stars(bg_stars, ROOT)
 
     # Assert
-    assert os.path.isfile("tmp/background.csv")
+    assert os.path.isfile(BG)
 
     # Clean Up
-    shutil.rmtree("tmp")
+    shutil.rmtree(ROOT)
 
 def test_save_background_stars_has_correct_headings():
     # Arrange
-    if os.path.isdir("tmp"):
-        shutil.rmtree("tmp")
+    if os.path.isdir(ROOT):
+        shutil.rmtree(ROOT)
 
-    os.mkdir("tmp")
+    os.mkdir(ROOT)
     bg_stars: float = get_background_stars(3.0, 3.0, 2.0)
 
     # Act
-    bg.save_background_stars(bg_stars, "tmp")
+    bg.save_background_stars(bg_stars, ROOT)
 
     # Assert
-    with open("tmp/background.csv", "r") as file:
+    with open(BG, "r") as file:
         headings: str = next(file).strip().split(",")
         assert headings[0] == "ra"
         assert headings[1] == "dec"
         assert headings[2] == "rel_flux"
 
     # Clean Up
-    shutil.rmtree("tmp")
+    shutil.rmtree(ROOT)
 
 def test_save_background_stars_has_correct_number_of_lines():
     # Arrange
-    if os.path.isdir("tmp"):
-        shutil.rmtree("tmp")
+    if os.path.isdir(ROOT):
+        shutil.rmtree(ROOT)
 
-    os.mkdir("tmp")
+    os.mkdir(ROOT)
     bg_stars: float = get_background_stars(3.0, 3.0, 2.0)
 
     # Act
-    bg.save_background_stars(bg_stars, "tmp")
+    bg.save_background_stars(bg_stars, ROOT)
 
     # Assert
-    with open("tmp/background.csv", "r") as file:
+    with open(BG, "r") as file:
         assert len(file.readlines()) == bg_stars[0].size + 1
 
     # Clean Up
-    shutil.rmtree("tmp")
+    shutil.rmtree(ROOT)
+
+def test_are_background_stars_installed_when_installed() -> None:
+    # Arrange
+    if os.path.isdir(ROOT):
+        shutile.rmtree(ROOT)
+
+    os.mkdir(ROOT)
+    open(BG, "w").close()
+
+    # Act/Assert
+    assert bg.are_background_stars_installed(ROOT)
+
+def test_are_background_stars_installed_when_not_installed() -> None:
+    # Arrange
+    if os.path.isdir(ROOT):
+        shutile.rmtree(ROOT)
+
+    os.mkdir(ROOT)
+
+    # Act/Assert
+    assert not bg.are_background_stars_installed(ROOT)
