@@ -7,9 +7,10 @@ FILTER_MIN_WAVELENGTH: float = const.get_const_as_type("FILTER_MIN_WAVELENGTH", 
 FILTER_MAX_WAVELENGTH: float = const.get_const_as_type("FILTER_MAX_WAVELENGTH", float)
 
 @pytest.fixture
-def create_fake_phoenix_installation(root: str, full = True) -> None:
-    remove_installation(root)
-    
+def create_fake_phoenix_installation(
+        root: str, 
+        full: bool, 
+    ) -> None:
     numbers: list = [5200, 5300, 5700, 5800]
     phoenix: str = "/".join([root, "grid", "phoenix"])
     phoenixm00: str = "/".join([phoenix, "phoenixm00"])
@@ -23,25 +24,21 @@ def create_fake_phoenix_installation(root: str, full = True) -> None:
         open("{}/phoenixm00_{}.fits".format(phoenixm00, num), "w").close()
         if full:
             open("{}/phoenixp03_{}.fits".format(phoenixp03, num), "w").close()
-    print("Do you yield!")
 
-    yield
+    yield 
 
-    print("I yield.")
-    remove_installation(root)
-            
+    if os.path.isdir(root): shutil.rmtree(root)
+
 @pytest.fixture
 def create_fake_mask_installation(root: str) -> None:
-    remove_installation(root)
     os.makedirs(root)
     open("{}/mask.npy".format(root)).close()
     
 @pytest.fixture
 def create_fake_background_installation(root: str) -> None:
-    remove_installation(root)
     os.makedirs(root)
     open("{}/background.npy".format(root)).close()
 
+@pytest.fixture(autouse=True)
 def remove_installation(root: str) -> None:
-    if os.path.isdir(root):
-        shutil.rmtree(root)
+    if os.path.isdir(root): shutil.rmtree(root)

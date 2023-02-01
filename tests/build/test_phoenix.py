@@ -9,28 +9,22 @@ import jax.random as random
 
 ROOT: str = "tmp"
 
+@pytest.mark.parametrize("full", [True])
 @pytest.mark.parametrize("root", [ROOT])
 def test_is_phoenix_installed_when_fully_installed(
-        create_fake_phoenix_installation
+        create_fake_phoenix_installation: callable,
     ) -> None:
     assert phoenix.is_phoenix_installed(ROOT)
 
-# Requires Refactor
-def test_is_phoenix_installed_when_partially_installed():
-    # Arrange 
-    create_fake_phoenix_installation(full = False)
-
-    # Assert
+@pytest.mark.parametrize("full", [False])
+@pytest.mark.parametrize("root", [ROOT])
+def test_is_phoenix_installed_when_partially_installed(
+        create_fake_phoenix_installation: callable,
+    ) -> None:
     assert not phoenix.is_phoenix_installed(ROOT)
-
-    # Clean Up
-    remove_installation()
     
-def test_is_phoenix_installed_when_not_installed():
-    # Arrange
-    remove_installation()
-
-    # Assert
+@pytest.mark.parametrize("root", [ROOT])
+def test_is_phoenix_installed_when_not_installed() -> None:
     assert not phoenix.is_phoenix_installed(ROOT)
 
 def test_make_phoenix_dirs_when_not_setup():
