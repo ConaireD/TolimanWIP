@@ -86,12 +86,10 @@ def test_save_background_stars_creates_file():
         shutil.rmtree("tmp")
 
     os.mkdir("tmp")
-    const.set_const("TOLIMAN_HOME", "tmp")
-
     bg_stars: float = get_background_stars(3.0, 3.0, 2.0)
 
     # Act
-    bg.save_background_stars(bg_stars)
+    bg.save_background_stars(bg_stars, "tmp")
 
     # Assert
     assert os.path.isfile("tmp/background.csv")
@@ -105,12 +103,10 @@ def test_save_background_stars_has_correct_headings():
         shutil.rmtree("tmp")
 
     os.mkdir("tmp")
-    const.set_const("TOLIMAN_HOME", "tmp")
-
     bg_stars: float = get_background_stars(3.0, 3.0, 2.0)
 
     # Act
-    bg.save_background_stars(bg_stars)
+    bg.save_background_stars(bg_stars, "tmp")
 
     # Assert
     with open("tmp/background.csv", "r") as file:
@@ -128,16 +124,14 @@ def test_save_background_stars_has_correct_number_of_lines():
         shutil.rmtree("tmp")
 
     os.mkdir("tmp")
-    const.set_const("TOLIMAN_HOME", "tmp")
-
     bg_stars: float = get_background_stars(3.0, 3.0, 2.0)
 
     # Act
-    bg.save_background_stars(bg_stars)
+    bg.save_background_stars(bg_stars, "tmp")
 
     # Assert
     with open("tmp/background.csv", "r") as file:
-        assert len(file.readlines()) == bg_stars[0].size
+        assert len(file.readlines()) == bg_stars[0].size + 1
 
     # Clean Up
     shutil.rmtree("tmp")

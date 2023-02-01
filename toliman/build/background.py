@@ -1,6 +1,7 @@
 import os
 import jax.numpy as np
 import toliman.constants as const
+import toliman.build.paths as paths
 
 __author__ = "Jordan Dennis"
 __all__ = [
@@ -153,12 +154,14 @@ def save_background_stars(background: float, root: str) -> None:
     >>> rel_stars: float = flux_relative_to_alpha_cen(win_stars)
     >>> save_background_stars(rel_stars)
     """
+    if background.shape[0] != 3:
+        raise ValueError("Invalid background stars.")
     with open(paths.concat([root, "background.csv"]), "w") as sheet:
         sheet.write("ra,dec,rel_flux\n")
         for row in np.arange(background[RA].size):
-            sheet.write("{},".format(background[RA]))
-            sheet.write("{},".format(background[DEC]))
-            sheet.write("{}\n".format(background[FLUX]))
+            sheet.write("{},".format(background[RA][row]))
+            sheet.write("{},".format(background[DEC][row]))
+            sheet.write("{}\n".format(background[FLUX][row]))
 
 def install_background_stars(
         root: str,
