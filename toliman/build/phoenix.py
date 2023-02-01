@@ -289,3 +289,50 @@ def save_phoenix_spectra(root: str, spectra: str) -> None:
             fspectra.write("{}, ".format(spectra[ALPHA_CEN_A][i]))
             fspectra.write("{}\n".format(spectra[ALPHA_CEN_B][i]))
 
+def is_spectra_installed(root: str) -> bool:
+
+
+def install_spectra(root: str, number_of_wavelengths: int) -> None:
+    """
+    Make and save the alpha centauri spectrum at a given resolution.
+
+    This function assumes that phoenix is already installed. If it is 
+    not installed then use the `install_phoenix` command. This module 
+    is not necessarily intended to be user facing so be aware that in 
+    general root should be TOLIMAN_HOME, but that is enforced upstream.
+
+    Parameters
+    ----------
+    root: str
+        The directory to install the spectrum.
+    number_of_wavelengths: int
+        The resolution of the spectrum. < 25 is not recommended but this
+        is not enforced.
+
+    Examples
+    --------
+    >>> import os
+    >>> import shutil
+    >>> if os.path.isdir("tmp"):
+    ...     shutil.rmtree("tmp")
+    >>> is_phoenix_installed("tmp")
+    ::: False
+    >>> install_phoenix("tmp")
+    >>> is_phoenix_installed("tmp")
+    ::: True
+    >>> install_spectra("tmp")
+    >>> is_spectra_installed("tmp")
+    ::: True
+    """
+    if not is_phoenix_installed(root):
+        raise ValueError("Phoenix not installed!")
+
+    spectra: float = resample_phoenix_spectra(
+        clip_phoenix_spectra(make_phoenix_spectra(root)), 
+        number_of_wavelengths
+    )
+
+    save_phoenix_spectra(root, spectra)
+    
+
+    
