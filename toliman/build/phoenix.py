@@ -290,7 +290,33 @@ def save_phoenix_spectra(root: str, spectra: str) -> None:
             fspectra.write("{}\n".format(spectra[ALPHA_CEN_B][i]))
 
 def is_spectra_installed(root: str) -> bool:
+    """
+    Check if the spectra are installed.
 
+    Parameters
+    ----------
+    root: str
+        The directory to search for an installation in.
+
+    Returns
+    -------
+    installed: bool
+        True is the spectra are installed else false.
+
+    Examples
+    --------
+    >>> import os
+    >>> os.mkdir("tmp")
+    >>> is_spectra_installed("tmp")
+    ::: False
+    >>> open("tmp/spectra.csv", "w").close()
+    >>> is_spectra_installed("tmp")
+    ::: True
+    """
+    if not os.path.isdir(root):
+        return False
+        
+    return os.path.isfile(paths.concat([root, "spectra.csv"]))
 
 def install_spectra(root: str, number_of_wavelengths: int) -> None:
     """
