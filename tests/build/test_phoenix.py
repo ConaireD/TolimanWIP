@@ -244,6 +244,10 @@ def test_set_phoenix_environ_when_set():
     # Assert
     assert os.environ["PYSYN_CDBS"] == ASSETS
 
+@pytest.mark.skipif(
+    not phoenix.is_phoenix_installed(ASSETS), 
+    reason="No valid installation."
+)
 def test_make_phoenix_spectra_when_root_valid():
     # Arrange
     spectra: float = phoenix.make_phoenix_spectra(".assets")
