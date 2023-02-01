@@ -95,10 +95,7 @@ def make_phoenix_dirs(root: str) -> None:
     ::: True
     """
     home: str = paths.concat([root, HOME])
-    if not os.path.exists(home):
-        for path in paths.accumulate(home.split("/")):
-            if not os.path.exists(path):
-                os.mkdir(path)
+    paths.mkdir_and_parents(home)
 
     for pnx in [M00, P03]:
         path: str = paths.concat([home, pnx])

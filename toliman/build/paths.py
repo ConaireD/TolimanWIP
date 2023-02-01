@@ -63,3 +63,28 @@ def concat(paths: list) -> str:
     ::: "root/dev/null"`
     """
     return "/".join(paths)
+
+def mkdir_and_parents(root: str) -> None:
+    """
+    Ensure the root directory exists.
+
+    Parameters
+    ----------
+    root: str
+        The directory to search for an installation in.
+
+    Examples
+    --------
+    >>> import os
+    >>> mkdir_and_parents(".assets")
+    >>> os.path.isdir(".assets")
+    ::: True
+    >>> mkdir_and_parents(".assets/mask/raw")
+    >>> os.path.isdir(".assets/mask/raw")
+    ::: True
+    """
+    if not os.path.exists(root):
+        for path in accumulate(root.split("/")):
+            if not os.path.exists(path):
+                os.mkdir(path)
+

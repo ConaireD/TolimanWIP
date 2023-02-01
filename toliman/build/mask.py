@@ -42,30 +42,6 @@ def is_mask_installed(root: str) -> bool:
         
     return os.path.isfile(paths.concat([root, MASK_FILE]))
 
-def make_mask_home(root: str) -> None:
-    """
-    Ensure the root directory exists.
-
-    Parameters
-    ----------
-    root: str
-        The directory to search for an installation in.
-
-    Examples
-    --------
-    >>> import os
-    >>> make_mask_home(".assets")
-    >>> os.path.isdir(".assets")
-    ::: True
-    >>> make_mask_home(".assets/mask/raw")
-    >>> os.path.isdir(".assets/mask/raw")
-    ::: True
-    """
-    if not os.path.exists(root):
-        for path in paths.accumulate(root.split("/")):
-            if not os.path.exists(path):
-                os.mkdir(path)
-
 def install_mask(root: str) -> bool:
     """
     Install phoenix from the web.
@@ -82,6 +58,6 @@ def install_mask(root: str) -> bool:
     >>> os.path.isfile(".assets/mask.npy")
     ::: True
     """
-    make_mask_home(root)
+    paths.mkdir_and_parents(root)
     path: str = paths.concat([root, MASK_FILE])
     https.download_file_from_https(path, MASK_HOME)
