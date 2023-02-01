@@ -6,6 +6,9 @@ import toliman.build.paths as paths
 import toliman.constants as const
 import jax.numpy as np
 import jax.random as random
+import typing
+
+class fixture(typing.Generic[typing.TypeVar("T")]): pass
 
 ROOT: str = "tmp"
 
@@ -31,33 +34,17 @@ def test_is_phoenix_installed_when_not_installed(
 
 @pytest.mark.parametrize("root", [ROOT])
 def test_make_phoenix_dirs_when_not_setup(
-        remove_installation: callable,
+        remove_installation: fixture[None],
+        list_phoenix_dirs: fixture[list]
     ) -> None:
     phoenix.make_phoenix_dirs(ROOT)
+    assert all(os.path.isdir(pdir) for pdir in list_phoenix_dirs)
 
-    assert os.path.exists(paths.concat([ROOT, "grid"]))
-    assert os.path.exists(paths.concat([ROOT, "grid/phoenix"]))
-    assert os.path.exists(paths.concat([ROOT, "grid/phoenix/phoenixm00"]))
-    assert os.path.exists(paths.concat([ROOT, "grid/phoenix/phoenixp03"]))
-
+@pytest.mark.parametrize("full", [True])
 @pytest.mark.parametrize("root", [ROOT])
 def test_make_phoenix_dirs_when_setup(
-        remove_installation: callable,
-        root: str,
+        create_fake_phoenix_dirs: fixture[None],
     ) -> None:
-    # Arrange
-    grid: str = paths.concat([root, "grid"])
-    phoenixs: str = paths.concat([root, "grid", "phoenix"])
-    phoenixm00: str = paths.concat([root, "grid", "phoenix", "phoenixm00"])
-    phoenixp03: str = paths.concat([root, "grid", "phoenix", "phoenixp03"])
-
-    os.mkdir(ROOT)
-    os.mkdir(grid)
-    os.mkdir(phoenixs)
-    os.mkdir(phoenixm00)
-    os.mkdir(phoenixp03)
-
-    # Act
     phoenix.make_phoenix_dirs(ROOT)
 
     # Assert
@@ -66,6 +53,7 @@ def test_make_phoenix_dirs_when_setup(
     assert os.path.isdir(phoenixm00)
     assert os.path.isdir(phoenixp03)
     
+# TODO:
 def test_make_phoenix_dirs_when_partially_setup():
     # Arrange
     remove_installation()

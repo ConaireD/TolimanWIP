@@ -14,15 +14,20 @@ def list_phoenix_dirs(root: str) -> list:
     phoenix: str = "/".join([root, "grid", "phoenix"])
     phoenixm00: str = "/".join([phoenix, "phoenixm00"])
     phoenixp03: str = "/".join([phoenix, "phoenixp03"])
-    return [phoenix, phoenixm00, phoenixp03]
+    return [phoenixm00, phoenixp03]
 
 @pytest.fixture
 def create_fake_phoenix_dirs(
         root: str, 
         full: bool, 
+        remove_installation: fixture[None],
         list_phoenix_dirs: fixture[list],
     ) -> None:
-    for pdir in list_phoenix_dirs: os.makedirs(pdir)
+    if full: 
+        for pdir in list_phoenix_dirs: 
+            os.makedirs(pdir)
+    else:
+        os.makedirs(list_phoenix_dirs[0])
     
 @pytest.fixture
 def create_fake_phoenix_installation(
@@ -31,6 +36,9 @@ def create_fake_phoenix_installation(
         remove_installation: fixture[None], 
         create_fake_phoenix_dirs: fixture[None],
     ) -> None:
+    phoenix: str = "/".join([root, "grid", "phoenix"])
+    phoenixm00: str = "/".join([phoenix, "phoenixm00"])
+    phoenixp03: str = "/".join([phoenix, "phoenixp03"])
     numbers: list = [5200, 5300, 5700, 5800]
     open("{}/catalog.fits".format(phoenix), "w").close()
     for num in numbers:
