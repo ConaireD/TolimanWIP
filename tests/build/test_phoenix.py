@@ -15,8 +15,21 @@ ROOT: str = "tmp"
 @pytest.mark.parametrize("full", [True])
 @pytest.mark.parametrize("root", [ROOT])
 def test_is_phoenix_installed_when_fully_installed(
-        create_fake_phoenix_installation: callable,
+        create_fake_phoenix_installation: None,
     ) -> None:
+    """
+    Outcome
+    -------
+    phoenix.is_phoenix_installed identified an existing installations.
+
+    Fixtures
+    --------
+    create_fake_phoenix_installation: fixture[None]
+        Cleans the testing directory and produces a "fake" installation
+        of phoenix. "fake" is used to describe a complete installation 
+        with empty data files. This fixture automatically handles the 
+        setup and teardown process via the fixture remove_installation.
+    """
     assert phoenix.is_phoenix_installed(ROOT)
 
 @pytest.mark.parametrize("full", [False])
