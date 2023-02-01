@@ -7,70 +7,68 @@ import toliman.constants as const
 import jax.numpy as np
 import jax.random as random
 
+ROOT: str = "tmp"
+
 def test_is_phoenix_installed_when_fully_installed():
     # Arrange 
-    remove_phoenix()
-    os.mkdir(ASSETS)
-    make_phoenix_installed()
+    create_fake_phoenix_installation(ROOT)
 
     # Assert
-    assert phoenix.is_phoenix_installed(ASSETS)
+    assert phoenix.is_phoenix_installed(ROOT)
 
     # Clean Up
-    remove_phoenix()
+    remove_installation()
 
 def test_is_phoenix_installed_when_partially_installed():
     # Arrange 
-    remove_phoenix()
-    os.mkdir(ASSETS)
-    make_phoenix_catalog()
+    create_fake_phoenix_installation(full = False)
 
     # Assert
-    assert not phoenix.is_phoenix_installed(ASSETS)
+    assert not phoenix.is_phoenix_installed(ROOT)
 
     # Clean Up
-    remove_phoenix()
+    remove_installation()
     
 def test_is_phoenix_installed_when_not_installed():
     # Arrange
-    remove_phoenix()
+    remove_installation()
 
     # Assert
-    assert not phoenix.is_phoenix_installed(ASSETS)
+    assert not phoenix.is_phoenix_installed(ROOT)
 
 def test_make_phoenix_dirs_when_not_setup():
     # Arrange
-    remove_phoenix()
-    os.mkdir(ASSETS)
+    remove_installation()
+    os.mkdir(ROOT)
 
     # Act
-    phoenix.make_phoenix_dirs(ASSETS)
+    phoenix.make_phoenix_dirs(ROOT)
 
     # Assert
-    assert os.path.exists(paths.concat([ASSETS, "grid"]))
-    assert os.path.exists(paths.concat([ASSETS, "grid/phoenix"]))
-    assert os.path.exists(paths.concat([ASSETS, "grid/phoenix/phoenixm00"]))
-    assert os.path.exists(paths.concat([ASSETS, "grid/phoenix/phoenixp03"]))
+    assert os.path.exists(paths.concat([ROOT, "grid"]))
+    assert os.path.exists(paths.concat([ROOT, "grid/phoenix"]))
+    assert os.path.exists(paths.concat([ROOT, "grid/phoenix/phoenixm00"]))
+    assert os.path.exists(paths.concat([ROOT, "grid/phoenix/phoenixp03"]))
     
     # Clean Up
-    remove_phoenix()
+    remove_installation()
 
 def test_make_phoenix_dirs_when_setup():
     # Arrange
-    grid: str = paths.concat([ASSETS, "grid"])
-    phoenixs: str = paths.concat([ASSETS, "grid", "phoenix"])
-    phoenixm00: str = paths.concat([ASSETS, "grid", "phoenix", "phoenixm00"])
-    phoenixp03: str = paths.concat([ASSETS, "grid", "phoenix", "phoenixp03"])
+    grid: str = paths.concat([ROOT, "grid"])
+    phoenixs: str = paths.concat([ROOT, "grid", "phoenix"])
+    phoenixm00: str = paths.concat([ROOT, "grid", "phoenix", "phoenixm00"])
+    phoenixp03: str = paths.concat([ROOT, "grid", "phoenix", "phoenixp03"])
 
-    remove_phoenix()
-    os.mkdir(ASSETS)
+    remove_installation()
+    os.mkdir(ROOT)
     os.mkdir(grid)
     os.mkdir(phoenixs)
     os.mkdir(phoenixm00)
     os.mkdir(phoenixp03)
 
     # Act
-    phoenix.make_phoenix_dirs(ASSETS)
+    phoenix.make_phoenix_dirs(ROOT)
 
     # Assert
     assert os.path.exists(grid)
@@ -79,49 +77,49 @@ def test_make_phoenix_dirs_when_setup():
     assert os.path.exists(phoenixp03)
     
     # Clean Up
-    remove_phoenix()
+    remove_installation()
     
 def test_make_phoenix_dirs_when_partially_setup():
     # Arrange
-    remove_phoenix()
-    os.mkdir(ASSETS)
-    os.mkdir(paths.concat([ASSETS, "grid"]))
+    remove_installation()
+    os.mkdir(ROOT)
+    os.mkdir(paths.concat([ROOT, "grid"]))
 
     # Act
-    phoenix.make_phoenix_dirs(ASSETS)
+    phoenix.make_phoenix_dirs(ROOT)
 
     # Assert
-    assert os.path.exists(paths.concat([ASSETS, "grid"]))
-    assert os.path.exists(paths.concat([ASSETS, "grid/phoenix"]))
-    assert os.path.exists(paths.concat([ASSETS, "grid/phoenix/phoenixm00"]))
-    assert os.path.exists(paths.concat([ASSETS, "grid/phoenix/phoenixp03"]))
+    assert os.path.exists(paths.concat([ROOT, "grid"]))
+    assert os.path.exists(paths.concat([ROOT, "grid/phoenix"]))
+    assert os.path.exists(paths.concat([ROOT, "grid/phoenix/phoenixm00"]))
+    assert os.path.exists(paths.concat([ROOT, "grid/phoenix/phoenixp03"]))
     
     # Clean Up
-    remove_phoenix()
+    remove_installation()
 
 def test_install_phoenix_complete():
     # Arrange
-    remove_phoenix()
-    os.mkdir(ASSETS)
+    remove_installation()
+    os.mkdir(ROOT)
 
     # Act
-    phoenix.install_phoenix(ASSETS, full = False)
+    phoenix.install_phoenix(ROOT, full = False)
 
     # Assert
     for file in PHOENIX_FILES:
         assert os.path.isfile(file)
 
     # Clean Up
-    remove_phoenix()
+    remove_installation()
 
 def test_install_phoenix_when_partially_installed():
     # Arrange
-    remove_phoenix()
-    make_phoenix_installed()
+    remove_installation()
+    create_fake_phoenix_installation()
     os.remove(PHOENIX_FILES[0])
 
     # Act
-    phoenix.install_phoenix(ASSETS)
+    phoenix.install_phoenix(ROOT)
 
     # Assert 
     for file in PHOENIX_FILES:
@@ -129,21 +127,10 @@ def test_install_phoenix_when_partially_installed():
     
 def test_install_phoenix_when_fully_installed():
     # Arrange
-    entry: str = "Hello world!"
-
-    remove_phoenix()
-    os.mkdir(ASSETS)
-    os.mkdir(paths.concat([ASSETS, "grid"]))
-    os.mkdir(paths.concat([ASSETS, "grid", "phoenix"]))
-    os.mkdir(paths.concat([ASSETS, "grid", "phoenix", "phoenixm00"]))
-    os.mkdir(paths.concat([ASSETS, "grid", "phoenix", "phoenixp03"]))
-
-    for file in PHOENIX_FILES:
-        with open(file, "w") as file:
-            file.write(entry)
+    create_fake_phoenix_installation()
     
     # Act
-    phoenix.install_phoenix(ASSETS)
+    phoenix.install_phoenix(ROOT)
 
     # Assert
     for file in PHOENIX_FILES:
@@ -151,11 +138,10 @@ def test_install_phoenix_when_fully_installed():
             raise ValueError
 
         with open(file, "r") as file:
-            assert file.read() == entry
-
+            assert not file.read()
 
     # Clean Up
-    remove_phoenix()
+    remove_installation()
 
 def test_set_phoenix_environ_when_not_set():
     # Arrange
@@ -163,10 +149,10 @@ def test_set_phoenix_environ_when_not_set():
         os.environ.pop("PYSYN_CDBS")
 
     # Act
-    phoenix.set_phoenix_environ(ASSETS)
+    phoenix.set_phoenix_environ(ROOT)
 
     # Assert
-    assert os.environ["PYSYN_CDBS"] == ASSETS
+    assert os.environ["PYSYN_CDBS"] == ROOT
 
 def test_set_phoenix_environ_when_set():
     # Arrange
@@ -174,13 +160,13 @@ def test_set_phoenix_environ_when_set():
         os.environ["PYSYN_CDBS"] = "ABCFU"
 
     # Act
-    phoenix.set_phoenix_environ(ASSETS)
+    phoenix.set_phoenix_environ(ROOT)
 
     # Assert
-    assert os.environ["PYSYN_CDBS"] == ASSETS
+    assert os.environ["PYSYN_CDBS"] == ROOT
 
 @pytest.mark.skipif(
-    not phoenix.is_phoenix_installed(ASSETS), 
+    not phoenix.is_phoenix_installed(ROOT), 
     reason="No valid installation."
 )
 def test_make_phoenix_spectra_when_root_valid():
@@ -192,11 +178,11 @@ def test_make_phoenix_spectra_when_root_valid():
 
 def test_make_phoenix_spectra_when_root_not_valid():
     # Arrange 
-    remove_phoenix()
+    remove_installation()
     
     # Act/Assert
     with pytest.raises(ValueError):
-        spectra: float = phoenix.make_phoenix_spectra(ASSETS)
+        spectra: float = phoenix.make_phoenix_spectra(ROOT)
 
 def test_clip_phoenix_spectra_in_range():
     # Arrange
@@ -238,10 +224,10 @@ def test_save_phoenix_spectra_makes_file():
     # Arrange
     spectra: float = get_spectra(FILTER_MIN_WAVELENGTH, FILTER_MAX_WAVELENGTH)
 
-    if os.path.isdir(ASSETS): 
-        shutil.rmtree(ASSETS)
+    if os.path.isdir(ROOT): 
+        shutil.rmtree(ROOT)
      
-    os.mkdir(ASSETS)
+    os.mkdir(ROOT)
 
     # Act
     phoenix.save_phoenix_spectra("tmp", spectra)
@@ -253,10 +239,10 @@ def test_save_phoenix_spectra_has_headings():
     # Arrange
     spectra: float = get_spectra(FILTER_MIN_WAVELENGTH, FILTER_MAX_WAVELENGTH)
 
-    if os.path.isdir(ASSETS): 
-        shutil.rmtree(ASSETS)
+    if os.path.isdir(ROOT): 
+        shutil.rmtree(ROOT)
      
-    os.mkdir(ASSETS)
+    os.mkdir(ROOT)
 
     # Act
     phoenix.save_phoenix_spectra("tmp", spectra)
@@ -274,10 +260,10 @@ def test_save_phoenix_spectra_has_correct_lines():
     # Arrange
     spectra: float = get_spectra(FILTER_MIN_WAVELENGTH, FILTER_MAX_WAVELENGTH)
 
-    if os.path.isdir(ASSETS): 
-        shutil.rmtree(ASSETS)
+    if os.path.isdir(ROOT): 
+        shutil.rmtree(ROOT)
      
-    os.mkdir(ASSETS)
+    os.mkdir(ROOT)
 
     # Act
     phoenix.save_phoenix_spectra("tmp", spectra)
