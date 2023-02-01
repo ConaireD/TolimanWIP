@@ -200,3 +200,32 @@ def simulate_background_stars(
     rel_stars: float = flux_relative_to_alpha_cen(win_stars)
     save_background_stars(rel_stars)
 
+def are_background_stars_installed(root: str) -> bool:
+    """
+    Check if the background stars are installed.
+
+    Parameters
+    ----------
+    root: str
+        The directory to search for an installation in.
+
+    Returns
+    -------
+    installed: bool
+        True if the background stars are installed else false.
+
+    Examples
+    --------
+    >>> import os
+    >>> os.mkdir("tmp")
+    >>> are_background_stars_installed("tmp")
+    ::: False
+    >>> open("tmp/background.csv", "w").close()
+    >>> are_background_stars_installed("tmp")
+    ::: True
+    """
+    if not os.path.isdir(root):
+        return False
+
+    BG_DIR: str = const.get_const_as_type("BACKGROUND_DIR", str)
+    return os.path.isfile(BG_DIR)
