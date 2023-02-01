@@ -62,7 +62,7 @@ def make_mask_home(root: str) -> None:
     ::: True
     """
     if not os.path.exists(root):
-        for path in paths.accumulate_path(root.split("/")):
+        for path in paths.accumulate(root.split("/")):
             if not os.path.exists(path):
                 os.mkdir(path)
 
@@ -84,4 +84,4 @@ def install_mask(root: str) -> bool:
     """
     make_mask_home(root)
     path: str = paths.concat([root, MASK_FILE])
-    https.download_file_from_http(path, MASK_HOME)
+    https.download_file_from_https(path, MASK_HOME)
