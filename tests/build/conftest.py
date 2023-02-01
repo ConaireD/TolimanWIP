@@ -1,16 +1,16 @@
 import os
 import shutil
+import pytest
 import toliman.constants as const
 
 FILTER_MIN_WAVELENGTH: float = const.get_const_as_type("FILTER_MIN_WAVELENGTH", float)
 FILTER_MAX_WAVELENGTH: float = const.get_const_as_type("FILTER_MAX_WAVELENGTH", float)
 
 @pytest.fixture
-def create_fake_phoenix_installation() -> callable:
-def create_fake_phoenix_installation(root: str, full = False) -> None:
+def create_fake_phoenix_installation(root: str, full = True) -> None:
     remove_installation(root)
     
-    numbers: list = [5200, 5300, 5700, 5900]
+    numbers: list = [5200, 5300, 5700, 5800]
     phoenix: str = "/".join([root, "grid", "phoenix"])
     phoenixm00: str = "/".join([phoenix, "phoenixm00"])
     phoenixp03: str = "/".join([phoenix, "phoenixp03"])
@@ -18,17 +18,25 @@ def create_fake_phoenix_installation(root: str, full = False) -> None:
     os.makedirs(phoenixm00)
     os.makedirs(phoenixp03)
 
-    open("{}/catalog.fits".format(phoenix)).close()
+    open("{}/catalog.fits".format(phoenix), "w").close()
     for num in numbers:
-        open("{}/phoenixm00_{}.fits".format(phoenixm00, num)).close()
+        open("{}/phoenixm00_{}.fits".format(phoenixm00, num), "w").close()
         if full:
-            open("{}/phoenixp03_{}.fits".format(phoenixm00, num)).close()
+            open("{}/phoenixp03_{}.fits".format(phoenixp03, num), "w").close()
+    print("Do you yield!")
+
+    yield
+
+    print("I yield.")
+    remove_installation(root)
             
+@pytest.fixture
 def create_fake_mask_installation(root: str) -> None:
     remove_installation(root)
     os.makedirs(root)
     open("{}/mask.npy".format(root)).close()
     
+@pytest.fixture
 def create_fake_background_installation(root: str) -> None:
     remove_installation(root)
     os.makedirs(root)
@@ -37,5 +45,3 @@ def create_fake_background_installation(root: str) -> None:
 def remove_installation(root: str) -> None:
     if os.path.isdir(root):
         shutil.rmtree(root)
-
-print("Hello world!")
