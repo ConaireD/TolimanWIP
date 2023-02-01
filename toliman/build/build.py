@@ -1,5 +1,6 @@
 import os
 import warnings
+import termcolor
 import toliman.build.mask as mask
 import toliman.build.phoenix as phoenix
 import toliman.build.background as bg
@@ -12,6 +13,8 @@ __all__ = [
 ]
 
 TOLIMAN_HOME: str = const.get_const_as_type("TOLIMAN_HOME", str) 
+
+def get_toliman_home() -> str:
 
 def is_toliman_installed(root: str = TOLIMAN_HOME) -> bool:
     """
@@ -62,15 +65,67 @@ def is_toliman_installed(root: str = TOLIMAN_HOME) -> bool:
 
     return all(component_installations)
 
-def build(root: str = TOLIMAN_HOME):
-    print("Building `toliman`!")
+def color_str_as_code(string: str) -> None:
+    """
+    Format markdown style code blocks.
+
+    Parameters
+    ----------
+    string: str
+        The string to format with markdown code blocks.
+
+    Returns
+    -------
+    string: str
+        The same string with ANSI escape charaters around the 
+        code blocks.
+    """
+    start: int = string.find("`")
+    if start > 0:
+        end: int = string.fing("`", start)
+        if end < 0:
+            raise ValueError("Code segement was not terminated.")
+        code: str = string[start:end]
+        c_code: str = termcolor.colored(code, "light_gray", "on_dark_gray")
+        return string[:start - 1] + c_code + string[end:]
+    return string 
+
+def install_toliman(root: str = TOLIMAN_HOME, /, force: bool = False) -> None:
+    """
+    Install all the resource files for toliman.
+
+    Parameters
+    ----------
+    root: str = TOLIMAN_HOME
+        The directory to search in. This should be TOLIMAN_HOME 
+        but I have enabled other options if multiple installations 
+        exist.
+    force: bool = False
+        If True then any existing installation will be deleted. 
+        Otherwise existsing files will be skipped if a partial 
+        implementation exists.
+
+    Examples
+    --------
+    >>> import toliman.build as build
+    >>> build.get_toliman_home()
+    ::: .assets
+    >>> build.is_toliman_installed()
+    ::: False
+    >>> build.install_toliman()
+    >>> build.is_toliman_installed()
+    ::: True
+    """
+    print(color_str_as_code("Building `toliman`!"))
     print("-------------------")
 
-    if not _is_phoenix_installed():
+    if not phoenix.is_phoenix_installed(root) or force:
         print("Installing phoenix...")
-        _install_phoenix()
+        phoenix.install_phoenix(root)
+        phoenix.simulate_alpha_cen_spectra(root)
         print("Done!")
 
+    if not 
     print("Saving spectral model...")
     _simulate_alpha_cen_spectra()
     print("Done!")
@@ -84,4 +139,4 @@ def build(root: str = TOLIMAN_HOME):
         _install_mask()
         print("Done!")
 
-    print("`toliman` built!")
+    print(color_str_as_code("`toliman` built!"))
