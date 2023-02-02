@@ -179,7 +179,7 @@ def test_make_phoenix_dirs_when_partially_setup(
     phoenix.make_phoenix_dirs(ROOT)
     assert all(os.path.isdir(pdir) for pdir in list_phoenix_dirs)
 
-# TODO:
+
 def test_install_phoenix_complete():
     # Arrange
     remove_installation()
