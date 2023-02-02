@@ -11,3 +11,4 @@ tmp
 */assets
 *.ipynb_checkpoints
 */*.ipynb_checkpoints
+poetry.lock

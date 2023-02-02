@@ -14,14 +14,17 @@ class PhoenixTree(object):
     phoenix: str
     phoenixm00: str
     phoenixp03: str
+
     def __init__(self: object, root: str) -> object:
         self._iter: int = 0
         self.phoenix: str = "/".join([root, "grid", "phoenix"])
         self.phoenixm00: str = "/".join([self.phoenix, "phoenixm00"])
         self.phoenixp03: str = "/".join([self.phoenix, "phoenixp03"])
+
     def __iter__(self: object) -> iter:
         self._iter: int = 0
         return self
+
     def __next__(self: object) -> str:
         if self._iter > 1:
             raise StopIteration
