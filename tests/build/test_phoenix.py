@@ -18,9 +18,7 @@ def test_is_phoenix_installed_when_fully_installed(
         create_fake_phoenix_installation: None,
     ) -> None:
     """
-    Outcome
-    -------
-    phoenix.is_phoenix_installed identified an existing installations.
+    phoenix.is_phoenix_installed identifies an existing installation.
 
     Fixtures
     --------
@@ -29,6 +27,16 @@ def test_is_phoenix_installed_when_fully_installed(
         of phoenix. "fake" is used to describe a complete installation 
         with empty data files. This fixture automatically handles the 
         setup and teardown process via the fixture remove_installation.
+
+    Parameters
+    ----------
+    full: True
+        Indirect parametrisation of create_fake_phoenix_installation.
+        Ensures that all mock files are created.
+    root: ROOT
+        Indirect parametrisation of create_fake_phoenix_installation.
+        Identifies where to create the mock installation. Also used 
+        directly to tesll phoenix.is_phoenix_installed where to look.
     """
     assert phoenix.is_phoenix_installed(ROOT)
 
@@ -37,12 +45,49 @@ def test_is_phoenix_installed_when_fully_installed(
 def test_is_phoenix_installed_when_partially_installed(
         create_fake_phoenix_installation: callable,
     ) -> None:
+    """
+    phoenix.is_phoenix_installed identifies an incomplete installation.
+
+    Fixtures
+    --------
+    create_fake_phoenix_installation: fixture[None]
+        Cleans the testing directory and produces a "fake" installation
+        of phoenix. "fake" is used to describe a complete installation 
+        with empty data files. This fixture automatically handles the 
+        setup and teardown process via the fixture remove_installation.
+
+    Parameters
+    ----------
+    full: True
+        Indirect parametrisation of create_fake_phoenix_installation.
+        Ensures that all mock files are created.
+    root: ROOT
+        Indirect parametrisation of create_fake_phoenix_installation.
+        Identifies where to create the mock installation. Also used 
+        directly to tesll phoenix.is_phoenix_installed where to look.
+    """
     assert not phoenix.is_phoenix_installed(ROOT)
     
 @pytest.mark.parametrize("root", [ROOT])
 def test_is_phoenix_installed_when_not_installed(
         remove_installation: callable,
     ) -> None:
+    """
+    phoenix.is_phoenix_installed identifies no installation.
+
+    Fixtures
+    --------
+    remove_installation: fixture[None]
+        Ensures that there is no installation of phoenix, before and
+        after the test.
+
+    Parameters
+    ----------
+    root: str = ROOT
+        Indirect parametrisation of remove_installation.
+        Direct parametrisation of phoenix.is_phoenix_installed,
+        identifying where to look.
+    """
     assert not phoenix.is_phoenix_installed(ROOT)
 
 @pytest.mark.parametrize("root", [ROOT])
@@ -50,6 +95,25 @@ def test_make_phoenix_dirs_when_not_setup(
         remove_installation: fixture[None],
         list_phoenix_dirs: fixture[list]
     ) -> None:
+    """
+    phoenix.make_phoenix_dirs creates the appropriate directories.
+
+    Fixtures
+    --------
+    remove_installation: fixture[None]
+        Ensures that there is no installation of phoenix, before and
+        after the test.
+    list_phoenix_dirs: fixture[list]
+        The directories storing the phoenix data files.
+
+    Parameters
+    ----------
+    root: str = ROOT
+        Indirect parametrisation of remove_installation identifying 
+        target. Indirect parametrisation of list_phoenix_dirs 
+        identifying target. Direct parametrisation of phoenix.make_phoenix_dirs
+        identifying target.
+    """
     phoenix.make_phoenix_dirs(ROOT)
     assert all(os.path.isdir(pdir) for pdir in list_phoenix_dirs)
 
@@ -58,14 +122,29 @@ def test_make_phoenix_dirs_when_not_setup(
 def test_make_phoenix_dirs_when_setup(
         create_fake_phoenix_dirs: fixture[None],
     ) -> None:
-    phoenix.make_phoenix_dirs(ROOT)
+    """
+    phoenix.make_phoenix_dirs does not alter the existing installation.
 
-    # Assert
-    assert os.path.isdir(grid)
-    assert os.path.isdir(phoenixs)
-    assert os.path.isdir(phoenixm00)
-    assert os.path.isdir(phoenixp03)
-    
+    Fixtures
+    --------
+    create_fake_phoenix_dirs: fixture[None]
+        Makes the tree structure for the phoenix directories. Automatically
+        handles the setup and teardown via the remove_installation 
+        fixture.
+
+    Parameters
+    ----------
+    root: str = ROOT
+        Indirect parametrisation of create_fake_phoenix_dirs identifying 
+        target. Direct parametrisation of phoenix.make_phoenix_dirs
+        identifying target.
+    full: bool = True
+        Indirect parametrisation of create_fake_phoenix_dirs 
+        specifying the creation of the complete tree.
+    """
+    phoenix.make_phoenix_dirs(ROOT)
+    assert all(os.path.isdir(pdir) for pdir in list_phoenix_dirs)
+
 # TODO:
 def test_make_phoenix_dirs_when_partially_setup():
     # Arrange
