@@ -121,6 +121,7 @@ def test_make_phoenix_dirs_when_not_setup(
 @pytest.mark.parametrize("root", [ROOT])
 def test_make_phoenix_dirs_when_setup(
         create_fake_phoenix_dirs: fixture[None],
+        list_phoenix_dirs: fixture[list],
     ) -> None:
     """
     phoenix.make_phoenix_dirs does not alter the existing installation.
@@ -131,6 +132,8 @@ def test_make_phoenix_dirs_when_setup(
         Makes the tree structure for the phoenix directories. Automatically
         handles the setup and teardown via the remove_installation 
         fixture.
+    list_phoenix_dirs: fixture[list]
+        The directories storing the phoenix data files.
 
     Parameters
     ----------
@@ -145,25 +148,38 @@ def test_make_phoenix_dirs_when_setup(
     phoenix.make_phoenix_dirs(ROOT)
     assert all(os.path.isdir(pdir) for pdir in list_phoenix_dirs)
 
-# TODO:
-def test_make_phoenix_dirs_when_partially_setup():
-    # Arrange
-    remove_installation()
-    os.mkdir(ROOT)
-    os.mkdir(paths.concat([ROOT, "grid"]))
+@pytest.mark.parametrize("full", [False])
+@pytest.mark.parametrize("root", [ROOT])
+def test_make_phoenix_dirs_when_partially_setup(
+        create_fake_phoenix_dirs: fixture[None],
+        list_phoenix_dirs: fixture[list],
+    ) -> None:
+    """
+    phoenix.make_phoenix_dirs finishes the existing installation.
 
-    # Act
+    Fixtures
+    --------
+    create_fake_phoenix_dirs: fixture[None]
+        Makes the tree structure for the phoenix directories. Automatically
+        handles the setup and teardown via the remove_installation 
+        fixture.
+    list_phoenix_dirs: fixture[list]
+        The directories storing the phoenix data files.
+
+    Parameters
+    ----------
+    root: str = ROOT
+        Indirect parametrisation of create_fake_phoenix_dirs identifying 
+        target. Direct parametrisation of phoenix.make_phoenix_dirs
+        identifying target.
+    full: bool = False
+        Indirect parametrisation of create_fake_phoenix_dirs 
+        specifying the creation of an incomplete tree.
+    """
     phoenix.make_phoenix_dirs(ROOT)
+    assert all(os.path.isdir(pdir) for pdir in list_phoenix_dirs)
 
-    # Assert
-    assert os.path.exists(paths.concat([ROOT, "grid"]))
-    assert os.path.exists(paths.concat([ROOT, "grid/phoenix"]))
-    assert os.path.exists(paths.concat([ROOT, "grid/phoenix/phoenixm00"]))
-    assert os.path.exists(paths.concat([ROOT, "grid/phoenix/phoenixp03"]))
-    
-    # Clean Up
-    remove_installation()
-
+# TODO:
 def test_install_phoenix_complete():
     # Arrange
     remove_installation()
