@@ -146,14 +146,14 @@ While `branch`ing and `commit`ing are by far the most important tools to
 understand when using `git`, there are many other features that can be 
 explored. 
 
-## Plugins 
+### Plugins 
 `git` is a very widely used tool and as a result developers and businesses 
 have produced tools that plug into `git` adding additional features and/or 
 making it easier to use. We use two different plugins in our development 
 stratergy: `git filter-repo` and `git lfs`. Both of these can be used to 
 reduce disk usage by changing the way that `git` deals with large files. 
 
-### Git Filter Repo
+#### Git Filter Repo
 While we use `git filter-repo` to manage large files, it is a very versatile
 tool that is primarily for disk-space optimisation allowing you to re-write 
 `git` histories. In our case we use `git filter-repo` to write large files 
@@ -204,7 +204,7 @@ Otherwise, `merge` conflicts that might have been important can be missed.
     fatal: your current branch 'main' does not have any commits yet
     ```
 
-### Git Large File Storage 
+#### Git Large File Storage 
 `git lfs` is a plugin that aims to make working with large file much easier.
 There [documentation](https://git-lfs.com/) is very good and can be accessed
 using `git lfs --help`. In summary, `git lfs` implements a specific type of 
@@ -219,13 +219,13 @@ this process has produced a new file `.gitattributes` which `git lfs` uses
 to identify what files it is tracking. From now on `git` can be used in the
 normal way.
 
-## Resources 
+### Resources 
 - [git](https://git-scm.com/)
 - [bitbucket](https://www.atlassian.com/git)
 - [git filter-repo](https://github.com/newren/git-filter-repo/blob/docs/html/git-filter-repo.html)
 - [git lfs](https://git-lfs.com/)
 
-# The Github CLI 
+## The Github CLI 
 `github` is one of many services that provide servers to store `git` 
 repostories. To the best of my knowledge it is the largest such service
 and it also provides a number of useful tools. For example, actions, issues
@@ -235,7 +235,7 @@ I recommend installing the `github` CLI (`gh`), because it compliments
 a terminal/IDE + terminal workflow. `gh` can be installed using your 
 package manager. 
 
-## Using Gh 
+### Using Gh 
 `gh` is a very modular tool consisting of many command and subcommand 
 patterns of the form `gh command subcommand --option`. Moreover, `gh`
 is interactive and will prompt you to enter input in a text editor if
@@ -266,13 +266,13 @@ To view an `issue` you must first know its number. To get the number run
 `gh issue list` which will list all the open issues (including their numbers).
 `gh issue list` can be used to search via `--search` and can view `issue`s 
 that are closed via `--state closed`. Once you have the number you can 
-use `gh issue view # --comments` to view the entire conversation in the 
+use `gh issue view number --comments` to view the entire conversation in the 
 terminal. If you just want a summary, removing the `--comments` flag will 
 just show the first and the last comment. `gh label` can be used to delete, 
 edit and create labels.
 
-## Plugins 
-### Gh Changelog <a name-"gh.plugins.gh_changelog">
+### Plugins 
+#### Gh Changelog
 `gh` has many plugins. We only use on `gh changelog` as it allows us to 
 easily keep a changelog across our versions. There is some nuance to
 using this plugin. It uses `git tag`s to find the versions which are 
@@ -282,8 +282,8 @@ those `pr`s. However, the tags need to be on `github` so when `push`ing
 changes make sure to use the `--follow-tags` flag. To create the changelog
 just run `gh changelog new` and to view it run `gh changelog view`.
 
-## Resources 
-# Python 
+### Resources 
+## Python 
 I imagine that you are familiar with `python`, but for the sake of
 completeness and consistency it is a dynamicly typed, interpretted-bytecode 
 language with inbuilt support for functional and object oriented programming. 
@@ -294,7 +294,7 @@ in our `toliman` package we are using `dLux`, which in turn used `jax`, a
 third party `python/numpy` compiler and sutomatic differentiation framework.
 At the `toliman` level you will rarely need to interact with `jax` directly.
 
-## Anaconda 
+### Anaconda 
 Anaconda or `conda` is a popular distribution of `python` that ships within 
 a virtual environment manager. We used `conda` to develop `toliman` and 
 recommend it to others who are involved on the project. A virtual environment
@@ -303,7 +303,7 @@ the environment is activated the versions it points to are used. This is most
 useful when developing multiple packages, with different versions of shared
 dependancies.  
 
-### Installing Anaconda 
+#### Installing Anaconda 
 To install anaconda you will need to download the installer from the 
 [Anaconda website](https://docs.anaconda.com/anaconda/install/). Follow 
 the installation instructions specific to your operating system from there 
@@ -311,7 +311,7 @@ onwards. On MacOS/Linux you will need to execute the downloaded `bash`
 script using `bash path/to/script` and it will do the rest for you. I 
 believe that it is safe to remove the script once `conda` is installed.
 
-### Using Anaconda 
+#### Using Anaconda 
 Imagine you are developing `toliman` which uses `python3.10.8`, and also 
 developing `steampunkfairytale` which uses `python3.8`.
 You can create an environment for each and switch between as needed. 
@@ -342,7 +342,7 @@ as `pip` which is `python`s default package manager. I am assuming familiary
 with `pip` but if you need more information the 
 [documentation](https://pip.pypa.io/en/stable/) is very good.
 
-### Resouces 
+#### Resouces 
 - [Anaconda](https://docs.anaconda.com/anaconda)
 
 ## Poetry  
