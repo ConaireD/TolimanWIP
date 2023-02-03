@@ -14,4 +14,7 @@ markdown_extensions:
 
 theme: 
     name: material 
-    logo: toliman/assets/logo.png
+    palette:
+        scheme: default
+        primary: blue
+        accent: light blue
