@@ -179,34 +179,47 @@ def test_make_phoenix_dirs_when_partially_setup(
     phoenix.make_phoenix_dirs(ROOT)
     assert all(os.path.isdir(pdir) for pdir in list_phoenix_dirs)
 
+@pytest.mark.parametrize("root", [ROOT])
+def test_install_phoenix_when_not_installed(
+        root: str,
+        remove_installation: fixture[None],
+        list_phoenix_files: fixture[list],
+    ) -> None:
+    """
+    Does `phoenix.install_phoenix` install phoenix?
 
-def test_install_phoenix_complete():
-    # Arrange
-    remove_installation()
-    os.mkdir(ROOT)
+    Fixtures
+    --------
+    remove_installation: fixture[None]
+        Ensures that there is no installation of phoenix, before and
+        after the test.
+    list_phoenix_files: fixture[list]
+        The files storing the phoenix data.
 
-    # Act
-    phoenix.install_phoenix(ROOT, full = False)
+    Parameters
+    ----------
+    root: str = ROOT
+        Indirect parametrization of remove_installation and list_phoenix_files.
+        Directly used by install_phoenix.
+    """
+    phoenix.install_phoenix(root, full = False)
+    for file in list_phoenix_files: assert os.path.isfile(file)
 
-    # Assert
-    for file in PHOENIX_FILES:
-        assert os.path.isfile(file)
+@pytest.mark.parametrize("full", [False])
+@pytest.mark.parametrize("root", [ROOT])
+def test_install_phoenix_when_partially_installed(
+        root: str,
+        create_fake_phoenix_installation: fixture[None],
+        list_phoenix_files: fixture[list],
+    ) -> None:
+    """
+    Does phoenix.install_phoenix finish an incomplete installation?
 
-    # Clean Up
-    remove_installation()
-
-def test_install_phoenix_when_partially_installed():
-    # Arrange
-    remove_installation()
-    create_fake_phoenix_installation()
-    os.remove(PHOENIX_FILES[0])
-
-    # Act
-    phoenix.install_phoenix(ROOT)
-
-    # Assert 
-    for file in PHOENIX_FILES:
-        assert os.path.isfile(file)
+    Fixtures
+    --------
+    """
+    phoenix.install_phoenix(root, full = False)
+    for file in list_phoenix_files: assert os.path.isfile(file)
     
 def test_install_phoenix_when_fully_installed():
     # Arrange
