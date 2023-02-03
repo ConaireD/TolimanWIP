@@ -5,8 +5,12 @@ plugins:
     - search
     - same-dir
     - simple
-    - mkdocstrings:
-        default_handler: python 
+    - mkdocstrings
+
+markdown_extensions:
+    - admonition
+    - pymdownx.details
+    - pymdownx.superfences
 
 theme: 
     name: material 

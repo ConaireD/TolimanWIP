@@ -238,7 +238,7 @@ Below I have created a very simple example of how you might use
 (home) ~/Documents/git-filter-repo$ git commit -m "Tracking a big file."
 (home) ~/Documents/git-filter-repo$ for i in {1..10000}; do echo "Hello world!" > big_file.txt; done;
 (home) ~/Documents/git-filter-repo$ du -h big_file.txt
-128K	big_file.txt
+128K  big_file.txt
 (home) ~/Documents/git-filter-repo$ git add big_file.txt
 (home) ~/Documents/git-filter-repo$ git commit -m "Oooof."
 (home) ~/Documents/git-filter-repo$ git branch 
@@ -260,7 +260,7 @@ To install `git lfs` you may use your package manager or download the binary
 from the [website](https://git-lfs.com/). To use `git lfs` first run `git 
 lfs install` and then `git lfs track path/to/big/file`. You will notice that
 this process has produced a new file `.gitattributes` which `git lfs` uses 
-to identify what files it is tracking. From now on `git can be used in the
+to identify what files it is tracking. From now on `git` can be used in the
 normal way.
 
 ## Resources <a name="git.resouces"> 
@@ -325,13 +325,160 @@ just run `gh changelog new` and to view it run `gh changelog view`.
 
 ## Resources <a name="gh.resources">
 # Python <a name="python">
-## Anaconda <a name="python.anaconda">
+I imagine that you are familiar with `python`, but for the sake of
+completeness and consistency it is a dynamicly typed, interpretted-bytecode 
+language with inbuilt support for functional and object oriented programming. 
+At present `python` does not ship with a `jit` runtime for `python` bytecode, 
+but this is scheduled for the `python3.12` release. `python` is praised for 
+its readability and critized for its speed. Since speed is a necessary evil 
+in our `toliman` package we are using `dLux`, which in turn used `jax`, a 
+third party `python/numpy` compiler and sutomatic differentiation framework.
+At the `toliman` level you will rarely need to interact with `jax` directly.
+
+## Anaconda <a name="python.anaconda"
+Anaconda or `conda` is a popular distribution of `python` that ships within 
+a virtual environment manager. We used `conda` to develop `toliman` and 
+recommend it to others who are involved on the project. A virtual environment
+provides a pointer to a set of executables and packages, ensuring that once 
+the environment is activated the versions it points to are used. This is most
+useful when developing multiple packages, with different versions of shared
+dependancies.  
+
 ### Installing Anaconda <a name="python.anaconda.installing">
+To install anaconda you will need to download the installer from the 
+[Anaconda website](https://docs.anaconda.com/anaconda/install/). Follow 
+the installation instructions specific to your operating system from there 
+onwards. On MacOS/Linux you will need to execute the downloaded `bash` 
+script using `bash path/to/script` and it will do the rest for you. I 
+believe that it is safe to remove the script once `conda` is installed.
+
 ### Using Anaconda <a name="python.anaconda.using">
+Imagine you are developing `toliman` which uses `python3.10.8`, and also 
+developing `steampunkfairytale` which uses `python3.8`.
+You can create an environment for each and switch between as needed. 
+
+```bash
+(home) user@Users-HP: ~/Documents$ conda create toliman python=3.10.8 
+(home) user@Users-HP: ~/Documents$ conda activate toliman
+(toliman) user@Users-HP: ~/Documents$ cd toliman
+(toliman) user@Users-HP: ~/Documents/toliman$ echo "Developing toliman ... Done!"
+Developing toliman ... Done!"
+(toliman) user@Users-HP: ~/Documents/toliman$ conda deactivate
+(home) user@Users-HP: ~/Documents/toliman$ cd ..
+(home) user@Users-HP: ~/Documents$ conda create steampunckfairytale python=3.8
+(home) user@Users-HP: ~/Documents$ conda activate steampunkfairytale 
+(steampunkfairytale) user@Users-HP: ~/Documents$ cd spft
+(steampunkfairytale) user@Users-HP: ~/Documents/spft$ echo "Developing steampunkfairytale ... Done!"
+Developing steampunkfairytale ... Done!
+(steampunkfairytale) user@Users-HP: ~/Documents/spft$ conda deativate steampunkfairytale
+(home) user@Users-HP: ~/Documents/spft$ cd ..
+(home) user@Users-HP: ~/Documents$ 
+```
+
+`conda` also comes with a package manager (similar to `pypi` + `pip`), which 
+can be used to install packages. The interface is more or less the same 
+as `pip` which is `python`s default package manager. I am assuming familiary
+with `pip` but if you need more information the 
+[documentation](https://pip.pypa.io/en/stable/) is very good.
+
 ### Resouces <a name="python.anaconda.resouces">
-## Poetry <a name="python.poetry">
+- [Anaconda](https://docs.anaconda.com/anaconda)
+
+## Poetry <a name="python.poetry"> 
+Dependencies are third party libraries used by a package. Quite often 
+dependancies contribute to software bloat, because although the entire 
+library needs to be installed you may only use/need a small subset. As
+a goal of modern development is modularity. Every dependency tries to do 
+only one thing (OK not quite **one** thing), with a clear purpose. This 
+creates its own problems, since now many small dependencies are needed 
+which in turn may depend on each other or yet more dependencies. Depending
+on whether or not dependcies are actively maintained, your dependencies 
+can come to rely upon different versions often within some window. You 
+can imagine that for any sizeable project downloading compatible versions
+of the dependencies can become an ourtight nightmare. 
+
+`pip` the default `python` package manager has some very basic dependancy 
+management functionality, but for the most part it is *superficial*; printed 
+warnings etc. Although `toliman` is a small package by software standards 
+however, `jax`, which is a dependancy of `dLux` is under rapid development
+publishing many new versions over the lifetime of the project. This is one
+way that dependencies can become incompatible, because changes in the `jax`
+API may break packages that use it (for example `dLux`). It is common when 
+developing `python` projects to use `pip` since it is not a dependency and 
+provides most of the necessary functionality. However, due to our past 
+experiences with `jax` we chose to use the more modern tool `poetry`.
+
+Most modern programming languages come with a dependancy management tool,
+for `python` this is `poetry`. `poetry`, as I aluded to in the paragraph 
+above is ironically a third party tool and hence a dependency itself. 
+By and large dependency management tools are able to automatically select 
+the correct versions of packages too install preventing this type of 
+development headache. Moreover, `poetry` also simplifies other common 
+processes such as `install`ing, `build`ing and `publish`ing. When working 
+with `toliman`, you are unlikely to require much familiarity with `poetry` 
+as most/all of the dependencies are already established.
+
 ### Installing Poetry <a name="python.poetry.installing"> 
+Unfortunately, `poetry` cannot yet be installed using a package manager 
+so you will need to download it from the internet. On MacOS/Linux `poetry` 
+can be installed using `curl -sSL https://install.python-poetry.org | python3 -`.
+
+
 ### Using Poetry <a name="python.poetry.using"> 
+This guide is very cursory, since it is unlikely you will need to use 
+`poetry` much in your development journey with toliman. The first useful 
+command is `poetry show package`. This will print useful information about
+the package you selected. In fact, it will even print in **color!** Let's
+imagine that you have stumbled across a new package that you think `toliman`
+will benfit from. You decide to use it. To register it as a dependency run 
+`poetry add package` and `poetry` will automatically find a version that is 
+compatible with the existing versions and install it. How does `poetry` work? 
+You may notice the `pyproject.toml` file in the root directory of `toliman`. 
+This is the file that `poetry` uses to manage/track the dependencies of 
+`toliman`. 
+
+!!! tip
+  This is a tip?
+
+<style>
+  .aside {
+    background-color: cyan;
+    border-radius: 15px 50px;
+    border: 2px solid blue;
+    padding: 20px;
+  }
+</style>
+<div class="aside">
+  <h3> 
+    Aside: 
+  </h3>
+  <p> 
+    <code>python</code> dependency management has incrementally evolved in the thirty 
+    odd years of the languages lifetime. I'm not sure of the early years 
+    but after some time the <code>setuptools</code> package was created in the standard 
+    library, which could be used to specify a <code>build</code> within a <code>python</code> script
+    called `setup.py`. While this allowed for some powerful metaprogramming for
+    experienced users, in general the interface was messy. Somewhere around 
+    this time <code>build</code> tools for other languages were increasingly handling 
+    dependencies. For example, <code>ant</code> inspired <code>maven</code> in the <code>java</code> ecosystem,
+    which is both a build tool and full blown dependency manager. Over this 
+    period a very large number of markup languages were created, providing 
+    well defined syntaxes. Build tools and dependency management tools 
+    increasingly started to leverage markup languages instead of implementing 
+    domain specific languages for their purposes. Eventually, <code>rust</code> released 
+    along with a <code>cargo</code>, a dependency management and build tool. 
+    <code>cargo</code> used the <cargo>toml</cargo> markup language as the interface to
+    its dependency specification. Furthermore, <code>cargo</code> also took
+    things one step further and automated many processes, so the typical 
+    user never interacted with the <code>cargo.toml</code>. The <code>poetry</code>
+    interface is very similar to the <code>cargo</code> one.
+  </p>
+</div>
+
+To install the dependencies for `toliman` simply run `poetry install`. This
+will take a while so make sure you have a coffee and a good book nearby.
+
+
 ### Resources <a name="python.poetry.resources"> 
 # Pytest <a name="pytest">
 ## Installing Pytest <a name="pytest.installing">
