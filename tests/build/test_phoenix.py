@@ -217,6 +217,22 @@ def test_install_phoenix_when_partially_installed(
 
     Fixtures
     --------
+    create_fake_phoenix_installation: fixture[None]
+        Generates the phoenix files, but does not instantiate any values. 
+        This fixture was created for speed.
+    list_phoenix_files: fixture[list]
+        Produces a list of all the phoenix files.
+
+    Parameters
+    ----------
+    root: str = ROOT
+        The directory to install phoenix in. Direct parametrisation of 
+        phoenix.install_phoenix and indirect parametrization of 
+        create_fake_phoenix_installation and list_phoenix_files.
+    full: bool = False
+        Install the first byte only. Indirect parametrisation of 
+        create_fake_phoenix_installation, do not instantiate all 
+        files.
     """
     phoenix.install_phoenix(root, full = False)
     for file in list_phoenix_files: assert os.path.isfile(file)
