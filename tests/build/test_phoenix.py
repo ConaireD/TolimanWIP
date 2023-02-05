@@ -375,37 +375,38 @@ def test_resample_phoenix_spectra_produces_correct_shape(
         The longest wavelength. Indirectly parametrizes make_fake_spectra.
     """
     out_shape: int = 10
-    out: float = phoenix.resample_phoenix_spectra(spectra, out_shape)
+    out: float = phoenix.resample_phoenix_spectra(make_fake_spectra, out_shape)
     assert out.shape == (3, out_shape)
     
-def test_save_phoenix_spectra_makes_file():
-    # Arrange
-    spectra: float = get_spectra(FILTER_MIN_WAVELENGTH, FILTER_MAX_WAVELENGTH)
+@pytest.mark.parametrize("min_", [FILTER_MIN])
+@pytest.mark.parametrize("max_", [FILTER_MAX])
+@pytest.mark.parametrize("root", [ROOT])
+def test_save_phoenix_spectra_makes_file(
+        root: str,
+        make_fake_spectra: fixture[float],
+    ) -> None:
+    """
+    Does phoenix.save_phoenix_spectra create a file?
 
-    if os.path.isdir(ROOT): 
-        shutil.rmtree(ROOT)
-     
-    os.mkdir(ROOT)
+    Fixtures
+    --------
+    make_phoenix_spectra: fixture[float],
+        Generated a simplified and fake spectrum.
 
-    # Act
-    phoenix.save_phoenix_spectra("tmp", spectra)
-
-    # Assert
-    assert os.path.isfile("tmp/spectra.csv")
+    Parameters
+    ----------
+    min_: float, meters
+        The shortest wavelength. Indirectly parametrizes make_fake_spectra.
+    max_: float, meters
+        The longest wavelength. Indirectly parametrizes make_fake_spectra.
+    root: str = ROOT
+        Where to save the file. 
+    """
+    phoenix.save_phoenix_spectra(root, spectra)
+    assert os.path.isfile("{}/spectra.csv".format(root))
 
 def test_save_phoenix_spectra_has_headings():
-    # Arrange
-    spectra: float = get_spectra(FILTER_MIN_WAVELENGTH, FILTER_MAX_WAVELENGTH)
-
-    if os.path.isdir(ROOT): 
-        shutil.rmtree(ROOT)
-     
-    os.mkdir(ROOT)
-
-    # Act
     phoenix.save_phoenix_spectra("tmp", spectra)
-
-    # Assert
     with open("tmp/spectra.csv", "r") as file:
         header: str = next(file)
         titles: list = header.strip().split(",")
