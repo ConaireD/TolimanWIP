@@ -73,3 +73,10 @@ def remove_installation(root: str) -> None:
     if os.path.isdir(root): shutil.rmtree(root)
     yield
     if os.path.isdir(root): shutil.rmtree(root)
+
+@pytest.fixture
+def setup_and_teardown_phoenix_environ() -> None:
+    if os.environ.get("PYSYN_CDBS"): os.environ.pop("PYSYN_CDBS")
+    yield
+    if os.environ.get("PYSYN_CDBS"): os.environ.pop("PYSYN_CDBS")
+

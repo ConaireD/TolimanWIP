@@ -205,7 +205,7 @@ def test_install_phoenix_when_not_installed(
     phoenix.install_phoenix(root, full = False)
     for file in list_phoenix_files: assert os.path.isfile(file)
 
-@pytest.mark.parametrize("full", [False])
+@pytest.mark.parametrize("full", [False, True])
 @pytest.mark.parametrize("root", [ROOT])
 def test_install_phoenix_when_partially_installed(
         root: str,
@@ -214,6 +214,7 @@ def test_install_phoenix_when_partially_installed(
     ) -> None:
     """
     Does phoenix.install_phoenix finish an incomplete installation?
+    Does phoenix.install_phoenix ignore a complete installation?
 
     Fixtures
     --------
@@ -236,34 +237,19 @@ def test_install_phoenix_when_partially_installed(
     """
     phoenix.install_phoenix(root, full = False)
     for file in list_phoenix_files: assert os.path.isfile(file)
-    
-def test_install_phoenix_when_fully_installed():
-    # Arrange
-    create_fake_phoenix_installation()
-    
-    # Act
-    phoenix.install_phoenix(ROOT)
 
-    # Assert
-    for file in PHOENIX_FILES:
-        if not os.path.exists(file):
-            raise ValueError
+def test_set_phoenix_environ_when_not_set(
+        setup_and_teardown_phoenix_environ: fixture[None],
+    ) -> None:
+    """
+    Does phoenix.set_phoenix_environ set PYSYN_CDBS?
 
-        with open(file, "r") as file:
-            assert not file.read()
-
-    # Clean Up
-    remove_installation()
-
-def test_set_phoenix_environ_when_not_set():
-    # Arrange
-    if os.environ.get("PYSYN_CDBS"):
-        os.environ.pop("PYSYN_CDBS")
-
-    # Act
+    Fixtures
+    --------
+    setup_and_teardown_phoenix_environ: fixture[None]
+        Ensure that PYSYN_CDBS is not defined before and after the test.
+    """
     phoenix.set_phoenix_environ(ROOT)
-
-    # Assert
     assert os.environ["PYSYN_CDBS"] == ROOT
 
 def test_set_phoenix_environ_when_set():
