@@ -354,14 +354,28 @@ def test_clip_phoenix_spectra_on_invalid_input(
     out: float = phoenix.clip_phoenix_spectra(make_fake_spectra)
     assert out.shape[1] == 0
 
-def test_resample_phoenix_spectra_produces_correct_shape():
-    spectra: float = get_spectra(FILTER_MIN_WAVELENGTH, FILTER_MAX_WAVELENGTH)
+@pytest.mark.parametrize("min_", [FILTER_MIN])
+@pytest.mark.parametrize("max_", [FILTER_MAX])
+def test_resample_phoenix_spectra_produces_correct_shape(
+        make_fake_spectra: fixture[float],
+    ) -> None:
+    """
+    Does resample spectra change the shape?
+
+    Fixtures
+    --------
+    make_phoenix_spectra: fixture[float],
+        Generated a simplified and fake spectrum.
+
+    Parameters
+    ----------
+    min_: float, meters
+        The shortest wavelength. Indirectly parametrizes make_fake_spectra.
+    max_: float, meters
+        The longest wavelength. Indirectly parametrizes make_fake_spectra.
+    """
     out_shape: int = 10
-
-    # Act
     out: float = phoenix.resample_phoenix_spectra(spectra, out_shape)
-
-    # Assert
     assert out.shape == (3, out_shape)
     
 def test_save_phoenix_spectra_makes_file():
