@@ -11,6 +11,8 @@ import typing
 class fixture(typing.Generic[typing.TypeVar("T")]): pass
 
 ROOT: str = "tmp"
+FILTER_MIN: float = const.get_const_as_type("FILTER_MIN_WAVELENGTH", float)
+FILTER_MAX: float = const.get_const_as_type("FILTER_MAX_WAVELENGTH", float)
 
 @pytest.mark.parametrize("full", [True])
 @pytest.mark.parametrize("root", [ROOT])
@@ -305,16 +307,29 @@ def test_make_phoenix_spectra_when_root_not_valid(
     with pytest.raises(ValueError):
         spectra: float = phoenix.make_phoenix_spectra(ROOT)
 
-@pytest.mark.parametrize("min_", [filter_min])
-@pytest.mark.parametrize("max_", [filter_max])
+@pytest.mark.parametrize("min_", [FILTER_MIN / 2.])
+@pytest.mark.parametrize("max_", [FILTER_MAX + FILTER_MIN / 2.])
 def test_clip_phoenix_spectra_in_range(
-        filter_min: fixture[float],
-        filter_max: fixture[float],
         make_fake_spectra: fixture[None],
     ) -> None:
+    """
+    Does phoenix.clip_phoenix_spectra take within the filter?
+
+    Fixtures
+    --------
+    make_fake_spectra: fixture[None],
+        Generate a simplified and fake spectrum.
+    
+    Parameters
+    ----------
+    min_: float, meters
+        The shortest wavelength. Indirectly parametrizes make_fake_spectra.
+    max_: float, meters
+        The longest wavelength. Indirectly parametrizes make_fake_spectra.
+    """
     out: float = phoenix.clip_phoenix_spectra(make_fake_spectra)
-    assert (out[0] >= filter_min).all()
-    assert (out[0] <= filter_max).all()
+    assert (out[0] >= FILTER_MIN).all()
+    assert (out[0] <= FILTER_MAX).all()
 
 def test_clip_phoenix_spectra_on_invalid_input():
     # Arrange

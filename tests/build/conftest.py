@@ -8,14 +8,6 @@ import
 class fixture(typing.Generic[typing.TypeVar("T")]): pass
 
 @pytest.fixture
-def filter_min() -> None:
-    return const.get_const_as_type("FILTER_MIN_WAVELENGTH", float)
-
-@pytest.fixture
-def filter_max() -> None:
-    return const.get_const_as_type("FILTER_MAX_WAVELENGTH", float)
-
-@pytest.fixture
 def make_fake_spectra(min_: float, max_: float) -> None:
     shape: int = 100
     return jax.numpy.array([
