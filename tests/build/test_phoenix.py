@@ -402,15 +402,34 @@ def test_save_phoenix_spectra_makes_file(
     root: str = ROOT
         Where to save the file. 
     """
-    phoenix.save_phoenix_spectra(root, spectra)
+    phoenix.save_phoenix_spectra(root, make_fake_spectra)
     assert os.path.isfile("{}/spectra.csv".format(root))
 
-def test_save_phoenix_spectra_has_headings():
-    phoenix.save_phoenix_spectra("tmp", spectra)
-    with open("tmp/spectra.csv", "r") as file:
+@pytest.mark.parametrize("min_", [FILTER_MIN])
+@pytest.mark.parametrize("max_", [FILTER_MAX])
+@pytest.mark.parametrize("root", [ROOT])
+def test_save_phoenix_spectra_has_headings(
+        make_fake_spectra: fixture[float],
+    ):
+    """
+    Fixtures
+    --------
+    make_phoenix_spectra: fixture[float],
+        Generated a simplified and fake spectrum.
+
+    Parameters
+    ----------
+    min_: float, meters
+        The shortest wavelength. Indirectly parametrizes make_fake_spectra.
+    max_: float, meters
+        The longest wavelength. Indirectly parametrizes make_fake_spectra.
+    root: str = ROOT
+        Where to save the file. 
+    """
+    phoenix.save_phoenix_spectra(root, make_fake_spectra)
+    with open("{}/spectra.csv".format(root), "r") as file:
         header: str = next(file)
         titles: list = header.strip().split(",")
-
         assert titles[0].strip() == "alpha cen a waves (m)"
         assert titles[1].strip() == "alpha cen a flux (W/m/m)"
         assert titles[2].strip() == "alpha cen b flux (W/m/m)"
