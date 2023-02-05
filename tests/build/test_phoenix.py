@@ -305,19 +305,16 @@ def test_make_phoenix_spectra_when_root_not_valid(
     with pytest.raises(ValueError):
         spectra: float = phoenix.make_phoenix_spectra(ROOT)
 
-def test_clip_phoenix_spectra_in_range():
-    # Arrange
-    min_wavelength: float = FILTER_MIN_WAVELENGTH / 2.
-    max_wavelength: float = FILTER_MAX_WAVELENGTH + FILTER_MIN_WAVELENGTH / 2.
-
-    spectra: float = get_spectra(min_wavelength, max_wavelength)
-
-    # Act
-    out: float = phoenix.clip_phoenix_spectra(spectra)
-
-    # Assert
-    assert (out[0] >= FILTER_MIN_WAVELENGTH).all()
-    assert (out[0] <= FILTER_MAX_WAVELENGTH).all()
+@pytest.mark.parametrize("min_", [filter_min])
+@pytest.mark.parametrize("max_", [filter_max])
+def test_clip_phoenix_spectra_in_range(
+        filter_min: fixture[float],
+        filter_max: fixture[float],
+        make_fake_spectra: fixture[None],
+    ) -> None:
+    out: float = phoenix.clip_phoenix_spectra(make_fake_spectra)
+    assert (out[0] >= filter_min).all()
+    assert (out[0] <= filter_max).all()
 
 def test_clip_phoenix_spectra_on_invalid_input():
     # Arrange
