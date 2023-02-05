@@ -331,18 +331,29 @@ def test_clip_phoenix_spectra_in_range(
     assert (out[0] >= FILTER_MIN).all()
     assert (out[0] <= FILTER_MAX).all()
 
-def test_clip_phoenix_spectra_on_invalid_input():
-    # Arrange
-    spectra: float = get_spectra(0.0, FILTER_MIN_WAVELENGTH) 
+@pytest.mark.parametrize("min_", [0.0])
+@pytest.mark.parametrize("max_", [FILTER_MIN]) 
+def test_clip_phoenix_spectra_on_invalid_input(
+        make_fake_spectra: fixture[float],
+    ) -> None:
+    """
+    Does phoenix.clip_phoenix_spectra break silently on bad input?
 
-    # Act
-    out: float = phoenix.clip_phoenix_spectra(spectra)
-
-    # Assert
+    Fixtures
+    --------
+    make_fake_spectra: fixture[None],
+        Generate a simplified and fake spectrum.
+    
+    Parameters
+    ----------
+    min_: float, meters
+        The shortest wavelength. Indirectly parametrizes make_fake_spectra.
+    max_: float, meters
+        The longest wavelength. Indirectly parametrizes make_fake_spectra.
+    """
+    out: float = phoenix.clip_phoenix_spectra(make_fake_spectra)
     assert out.shape[1] == 0
 
-# TODO: The way the clipping happens will be a problem for smaller arrays
-# TODO: Implement a get_spectra fixture
 def test_resample_phoenix_spectra_produces_correct_shape():
     spectra: float = get_spectra(FILTER_MIN_WAVELENGTH, FILTER_MAX_WAVELENGTH)
     out_shape: int = 10
