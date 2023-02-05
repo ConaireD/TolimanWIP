@@ -1,4 +1,5 @@
 science
+dist
 __pycache__
 */__pycache__
 */*/__pycache__
@@ -10,3 +11,4 @@ tmp
 */assets
 *.ipynb_checkpoints
 */*.ipynb_checkpoints
+poetry.lock

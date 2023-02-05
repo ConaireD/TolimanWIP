@@ -1,15 +1,20 @@
 site_name: TOLIMAN
 docs_dir: .
-extra_css:
-    - extra.css
 
 plugins:
     - search
     - same-dir
     - simple
-    - mkdocstrings:
-        default_handler: python 
+    - mkdocstrings
+
+markdown_extensions:
+    - admonition
+    - pymdownx.details
+    - pymdownx.superfences
 
 theme: 
     name: material 
-    logo: toliman/assets/logo.png
+    palette:
+        scheme: default
+        primary: blue
+        accent: light blue

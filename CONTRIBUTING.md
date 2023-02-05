@@ -1,5 +1,3 @@
-# Contributing
---------------
 The `toliman` package is managed using `poetry` and it is helpful if you also 
 have `conda` installed. Firstly check you `python` version, which can be done 
 using by typing `python --version` in the command prompt. You will need to have

@@ -1,4 +1,7 @@
 __author__ = "Jordan Dennis"
 
-from . import toliman
 from .toliman import *
+from . import constants
+from . import collections 
+from . import math 
+from . import io
