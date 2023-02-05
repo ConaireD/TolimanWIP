@@ -252,33 +252,56 @@ def test_set_phoenix_environ_when_not_set(
     phoenix.set_phoenix_environ(ROOT)
     assert os.environ["PYSYN_CDBS"] == ROOT
 
-def test_set_phoenix_environ_when_set():
-    # Arrange
-    if not os.environ.get("PYSYN_CDBS"):
-        os.environ["PYSYN_CDBS"] = "ABCFU"
+def test_set_phoenix_environ_when_set(
+        setup_and_teardown_phoenix_environ: fixture[None],
+    ) -> None:
+    """
+    Does phoenix.set_phoenix_environ set PYSYN_CDBS when PYSYN_CDBS is 
+    already set?
 
-    # Act
+    Fixtures
+    --------
+    setup_and_teardown_phoenix_environ: fixture[None]
+        Ensure that PYSYN_CDBS is not defined before and after the test.
+    """
+    os.environ["PYSYN_CDBS"] = "ABCFU"
     phoenix.set_phoenix_environ(ROOT)
-
-    # Assert
     assert os.environ["PYSYN_CDBS"] == ROOT
 
 @pytest.mark.skipif(
-    not phoenix.is_phoenix_installed(ROOT), 
+    not phoenix.is_phoenix_installed(".assets"), 
     reason="No valid installation."
 )
-def test_make_phoenix_spectra_when_root_valid():
-    # Arrange
+def test_make_phoenix_spectra_when_root_valid() -> None:
+    """
+    When phoenix is installed, does make_phoenix_spectra create spectra?
+    """
     spectra: float = phoenix.make_phoenix_spectra(".assets")
-
-    # Assert
     assert spectra.shape[0] == 3
 
-def test_make_phoenix_spectra_when_root_not_valid():
-    # Arrange 
-    remove_installation()
-    
-    # Act/Assert
+@pytest.mark.parametrize("root", [ROOT])
+def test_make_phoenix_spectra_when_root_not_valid(
+        root: str,
+        remove_installation: fixture[None],
+    ) -> None:
+    """
+    When phoenix is not installed, does make_phoenix_spectra raise a 
+    ValueError?
+
+    Fixtures
+    --------
+    remove_installation: fixture[None],
+        Ensures that there is not installation in the root directory before 
+        and after the test.
+
+    Parameters
+    ----------
+    root: str = ROOT
+        Points where to look for phoenix. Direct parametrisation of 
+        phoenix.set_phoenix_environ and phoenix.make_phoenix_spectra.
+        Indirect parametrisation of remove_installation.
+    """
+    phoenix.set_phoenix_environ(root)
     with pytest.raises(ValueError):
         spectra: float = phoenix.make_phoenix_spectra(ROOT)
 
