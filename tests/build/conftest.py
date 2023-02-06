@@ -69,6 +69,19 @@ def make_fake_spectra(min_: float, max_: float) -> None:
 
 @pytest.fixture
 def list_phoenix_dirs(root: str) -> list:
+    """
+    List the phoenix directories.
+
+    Parameters
+    ----------
+    root: str
+        The phoenix root directory.
+
+    Returns
+    -------
+    dirs: list[str]
+        The directories containing the phoenix files.
+    """
     phoenix: str = "/".join([root, "grid", "phoenix"])
     phoenixm00: str = "/".join([phoenix, "phoenixm00"])
     phoenixp03: str = "/".join([phoenix, "phoenixp03"])
@@ -76,6 +89,19 @@ def list_phoenix_dirs(root: str) -> list:
 
 @pytest.fixture
 def list_phoenix_files(root: str) -> list:
+    """
+    List the phoenix files.
+
+    Parameters
+    ----------
+    root: str
+        The phoenix root directory.
+
+    Results
+    -------
+    files: list[str]
+        The phoenix files.
+    """
     phoenix: str = "/".join([root, "grid", "phoenix"])
     phoenixm00: str = "/".join([phoenix, "phoenixm00"])
     phoenixp03: str = "/".join([phoenix, "phoenixp03"])
