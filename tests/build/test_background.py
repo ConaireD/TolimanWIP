@@ -246,23 +246,30 @@ def test_save_background_stars_has_correct_number_of_lines(
     with open(BG, "r") as file:
         assert len(file.readlines()) == bg_stars[0].size + 1
 
-def test_are_background_stars_installed_when_installed() -> None:
-    # Arrange
-    if os.path.isdir(ROOT):
-        shutil.rmtree(ROOT)
+@pytest.mark.parametrize("root", [ROOT])
+def test_are_background_stars_installed_when_installed(
+        root: str,
+        remove_installation: fixture[None],
+        create_fake_background_installation: fixture[None],
+    ) -> None:
+    """
+    Does bg.are_background_stars_installed detect an existing installation?
 
-    os.mkdir(ROOT)
-    open(BG, "w").close()
+    Fixtures
+    --------
+    remove_installation: fixture[None],
+        Ensures that there is no installation before and after the test.
+    create_fake_background_installation: fixture[None],
+        Quickly makes a false installation.
 
-    # Act/Assert
+    Parameters
+    ----------
+    root: str = ROOT
+        The directory of installation. Directly parametrizes 
+        bg.are_background_stars_installed. Indirectly parametrizes
+        remove_installation and create_fake_background_installation.
+    """
     assert bg.are_background_stars_installed(ROOT)
 
 def test_are_background_stars_installed_when_not_installed() -> None:
-    # Arrange
-    if os.path.isdir(ROOT):
-        shutil.rmtree(ROOT)
-
-    os.mkdir(ROOT)
-
-    # Act/Assert
     assert not bg.are_background_stars_installed(ROOT)
