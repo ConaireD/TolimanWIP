@@ -13,22 +13,6 @@ DEC: int = 1
 FLUX: int = 2
 ROOT: str = "tmp"
 BG: str = "tmp/background.csv"
-
-def get_background_stars(ra: float, dec: float, rad: float) -> float:
-    NUM: int = 100
-
-    def uniform_in_minus_one_to_one(key: int, shape: tuple) -> float:
-        return 2.0 * rng.uniform(rng.PRNGKey(key), shape) - 1.0
-
-    ra_sample: float = uniform_in_minus_one_to_one(0, (NUM,)) 
-    dec_samples: float = uniform_in_minus_one_to_one(1, (NUM,))
-    max_decs: float = np.sqrt(rad ** 2 - ra_sample ** 2)
-
-    return np.array([
-            (ra - (rad * ra_sample)),
-            (dec -(max_decs * dec_samples)),
-            rng.normal(rng.PRNGKey(2), (NUM,)),
-        ], dtype = float)
         
 def test_load_background_stars_has_correct_shape():
     # Arrange

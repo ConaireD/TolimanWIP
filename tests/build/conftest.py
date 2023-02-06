@@ -8,6 +8,23 @@ import jax
 class fixture(typing.Generic[typing.TypeVar("T")]): pass
 
 @pytest.fixture
+def get_background_stars(ra: float, dec: float, rad: float) -> float:
+    NUM: int = 100
+
+    def uniform_in_minus_one_to_one(key: int, shape: tuple) -> float:
+        return 2.0 * rng.uniform(rng.PRNGKey(key), shape) - 1.0
+
+    ra_sample: float = uniform_in_minus_one_to_one(0, (NUM,)) 
+    dec_samples: float = uniform_in_minus_one_to_one(1, (NUM,))
+    max_decs: float = np.sqrt(rad ** 2 - ra_sample ** 2)
+
+    return np.array([
+            (ra - (rad * ra_sample)),
+            (dec -(max_decs * dec_samples)),
+            rng.normal(rng.PRNGKey(2), (NUM,)),
+        ], dtype = float)
+    
+@pytest.fixture
 def make_fake_spectra(min_: float, max_: float) -> None:
     shape: int = 100
     return jax.numpy.array([
