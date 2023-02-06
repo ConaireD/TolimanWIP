@@ -213,6 +213,14 @@ def create_fake_background_installation(root: str) -> None:
 
 @pytest.fixture
 def remove_installation(root: str) -> None:
+    """
+    Ensure there is not resource installation before and after a test.
+
+    Parameters
+    ----------
+    root: str
+        The resource directory.
+    """
     if os.path.isdir(root): shutil.rmtree(root)
     yield
     if os.path.isdir(root): shutil.rmtree(root)
