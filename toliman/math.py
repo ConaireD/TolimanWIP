@@ -1,4 +1,5 @@
 import jax.numpy as np
+import jax
 
 __author__ = [
     "Jordan Dennis",
