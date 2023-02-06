@@ -227,7 +227,11 @@ def remove_installation(root: str) -> None:
 
 @pytest.fixture
 def setup_and_teardown_phoenix_environ() -> None:
-    if os.environ.get("PYSYN_CDBS"): os.environ.pop("PYSYN_CDBS")
+    """
+    Ensure the phoenix environment is empty before and after the test.
+    """
+    SYN: str = "PYSYN_CDBS"
+    if os.environ.get(SYN): os.environ.pop(SYN)
     yield
-    if os.environ.get("PYSYN_CDBS"): os.environ.pop("PYSYN_CDBS")
+    if os.environ.get(SYN): os.environ.pop(SYN)
 

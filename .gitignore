@@ -8,7 +8,7 @@ __pycache__
 */*.swp
 tmp
 */tmp
-*/assets
 *.ipynb_checkpoints
 */*.ipynb_checkpoints
 poetry.lock
+.assets
