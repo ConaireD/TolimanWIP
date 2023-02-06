@@ -269,7 +269,26 @@ def test_are_background_stars_installed_when_installed(
         bg.are_background_stars_installed. Indirectly parametrizes
         remove_installation and create_fake_background_installation.
     """
-    assert bg.are_background_stars_installed(ROOT)
+    assert bg.are_background_stars_installed(root)
 
-def test_are_background_stars_installed_when_not_installed() -> None:
-    assert not bg.are_background_stars_installed(ROOT)
+@pytest.mark.parametrize("root", [ROOT])
+def test_are_background_stars_installed_when_not_installed(
+        root: str,
+        remove_installation: fixture[None],
+    ) -> None:
+    """
+    Does bg.are_background_stars_installed detect no existing installation?
+
+    Fixtures
+    --------
+    remove_installation: fixture[None],
+        Ensures that there is no installation before and after the test.
+
+    Parameters
+    ----------
+    root: str = ROOT
+        The directory of installation. Directly parametrizes 
+        bg.are_background_stars_installed. Indirectly parametrizes
+        remove_installation. 
+    """
+    assert not bg.are_background_stars_installed(root)
