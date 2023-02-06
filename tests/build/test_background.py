@@ -132,43 +132,81 @@ def test_flux_relative_to_alpha_cen_has_correct_shape(
     rel_bg_stars: float = bg.flux_relative_to_alpha_cen(make_fake_background_stars)
     assert rel_bg_stars.shape[0] == 3
 
-def test_save_background_stars_creates_file():
-    # Arrange
-    if os.path.isdir(ROOT):
-        shutil.rmtree(ROOT)
+@pytest.mark.parametrize("ra", [3.0])
+@pytest.mark.parametrize("dec", [3.0])
+@pytest.mark.parametrize("rad", [2.0])
+@pytest.mark.parametrize("root", [ROOT])
+def test_save_background_stars_creates_file(
+        root: str,
+        remove_installation: fixture[None],
+        make_fake_background_stars: fixture[float],
+    ) -> None:
+    """
+    Does bg.save_background_stars create the correct file?
 
-    os.mkdir(ROOT)
-    bg_stars: float = get_background_stars(3.0, 3.0, 2.0)
+    Fixtures
+    --------
+    remove_installation: fixture[None],
+       Ensure there is no installation before and after the test. 
+    make_fake_background_stars: fixture[float],
+        Quickly generate an array of imaginary background stars.
 
-    # Act
-    bg.save_background_stars(bg_stars, ROOT)
+    Parameters
+    ----------
+    ra: float = 3.0, deg
+        The right ascension centre of the background stars. Indirectly 
+        parametrizes make_fake_background_stars.
+    dec: float = 3.0, deg
+        The declination centre of the background stars. Indirectly parametrizes
+        make_fake_background_stars.
+    rad: float = 2.0, deg
+        The radius of the search window. Indirectly parametrizes 
+        make_fake_background_stars.
+    root: str = ROOT
+        The directory to background stars to.
+    """
+    bg.save_background_stars(make_fake_background_stars, root)
+    assert os.path.isfile("{}/background.csv".format(root))
 
-    # Assert
-    assert os.path.isfile(BG)
+@pytest.mark.parametrize("ra", [3.0])
+@pytest.mark.parametrize("dec", [3.0])
+@pytest.mark.parametrize("rad", [2.0])
+@pytest.mark.parametrize("root", [ROOT])
+def test_save_background_stars_has_correct_headings(
+        root: str,
+        remove_installation: fixture[None],
+        make_fake_background_stars: fixture[float],
+    ) -> None:
+    """
+    Does bg.save_background_stars create the correct columns?
 
-    # Clean Up
-    shutil.rmtree(ROOT)
+    Fixtures
+    --------
+    remove_installation: fixture[None],
+       Ensure there is no installation before and after the test. 
+    make_fake_background_stars: fixture[float],
+        Quickly generate an array of imaginary background stars.
 
-def test_save_background_stars_has_correct_headings():
-    # Arrange
-    if os.path.isdir(ROOT):
-        shutil.rmtree(ROOT)
-
-    os.mkdir(ROOT)
-    bg_stars: float = get_background_stars(3.0, 3.0, 2.0)
-
-    # Act
-    bg.save_background_stars(bg_stars, ROOT)
-
-    # Assert
-    with open(BG, "r") as file:
+    Parameters
+    ----------
+    ra: float = 3.0, deg
+        The right ascension centre of the background stars. Indirectly 
+        parametrizes make_fake_background_stars.
+    dec: float = 3.0, deg
+        The declination centre of the background stars. Indirectly parametrizes
+        make_fake_background_stars.
+    rad: float = 2.0, deg
+        The radius of the search window. Indirectly parametrizes 
+        make_fake_background_stars.
+    root: str = ROOT
+        The directory to background stars to.
+    """
+    bg.save_background_stars(bg_stars, root)
+    with open("{}/background.csv".format(root), "r") as file:
         headings: str = next(file).strip().split(",")
         assert headings[0] == "ra"
         assert headings[1] == "dec"
         assert headings[2] == "rel_flux"
-
-    # Clean Up
-    shutil.rmtree(ROOT)
 
 def test_save_background_stars_has_correct_number_of_lines():
     # Arrange
