@@ -44,6 +44,22 @@ def make_fake_background_stars(ra: float, dec: float, rad: float) -> float:
     
 @pytest.fixture
 def make_fake_spectra(min_: float, max_: float) -> None:
+    """
+    Create a phony spectra represented as an array.
+
+    Parameters
+    ----------
+    min_: float, meters
+        The smallest wavelengths.
+    min_: float, meters
+        The largest wavelengths.
+
+    Returns
+    -------
+    spectra: float, [m, W/m/m, W/m/m]
+        The spectra of the two stars. The common wavelengths is the 
+        first row and the flux occupy the next two rows.
+    """
     shape: int = 100
     return jax.numpy.array([
             jax.numpy.linspace(min_, max_, shape, dtype = float),
