@@ -179,6 +179,17 @@ def create_fake_phoenix_installation(
             
 @pytest.fixture
 def create_fake_mask_installation(root: str) -> None:
+    """
+    Create a phony mask installation.
+
+    Ensures that tests are Fast and Independent, by creating the correct 
+    file, but leaving it empty.
+
+    Parameters
+    ----------
+    root: str
+        The mask root directory.
+    """
     remove_installation(root)
     os.makedirs(root)
     open("{}/mask.npy".format(root)).close()
