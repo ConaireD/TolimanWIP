@@ -200,7 +200,7 @@ def install_background_stars(
     bgstars: float = load_background_stars(ra, dec, width / np.sqrt(2))
     win_stars: float = window_background_stars(bgstars, width)
     rel_stars: float = flux_relative_to_alpha_cen(win_stars)
-    save_background_stars(rel_stars)
+    save_background_stars(rel_stars, root)
 
 def are_background_stars_installed(root: str) -> bool:
     """
