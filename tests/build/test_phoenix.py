@@ -447,7 +447,7 @@ def test_save_phoenix_spectra_has_headings(
 @pytest.mark.parametrize("max_", [FILTER_MAX])
 @pytest.mark.parametrize("root", [ROOT])
 def test_save_phoenix_spectra_has_correct_lines(
-        root: str
+        root: str,
         remove_installation: fixture[None],
         make_fake_spectra: fixture[None],
     ) -> None:
@@ -470,7 +470,7 @@ def test_save_phoenix_spectra_has_correct_lines(
     root: str = ROOT
         Where to save the file. 
     """
-    phoenix.save_phoenix_spectra(root, spectra)
+    phoenix.save_phoenix_spectra(root, make_fake_spectra)
     with open("{}/spectra.csv".format(root), "r") as file:
         num_lines: int = len(file.readlines())
         assert num_lines == 101

@@ -3,7 +3,7 @@ import shutil
 import pytest
 import toliman.constants as const
 import typing 
-import 
+import jax 
 
 class fixture(typing.Generic[typing.TypeVar("T")]): pass
 
@@ -12,8 +12,8 @@ def make_fake_spectra(min_: float, max_: float) -> None:
     shape: int = 100
     return jax.numpy.array([
             jax.numpy.linspace(min_, max_, shape, dtype = float),
-            jax.random.norm(jax.random.PRNGKey(0), (shape,), dtype = float),
-            jax.random.norm(jax.random.PRNGKey(1), (shape,), dtype = float),
+            jax.random.normal(jax.random.PRNGKey(0), (shape,), dtype = float),
+            jax.random.normal(jax.random.PRNGKey(1), (shape,), dtype = float),
         ], dtype = float)
 
 @pytest.fixture
