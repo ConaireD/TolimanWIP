@@ -1,5 +1,4 @@
-
-import toliman.build.math as math
+import toliman.math as math
 
 def test_normalise_in_range():
     # Arrange
