@@ -117,6 +117,23 @@ def create_fake_phoenix_dirs(
         remove_installation: fixture[None],
         list_phoenix_dirs: fixture[list],
     ) -> None:
+    """
+    Make a phony set of phoenix directories.
+
+    Fixtures
+    --------
+    remove_installation: fixture[None],
+        Ensure there is no installation before (and after) the test.
+    list_phoenix_dirs: fixture[list],
+        the phoenix directories.
+
+    Parameters
+    ----------
+    root: str
+        The phoenix root directory.
+    full: bool
+        If True create all the directories else only create half.
+    """
     if full: 
         for pdir in list_phoenix_dirs: 
             os.makedirs(pdir)
