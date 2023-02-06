@@ -8,7 +8,25 @@ import jax
 class fixture(typing.Generic[typing.TypeVar("T")]): pass
 
 @pytest.fixture
-def get_background_stars(ra: float, dec: float, rad: float) -> float:
+def make_fake_background_stars(ra: float, dec: float, rad: float) -> float:
+    """
+    Create a phony array representing background stars.
+
+    Parameters
+    ----------
+    ra: float, deg
+        The right ascension of the stars.
+    dec: float, deg
+        The declination of the stars.
+    rad: float, deg
+        The radius to place the stars in.
+
+    Returns
+    -------
+    stars: float, [deg, deg, W/m/m]
+        An array based representation of the stars. The convention is 
+        [RA, DEC, FLUX].
+    """
     NUM: int = 100
 
     def uniform_in_minus_one_to_one(key: int, shape: tuple) -> float:
