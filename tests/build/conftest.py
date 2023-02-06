@@ -147,6 +147,26 @@ def create_fake_phoenix_installation(
         remove_installation: fixture[None], 
         create_fake_phoenix_dirs: fixture[None],
     ) -> None:
+    """
+    Create a phony phoenix installation. 
+
+    The files are created but left empty. This is done so that tests
+    requiring a full installation remain independent and fast.
+
+    Fixtures
+    --------
+    remove_installation: fixture[None],
+        Ensure there is no installation before (and after) the test.
+    list_phoenix_dirs: fixture[list],
+        the phoenix directories.
+
+    Parameters
+    ----------
+    root: str
+        The phoenix root directory.
+    full: bool
+        If True create all the directories else only create half.
+    """
     phoenix: str = "/".join([root, "grid", "phoenix"])
     phoenixm00: str = "/".join([phoenix, "phoenixm00"])
     phoenixp03: str = "/".join([phoenix, "phoenixp03"])
