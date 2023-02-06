@@ -103,14 +103,33 @@ def test_window_background_stars_has_correct_shape(
     win_bg_stars: float = bg.window_background_stars(make_fake_background_stars, window) 
     assert win_bg_stars.shape[0] == 3
 
-def test_flux_relative_to_alpha_cen_has_correct_shape():
-    # Arrange
-    bg_stars: float = get_background_stars(3.0, 3.0, 2.0)
+@pytest.mark.parametrize("ra", [3.0])
+@pytest.mark.parametrize("dec", [3.0])
+@pytest.mark.parametrize("rad", [2.0])
+def test_flux_relative_to_alpha_cen_has_correct_shape(
+        make_fake_background_stars: fixture[float],
+    ) -> None:
+    """
+    Does bg.flux_relative_to_alpha_cen keep the length of the leading dimension?
 
-    # Act
-    rel_bg_stars: float = bg.flux_relative_to_alpha_cen(bg_stars)
+    Fixtures
+    --------
+    make_fake_background_stars: fixture[float],
+        Quickly generate an array of imaginary background stars.
 
-    # Assert
+    Parameters
+    ----------
+    ra: float = 3.0, deg
+        The right ascension centre of the background stars. Indirectly 
+        parametrizes make_fake_background_stars.
+    dec: float = 3.0, deg
+        The declination centre of the background stars. Indirectly parametrizes
+        make_fake_background_stars.
+    rad: float = 2.0, deg
+        The radius of the search window. Indirectly parametrizes 
+        make_fake_background_stars.
+    """
+    rel_bg_stars: float = bg.flux_relative_to_alpha_cen(make_fake_background_stars)
     assert rel_bg_stars.shape[0] == 3
 
 def test_save_background_stars_creates_file():
