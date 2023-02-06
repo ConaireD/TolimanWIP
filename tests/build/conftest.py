@@ -196,6 +196,17 @@ def create_fake_mask_installation(root: str) -> None:
     
 @pytest.fixture
 def create_fake_background_installation(root: str) -> None:
+    """
+    Create a phony installation of background stars.
+
+    Ensures that tests are Fast and Independent, by creating the correct 
+    file, but leaving it empty.
+
+    Parameters
+    ----------
+    root: str
+        The mask root directory.
+    """
     remove_installation(root)
     os.makedirs(root)
     open("{}/background.npy".format(root)).close()
