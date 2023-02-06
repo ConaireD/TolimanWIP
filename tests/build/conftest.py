@@ -30,16 +30,16 @@ def make_fake_background_stars(ra: float, dec: float, rad: float) -> float:
     NUM: int = 100
 
     def uniform_in_minus_one_to_one(key: int, shape: tuple) -> float:
-        return 2.0 * rng.uniform(rng.PRNGKey(key), shape) - 1.0
+        return 2.0 * jax.random.uniform(jax.random.PRNGKey(key), shape) - 1.0
 
     ra_sample: float = uniform_in_minus_one_to_one(0, (NUM,)) 
     dec_samples: float = uniform_in_minus_one_to_one(1, (NUM,))
-    max_decs: float = np.sqrt(rad ** 2 - ra_sample ** 2)
+    max_decs: float = jax.numpy.sqrt(rad ** 2 - ra_sample ** 2)
 
-    return np.array([
+    return jax.numpy.array([
             (ra - (rad * ra_sample)),
             (dec -(max_decs * dec_samples)),
-            rng.normal(rng.PRNGKey(2), (NUM,)),
+            jax.random.normal(jax.random.PRNGKey(2), (NUM,)),
         ], dtype = float)
     
 @pytest.fixture
@@ -195,21 +195,28 @@ def create_fake_mask_installation(root: str) -> None:
     open("{}/mask.npy".format(root)).close()
     
 @pytest.fixture
-def create_fake_background_installation(root: str) -> None:
+def create_fake_background_installation(
+        root: str,
+        remove_installation: fixture[None],
+    ) -> None:
     """
     Create a phony installation of background stars.
 
     Ensures that tests are Fast and Independent, by creating the correct 
     file, but leaving it empty.
 
+    Fixtures
+    --------
+    remove_installation: fixture[None],
+        Ensures that there is no installation before and after the test.   
+
     Parameters
     ----------
     root: str
         The mask root directory.
     """
-    remove_installation(root)
     os.makedirs(root)
-    open("{}/background.npy".format(root)).close()
+    open("{}/background.csv".format(root), "w").close()
 
 @pytest.fixture
 def remove_installation(root: str) -> None:

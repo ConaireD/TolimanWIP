@@ -156,6 +156,8 @@ def save_background_stars(background: float, root: str) -> None:
     """
     if background.shape[0] != 3:
         raise ValueError("Invalid background stars.")
+    if not os.path.isdir(root):
+        os.mkdir(root)
     with open(paths.concat([root, "background.csv"]), "w") as sheet:
         sheet.write("ra,dec,rel_flux\n")
         for row in np.arange(background[RA].size):
