@@ -383,6 +383,7 @@ def test_resample_phoenix_spectra_produces_correct_shape(
 @pytest.mark.parametrize("root", [ROOT])
 def test_save_phoenix_spectra_makes_file(
         root: str,
+        remove_installation: fixture[None],
         make_fake_spectra: fixture[float],
     ) -> None:
     """
@@ -392,6 +393,8 @@ def test_save_phoenix_spectra_makes_file(
     --------
     make_phoenix_spectra: fixture[float],
         Generated a simplified and fake spectrum.
+    remove_installation: fixture[None],
+        Ensures there is no installation before and after the test.
 
     Parameters
     ----------
@@ -409,13 +412,19 @@ def test_save_phoenix_spectra_makes_file(
 @pytest.mark.parametrize("max_", [FILTER_MAX])
 @pytest.mark.parametrize("root", [ROOT])
 def test_save_phoenix_spectra_has_headings(
+        root: str,
+        remove_installation: fixture[None],
         make_fake_spectra: fixture[float],
-    ):
+    ) -> None:
     """
+    Are the correct headings in phoenix.save_phoenix_spectra?
+
     Fixtures
     --------
     make_phoenix_spectra: fixture[float],
         Generated a simplified and fake spectrum.
+    remove_installation: fixture[None],
+        Ensures there is no installation before and after the test.
 
     Parameters
     ----------
@@ -434,19 +443,34 @@ def test_save_phoenix_spectra_has_headings(
         assert titles[1].strip() == "alpha cen a flux (W/m/m)"
         assert titles[2].strip() == "alpha cen b flux (W/m/m)"
 
-def test_save_phoenix_spectra_has_correct_lines():
-    # Arrange
-    spectra: float = get_spectra(FILTER_MIN_WAVELENGTH, FILTER_MAX_WAVELENGTH)
+@pytest.mark.parametrize("min_", [FILTER_MIN])
+@pytest.mark.parametrize("max_", [FILTER_MAX])
+@pytest.mark.parametrize("root", [ROOT])
+def test_save_phoenix_spectra_has_correct_lines(
+        root: str
+        remove_installation: fixture[None],
+        make_fake_spectra: fixture[None],
+    ) -> None:
+    """
+    Is the correct amount of information in phoenix.save_phoenix_spectra? 
 
-    if os.path.isdir(ROOT): 
-        shutil.rmtree(ROOT)
-     
-    os.mkdir(ROOT)
+    Fixtures
+    --------
+    make_phoenix_spectra: fixture[float],
+        Generated a simplified and fake spectrum.
+    remove_installation: fixture[None],
+        Ensures there is no installation before and after the test.
 
-    # Act
-    phoenix.save_phoenix_spectra("tmp", spectra)
-
-    # Assert
-    with open("tmp/spectra.csv", "r") as file:
+    Parameters
+    ----------
+    min_: float, meters
+        The shortest wavelength. Indirectly parametrizes make_fake_spectra.
+    max_: float, meters
+        The longest wavelength. Indirectly parametrizes make_fake_spectra.
+    root: str = ROOT
+        Where to save the file. 
+    """
+    phoenix.save_phoenix_spectra(root, spectra)
+    with open("{}/spectra.csv".format(root), "r") as file:
         num_lines: int = len(file.readlines())
         assert num_lines == 101
