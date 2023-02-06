@@ -14,20 +14,25 @@ FLUX: int = 2
 ROOT: str = "tmp"
 BG: str = "tmp/background.csv"
         
-def test_load_background_stars_has_correct_shape():
-    # Arrange
+def test_load_background_stars_has_correct_shape() -> None:
+    """
+    Does bg.load_background_stars have the correct amount of data?
+    """
     bg_stars: float = bg.load_background_stars(3.0, 3.0, 2.0)
-
-    # Act/Assert
     assert bg_stars.shape[0] == 3
 
-def test_load_background_stars_within_cone():
+def test_load_background_stars_within_cone() -> None:
+    """
+    Does bg.load_background_stars load stars in a cone?
+
+    When manually reviewing the output of bg.load_background_stars it
+    was found that the cone had a certain "tolerance" associated with 
+    it. We have given a rather lenient tolerance for the tests.
+    """
     # Arrange
     rad: float = 2.0
     tol: float = 0.01
     bg_stars: float = bg.load_background_stars(3.0, 3.0, rad)
-
-    print(bg_stars)
 
     # Act/Assert
     hypot: callable = lambda x: np.hypot(x[0], x[1])
@@ -35,7 +40,11 @@ def test_load_background_stars_within_cone():
 
     assert (hypots <= rad + tol).all()
 
-def test_window_background_stars_in_range():
+def test_window_background_stars_in_range(
+        make_fake_background_stars: fixture[float],
+    ) -> None:
+    """
+    """
     # Arrange
     bg_stars: float = get_background_stars(3.0, 3.0, 2.0)
 
