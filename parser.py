@@ -15,21 +15,30 @@ class Token(object):
 """
 Grammar
 
-P := E
-E := [E,   
+P := [E]
+E := [E], [E]
+  |  [E]
+  |  L
+L := N, L
+  |  N
+N := F
+  |  I
+F := I.I
+  | I.
+  | .I
+I := [0-9]+
 """
 
 def parse_program(tokens: list):
     array: list = []
-    parse_expression(tokens, array)
+    if not (tokens[0].token == LPAREN and tokens[-1].token == RPAREN):
+        raise ValueError("Mismatched []!")    
+    parse_expression(tokens[1:-1], array)
     return array
 
 def parse_expression(tokens: list, array: list) -> list: 
-    if not (tokens[0].token == LPAREN and tokens[-1].token == RPAREN):
-        raise ValueError("Mismatched []!")    
-
-    if tokens[1].token == LPAREN and tokens[-2].token == RPAREN:
-        inner: list = parse_expression(tokens[1:-1], [])
+    if tokens[1].token == LPAREN:
+        inner: list = parse_expression(tokens[1:], [])
         array.append(inner)
     else:
         parse_terms(tokens[1:-1], array)
