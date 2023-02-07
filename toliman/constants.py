@@ -59,8 +59,8 @@ def get_const_as_type(const: str, t: type) -> type:
     """
     constant: str = os.environ[const]
 
-    if not const.startswith("["):
-        return t(os.environ[const])
+    if not constant.startswith("["):
+        return t(constant)
 
     values: list = [
         float(value.strip()) 

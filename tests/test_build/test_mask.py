@@ -13,7 +13,7 @@ ROOT: str = "tmp"
 @pytest.mark.parametrize("root", [ROOT])
 def test_is_mask_installed_when_installed(
         root: str,
-        remove_installation: fixture[None],
+        create_fake_mask_installation: fixture[None],
     ) -> None:
     """
     Can mask.is_mask_installed detect and existing installation?
