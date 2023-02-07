@@ -38,11 +38,37 @@ class Token(object):
         self.value = value
 
 def parse_program(tokens: list) -> list:
+    """
+    Parse an arbitrarily nested 1d array with mixed types.
+
+    Parameters
+    ----------
+    tokens: list
+        A list of tokens representing the program.
+
+    Returns
+    -------
+    array: list
+        A list of mixed types representing the ouput of the program.
+    """
     array: list = []
     parse_expression(tokens, array)
     return array
 
 def parse_expression(tokens: list, array: list) -> list: 
+    """
+    The grammar of an expression is:
+
+    E := [E]
+      |  [T]
+
+    Parameters
+    ----------
+    tokens: list
+        The tokens representing the recursive fragement of the program.
+    array: list
+        
+    """
     if not (tokens[0].token == LPAREN and tokens[-1].token == RPAREN):
         raise ValueError("Mismatched []!")    
 
