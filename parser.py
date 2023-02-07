@@ -5,21 +5,39 @@ COMMA: int = 3
 DOT: int = 4
 
 class Token(object):
+    """
+    Represents a character or group of characters in the input stream.
+
+    The token is an abstraction allowing the syntax to be separated from
+    the information and parsed. 
+
+    Attributes
+    ----------
+    token: int
+        The tokens are encoded by an enum with the following key.
+        LPAREN = 0, RPAREN = 1, NUMBER = 2, COMMA = 3 and DOT = 4.
+    value: str, optional
+        The information. This is only included for the NUMBER token.
+        Because (unfortunately) this is not C, it may have made more 
+        sense to inherit Number from Token and include the value 
+        field specifically in Number. This also works so I have not.
+    """
     token: int
     value: str
 
     def __init__(self, token: int, value: str = ""):
+        """
+        Parameters
+        ----------
+        token: int 
+            The syntax.
+        value: str = ""
+            The information.
+        """
         self.token = token
         self.value = value
 
-"""
-Grammar
-
-P := E
-E := [E,   
-"""
-
-def parse_program(tokens: list):
+def parse_program(tokens: list) -> list:
     array: list = []
     parse_expression(tokens, array)
     return array
