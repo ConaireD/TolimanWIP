@@ -156,6 +156,8 @@ def save_background_stars(background: float, root: str) -> None:
     """
     if background.shape[0] != 3:
         raise ValueError("Invalid background stars.")
+    if not os.path.isdir(root):
+        os.mkdir(root)
     with open(paths.concat([root, "background.csv"]), "w") as sheet:
         sheet.write("ra,dec,rel_flux\n")
         for row in np.arange(background[RA].size):
@@ -200,7 +202,7 @@ def install_background_stars(
     bgstars: float = load_background_stars(ra, dec, width / np.sqrt(2))
     win_stars: float = window_background_stars(bgstars, width)
     rel_stars: float = flux_relative_to_alpha_cen(win_stars)
-    save_background_stars(rel_stars)
+    save_background_stars(rel_stars, root)
 
 def are_background_stars_installed(root: str) -> bool:
     """

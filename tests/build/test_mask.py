@@ -4,65 +4,96 @@ import toliman.build.mask as mask
 import os
 import shutil
 import jax.numpy as np
+import typing
+
+class fixture(typing.Generic[typing.TypeVar("T")]): pass
 
 ROOT: str = "tmp"
 
-def test_is_mask_installed_when_installed() -> None:
-    # Arrange
-    if os.path.isdir(ROOT):
-        shutil.rmtree(ROOT)
+@pytest.mark.parametrize("root", [ROOT])
+def test_is_mask_installed_when_installed(
+        root: str,
+        remove_installation: fixture[None],
+    ) -> None:
+    """
+    Can mask.is_mask_installed detect and existing installation?
 
-    os.mkdir(ROOT)
-    open(paths.concat([ROOT, "mask.npy"]), "w").close()
+    Fixtures
+    --------
+    remove_installation: fixture[None],
+        Ensures there is no installation before and after the test.
 
-    # Act
-    assert mask.is_mask_installed(ROOT)
+    Parameters
+    ----------
+    root: str = ROOT
+        Where to look for the installation. Directly parametrises 
+        mask.is_mask_installed. Indirectly parametrizes remove_installation.
+    """
+    open(paths.concat([root, "mask.npy"]), "w").close()
+    assert mask.is_mask_installed(root)
 
-    # Clean Up
-    if os.path.isdir(ROOT):
-        shutil.rmtree(ROOT)
+@pytest.mark.parametrize("root", [ROOT])
+def test_is_mask_installed_when_not_installed(
+        root: str,
+        remove_installation: fixture[None],
+    ) -> None:
+    """
+    Can mask.is_mask_installed identify no installation?
 
-def test_is_mask_installed_when_not_installed() -> None:
-    # Arrange
-    if os.path.isdir(ROOT):
-        shutil.rmtree(ROOT)
+    Fixtures
+    --------
+    remove_installation: fixture[None],
+        Ensures there is no installation before and after the test.
 
-    os.mkdir(ROOT)
+    Parameters
+    ----------
+    root: str = ROOT
+        Where to look for the installation. Directly parametrises 
+        mask.is_mask_installed. Indirectly parametrizes remove_installation.
+    """
+    assert not mask.is_mask_installed(root)
 
-    # Act 
-    assert not mask.is_mask_installed(ROOT)
+@pytest.mark.parametrize("root", [ROOT])
+def test_install_mask_creates_file(
+        root: str,
+        remove_installation: fixture[None],
+    ) -> None:
+    """
+    Does mask.install_mask create a file?
 
-    # Clean Up
-    if os.path.isdir(ROOT):
-        shutil.rmtree(ROOT)
+    Fixtures
+    --------
+    remove_installation: fixture[None],
+        Ensures there is no installation before and after the test.
 
-def test_install_mask_creates_file() -> None:
-    # Arrange
-    if os.path.isdir(ROOT):
-        shutil.rmtree(ROOT)
+    Parameters
+    ----------
+    root: str = ROOT
+        Where to look for the installation. Directly parametrises 
+        mask.is_mask_installed. Indirectly parametrizes remove_installation.
+    """
+    mask.install_mask(root)
+    assert os.path.isfile(paths.concat([root, "mask.npy"]))
 
-    # Act
-    mask.install_mask(ROOT)
+@pytest.mark.parametrize("root", [ROOT])
+def test_install_mask_has_correct_shape(
+        root: str,
+        remove_installation: fixture[None],
+    ) -> None:
+    """
+    Does mask.install_mask reproduce the correct amount of data?
 
-    # Assert
-    assert os.path.isfile(paths.concat([ROOT, "mask.npy"]))
+    Fixtures
+    --------
+    remove_installation: fixture[None],
+        Ensures there is no installation before and after the test.
 
-    # Clean Up
-    if os.path.isdir(ROOT):
-        shutil.rmtree(ROOT)
-
-def test_install_mask_has_correct_shape() -> None:
-    # Arrange
-    if os.path.isdir(ROOT):
-        shutil.rmtree(ROOT)
-
-    # Act
-    mask.install_mask(ROOT)
-
-    # Assert
-    masks: float = np.load(paths.concat([ROOT, "mask.npy"]))
+    Parameters
+    ----------
+    root: str = ROOT
+        Where to look for the installation. Directly parametrises 
+        mask.is_mask_installed. Indirectly parametrizes remove_installation.
+    """
+    mask.install_mask(root)
+    masks: float = np.load(paths.concat([root, "mask.npy"]))
     assert masks.shape == (1024, 1024)
-
-    # Clean Up
-    if os.path.isdir(ROOT):
-        shutil.rmtree(ROOT)

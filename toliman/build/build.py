@@ -14,8 +14,6 @@ __all__ = [
 
 TOLIMAN_HOME: str = const.get_const_as_type("TOLIMAN_HOME", str) 
 
-def get_toliman_home() -> str:
-
 def is_toliman_installed(root: str = TOLIMAN_HOME) -> bool:
     """
     Checks if all the assets files for toliman are installed.
@@ -82,20 +80,27 @@ def color_str_as_code(string: str) -> None:
     """
     start: int = string.find("`")
     if start > 0:
-        end: int = string.fing("`", start)
+        end: int = string.find("`", start)
         if end < 0:
             raise ValueError("Code segement was not terminated.")
         code: str = string[start:end]
-        c_code: str = termcolor.colored(code, "light_gray", "on_dark_gray")
+        c_code: str = termcolor.colored(code, "light_grey", "on_dark_grey")
         return string[:start - 1] + c_code + string[end:]
     return string 
 
-def install_toliman(root: str = TOLIMAN_HOME, /, force: bool = False) -> None:
+def install_toliman(
+        number_of_wavelengths: int, 
+        root: str = TOLIMAN_HOME, /, 
+        force: bool = False
+    ) -> None:
     """
     Install all the resource files for toliman.
 
     Parameters
     ----------
+    number_of_wavelengths: int
+        How many wavelengths should be saved in the spectra 
+        generated using `phoenix` models?
     root: str = TOLIMAN_HOME
         The directory to search in. This should be TOLIMAN_HOME 
         but I have enabled other options if multiple installations 
@@ -120,12 +125,12 @@ def install_toliman(root: str = TOLIMAN_HOME, /, force: bool = False) -> None:
 
     if not phoenix.is_phoenix_installed(root) or force:
         print("Installing phoenix...")
-        phoenix.install_phoenix(root)
+        phoenix.install_phoenix(root, full = True)
         print("Done!")
 
     if not phoenix.is_spectra_installed(root) or force: 
         print("Installing spectra...")
-        phoenix.install_spectra(root)
+        phoenix.install_spectra(root, number_of_wavelengths)
         print("Done!")
 
     if not bg.are_background_stars_installed(root) or force:

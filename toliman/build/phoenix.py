@@ -279,6 +279,7 @@ def save_phoenix_spectra(root: str, spectra: str) -> None:
     """
     file: str = paths.concat([root, "spectra.csv"])
 
+    if not os.path.isdir(root): os.mkdir(root)
     with open(file, "w") as fspectra:
         fspectra.write("alpha cen a waves (m), ")
         fspectra.write("alpha cen a flux (W/m/m), ")

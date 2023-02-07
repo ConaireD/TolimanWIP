@@ -1,4 +1,5 @@
 import jax 
+import jax.numpy as np
 
 __author__ = ["Jordan Dennis"]
 __all__ = ["read_csv_to_jax_array"]

@@ -26,6 +26,8 @@ from toliman import (
 )
 
 from toliman.collections import contains_instance
+from toliman.io import read_csv_to_jax_array
+import toliman.constants as const
 
 from jax import (
     numpy as np,
@@ -46,6 +48,7 @@ class FresnelPropagator(object):
     """
     pass
 
+MASK_DIR: str = const.get_const_as_type("DEFAULT_MASK_DIR", str)
 
 class TestTolimanOptics(object):
     @pytest.mark.xdist_group("2")
@@ -56,7 +59,7 @@ class TestTolimanOptics(object):
 
         # Assert
         optics: list = static_toliman.to_optics_list()
-        assert _contains_instance(optics, StaticAperture)
+        assert contains_instance(optics, StaticAperture)
 
     @pytest.mark.xdist_group("1")
     @pytest.mark.software
@@ -66,13 +69,12 @@ class TestTolimanOptics(object):
 
         # Assert
         optics: list = dynamic_toliman.to_optics_list()
-        assert not _contains_instance(optics, StaticAperture)
+        assert not contains_instance(optics, StaticAperture)
 
     @pytest.mark.xdist_group("2")
     @pytest.mark.software
     def test_constructor_when_mask_too_large(self: object) -> None:
         with pytest.raises(NotImplementedError):
-            # Arrange/Act/Assert
             toliman: object = TolimanOptics(pixels_in_pupil=2048)
 
     @pytest.mark.xdist_group("3")
@@ -90,20 +92,21 @@ class TestTolimanOptics(object):
 
         # Assert
         optics: list = toliman.to_optics_list()
-        assert _contains_instance(optics, AddOPD)
+        assert contains_instance(optics, AddOPD)
 
     @pytest.mark.xdist_group("4")
     @pytest.mark.software
+    @pytest.mark.skipif(not os.path.isfile(MASK_DIR), reason="The mask is not installed.")
     def test_constructor_when_mask_is_correct_at_max(self: object) -> None:
         # TODO: Load the mask to get the correct size
-        mask: float = np.load("/home/jordan/Documents/toliman/toliman/assets/mask.npy")
+        mask: float = np.load(MASK_DIR)
         max_size: int = mask.shape[0]
         # Arrange/Act
         toliman: object = TolimanOptics(pixels_in_pupil=max_size)
 
         # Assert
         optics: list = toliman.to_optics_list()
-        assert _contains_instance(optics, AddOPD)
+        assert contains_instance(optics, AddOPD)
 
     @pytest.mark.xdist_group("1")
     @pytest.mark.software
@@ -124,7 +127,7 @@ class TestTolimanOptics(object):
         optics: list = toliman.to_optics_list()
 
         # Assert
-        assert _contains_instance(optics, StaticAberratedAperture)
+        assert contains_instance(optics, StaticAberratedAperture)
 
     @pytest.mark.xdist_group("2")
     @pytest.mark.software
@@ -134,7 +137,7 @@ class TestTolimanOptics(object):
         optics: list = list(toliman.layers.values())
 
         # Assert
-        assert not _contains_instance(optics, StaticAberratedAperture)
+        assert not contains_instance(optics, StaticAberratedAperture)
 
     @pytest.mark.xdist_group("3")
     @pytest.mark.software
@@ -151,7 +154,7 @@ class TestTolimanOptics(object):
         optics: list = toliman.to_optics_list()
 
         # Assert
-        assert not _contains_instance(optics, GeometricAberrations)
+        assert not contains_instance(optics, GeometricAberrations)
 
     @pytest.mark.xdist_group("3")
     @pytest.mark.software
@@ -169,7 +172,7 @@ class TestTolimanOptics(object):
 
         # TODO: get the correct name for the FresnelPropagator.
         # Assert
-        assert not _contains_instance(optics, FresnelPropagator)
+        assert not contains_instance(optics, FresnelPropagator)
 
     @pytest.mark.xdist_group("4")
     @pytest.mark.software
@@ -219,7 +222,7 @@ class TestTolimanOptics(object):
 
         # Assert
         new_optics: list = toliman.to_optics_list()
-        assert _contains_instance(new_optics, HexagonalAperture)
+        assert contains_instance(new_optics, HexagonalAperture)
 
     @pytest.mark.xdist_group("4")
     @pytest.mark.software
@@ -256,7 +259,7 @@ class TestTolimanOptics(object):
         new_optics: list = new_toliman.to_optics_list()
 
         # Assert
-        assert not _contains_instance(new_optics, CreateWavefront)
+        assert not contains_instance(new_optics, CreateWavefront)
 
     @pytest.mark.xdist_group("3")
     @pytest.mark.software
@@ -280,7 +283,7 @@ class TestTolimanOptics(object):
         optics: list = toliman.to_optics_list()
 
         # Assert
-        assert _contains_instance(optics, CircularAperture)
+        assert contains_instance(optics, CircularAperture)
 
     @pytest.mark.xdist_group("1")
     @pytest.mark.software
@@ -312,7 +315,7 @@ class TestTolimanDetector(object):
         optics: list = detector.to_optics_list()
 
         # Assert
-        assert _contains_instance(optics, ApplyJitter)
+        assert contains_instance(optics, ApplyJitter)
 
     @pytest.mark.xdist_group("3")
     @pytest.mark.software
@@ -322,7 +325,7 @@ class TestTolimanDetector(object):
         optics: list = detector.to_optics_list()
 
         # Assert
-        assert not _contains_instance(optics, ApplyJitter)
+        assert not contains_instance(optics, ApplyJitter)
 
     @pytest.mark.xdist_group("4")
     @pytest.mark.software
@@ -344,7 +347,7 @@ class TestTolimanDetector(object):
         optics: list = detector.to_optics_list()
 
         # Assert
-        assert _contains_instance(optics, ApplySaturation)
+        assert contains_instance(optics, ApplySaturation)
 
     @pytest.mark.xdist_group("2")
     @pytest.mark.software
@@ -354,7 +357,7 @@ class TestTolimanDetector(object):
         optics: list = detector.to_optics_list()
 
         # Assert
-        assert not _contains_instance(optics, ApplySaturation)
+        assert not contains_instance(optics, ApplySaturation)
 
     @pytest.mark.xdist_group("3")
     @pytest.mark.software
@@ -376,7 +379,7 @@ class TestTolimanDetector(object):
         optics: list = detector.to_optics_list()
 
         # Assert
-        assert _contains_instance(optics, ApplyPixelResponse)
+        assert contains_instance(optics, ApplyPixelResponse)
 
     @pytest.mark.xdist_group("1")
     @pytest.mark.software
@@ -386,7 +389,7 @@ class TestTolimanDetector(object):
         optics: list = detector.to_optics_list()
 
         # Assert
-        assert not _contains_instance(optics, ApplyPixelResponse)
+        assert not contains_instance(optics, ApplyPixelResponse)
 
     @pytest.mark.xdist_group("2")
     @pytest.mark.software
@@ -408,9 +411,9 @@ class TestTolimanDetector(object):
         optics: list = detector.to_optics_list()
 
         # Assert
-        assert _contains_instance(optics, ApplyJitter)
-        assert _contains_instance(optics, ApplySaturation)
-        assert _contains_instance(optics, ApplyPixelResponse)
+        assert contains_instance(optics, ApplyJitter)
+        assert contains_instance(optics, ApplySaturation)
+        assert contains_instance(optics, ApplyPixelResponse)
 
     @pytest.mark.xdist_group("4")
     @pytest.mark.software
@@ -470,7 +473,7 @@ class TestTolimanDetector(object):
         optics: list = detector.to_optics_list()
 
         # Assert
-        assert _contains_instance(optics, AddConstant)
+        assert contains_instance(optics, AddConstant)
 
     @pytest.mark.xdist_group("1")
     @pytest.mark.software
@@ -506,7 +509,7 @@ class TestTolimanDetector(object):
         optics: list = detector.to_optics_list()
 
         # Assert
-        assert not _contains_instance(optics, ApplyJitter)
+        assert not contains_instance(optics, ApplyJitter)
 
     @pytest.mark.xdist_group("4")
     @pytest.mark.software
@@ -530,7 +533,7 @@ class TestTolimanDetector(object):
         new_optics: list = new_detector.to_optics_list()
 
         # Assert
-        assert _contains_instance(new_optics, AddConstant)
+        assert contains_instance(new_optics, AddConstant)
 
     @pytest.mark.xdist_group("2")
     @pytest.mark.software
@@ -545,7 +548,7 @@ class TestTolimanDetector(object):
         # Assert
         # TODO: Check that I actually have this correct and upgrade
         #       to make it more programmatic.
-        assert not _contains_instance(new_optics, ApplyPixelResponse)
+        assert not contains_instance(new_optics, ApplyPixelResponse)
 
 
 class TestAlphaCentauri(object):

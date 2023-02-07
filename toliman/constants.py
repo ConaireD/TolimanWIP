@@ -57,7 +57,17 @@ def get_const_as_type(const: str, t: type) -> type:
     value: t
         The value of the constant.
     """
-    return t(os.environ[const])
+    constant: str = os.environ[const]
+
+    if not const.startswith("["):
+        return t(os.environ[const])
+
+    values: list = [
+        float(value.strip()) 
+        for value in constant.strip("[").strip("]").split(",")
+    ]
+
+    return values
 
 if not is_const_defined("TOLIMAN_HOME"):
     warnings.warn("`TOLIMAN_HOME` is not defined. Using `.assets`.")

@@ -11,6 +11,8 @@ import typing
 class fixture(typing.Generic[typing.TypeVar("T")]): pass
 
 ROOT: str = "tmp"
+FILTER_MIN: float = const.get_const_as_type("FILTER_MIN_WAVELENGTH", float)
+FILTER_MAX: float = const.get_const_as_type("FILTER_MAX_WAVELENGTH", float)
 
 @pytest.mark.parametrize("full", [True])
 @pytest.mark.parametrize("root", [ROOT])
@@ -205,7 +207,7 @@ def test_install_phoenix_when_not_installed(
     phoenix.install_phoenix(root, full = False)
     for file in list_phoenix_files: assert os.path.isfile(file)
 
-@pytest.mark.parametrize("full", [False])
+@pytest.mark.parametrize("full", [False, True])
 @pytest.mark.parametrize("root", [ROOT])
 def test_install_phoenix_when_partially_installed(
         root: str,
@@ -214,157 +216,261 @@ def test_install_phoenix_when_partially_installed(
     ) -> None:
     """
     Does phoenix.install_phoenix finish an incomplete installation?
+    Does phoenix.install_phoenix ignore a complete installation?
 
     Fixtures
     --------
+    create_fake_phoenix_installation: fixture[None]
+        Generates the phoenix files, but does not instantiate any values. 
+        This fixture was created for speed.
+    list_phoenix_files: fixture[list]
+        Produces a list of all the phoenix files.
+
+    Parameters
+    ----------
+    root: str = ROOT
+        The directory to install phoenix in. Direct parametrisation of 
+        phoenix.install_phoenix and indirect parametrization of 
+        create_fake_phoenix_installation and list_phoenix_files.
+    full: bool = False
+        Install the first byte only. Indirect parametrisation of 
+        create_fake_phoenix_installation, do not instantiate all 
+        files.
     """
     phoenix.install_phoenix(root, full = False)
     for file in list_phoenix_files: assert os.path.isfile(file)
-    
-def test_install_phoenix_when_fully_installed():
-    # Arrange
-    create_fake_phoenix_installation()
-    
-    # Act
-    phoenix.install_phoenix(ROOT)
 
-    # Assert
-    for file in PHOENIX_FILES:
-        if not os.path.exists(file):
-            raise ValueError
+def test_set_phoenix_environ_when_not_set(
+        setup_and_teardown_phoenix_environ: fixture[None],
+    ) -> None:
+    """
+    Does phoenix.set_phoenix_environ set PYSYN_CDBS?
 
-        with open(file, "r") as file:
-            assert not file.read()
-
-    # Clean Up
-    remove_installation()
-
-def test_set_phoenix_environ_when_not_set():
-    # Arrange
-    if os.environ.get("PYSYN_CDBS"):
-        os.environ.pop("PYSYN_CDBS")
-
-    # Act
+    Fixtures
+    --------
+    setup_and_teardown_phoenix_environ: fixture[None]
+        Ensure that PYSYN_CDBS is not defined before and after the test.
+    """
     phoenix.set_phoenix_environ(ROOT)
-
-    # Assert
     assert os.environ["PYSYN_CDBS"] == ROOT
 
-def test_set_phoenix_environ_when_set():
-    # Arrange
-    if not os.environ.get("PYSYN_CDBS"):
-        os.environ["PYSYN_CDBS"] = "ABCFU"
+def test_set_phoenix_environ_when_set(
+        setup_and_teardown_phoenix_environ: fixture[None],
+    ) -> None:
+    """
+    Does phoenix.set_phoenix_environ set PYSYN_CDBS when PYSYN_CDBS is 
+    already set?
 
-    # Act
+    Fixtures
+    --------
+    setup_and_teardown_phoenix_environ: fixture[None]
+        Ensure that PYSYN_CDBS is not defined before and after the test.
+    """
+    os.environ["PYSYN_CDBS"] = "ABCFU"
     phoenix.set_phoenix_environ(ROOT)
-
-    # Assert
     assert os.environ["PYSYN_CDBS"] == ROOT
 
 @pytest.mark.skipif(
-    not phoenix.is_phoenix_installed(ROOT), 
+    not phoenix.is_phoenix_installed(".assets"), 
     reason="No valid installation."
 )
-def test_make_phoenix_spectra_when_root_valid():
-    # Arrange
+def test_make_phoenix_spectra_when_root_valid() -> None:
+    """
+    When phoenix is installed, does make_phoenix_spectra create spectra?
+    """
     spectra: float = phoenix.make_phoenix_spectra(".assets")
-
-    # Assert
     assert spectra.shape[0] == 3
 
-def test_make_phoenix_spectra_when_root_not_valid():
-    # Arrange 
-    remove_installation()
-    
-    # Act/Assert
+@pytest.mark.parametrize("root", [ROOT])
+def test_make_phoenix_spectra_when_root_not_valid(
+        root: str,
+        remove_installation: fixture[None],
+    ) -> None:
+    """
+    When phoenix is not installed, does make_phoenix_spectra raise a 
+    ValueError?
+
+    Fixtures
+    --------
+    remove_installation: fixture[None],
+        Ensures that there is not installation in the root directory before 
+        and after the test.
+
+    Parameters
+    ----------
+    root: str = ROOT
+        Points where to look for phoenix. Direct parametrisation of 
+        phoenix.set_phoenix_environ and phoenix.make_phoenix_spectra.
+        Indirect parametrisation of remove_installation.
+    """
+    phoenix.set_phoenix_environ(root)
     with pytest.raises(ValueError):
         spectra: float = phoenix.make_phoenix_spectra(ROOT)
 
-def test_clip_phoenix_spectra_in_range():
-    # Arrange
-    min_wavelength: float = FILTER_MIN_WAVELENGTH / 2.
-    max_wavelength: float = FILTER_MAX_WAVELENGTH + FILTER_MIN_WAVELENGTH / 2.
+@pytest.mark.parametrize("min_", [FILTER_MIN / 2.])
+@pytest.mark.parametrize("max_", [FILTER_MAX + FILTER_MIN / 2.])
+def test_clip_phoenix_spectra_in_range(
+        make_fake_spectra: fixture[None],
+    ) -> None:
+    """
+    Does phoenix.clip_phoenix_spectra take within the filter?
 
-    spectra: float = get_spectra(min_wavelength, max_wavelength)
+    Fixtures
+    --------
+    make_fake_spectra: fixture[None],
+        Generate a simplified and fake spectrum.
+    
+    Parameters
+    ----------
+    min_: float, meters
+        The shortest wavelength. Indirectly parametrizes make_fake_spectra.
+    max_: float, meters
+        The longest wavelength. Indirectly parametrizes make_fake_spectra.
+    """
+    out: float = phoenix.clip_phoenix_spectra(make_fake_spectra)
+    assert (out[0] >= FILTER_MIN).all()
+    assert (out[0] <= FILTER_MAX).all()
 
-    # Act
-    out: float = phoenix.clip_phoenix_spectra(spectra)
+@pytest.mark.parametrize("min_", [0.0])
+@pytest.mark.parametrize("max_", [FILTER_MIN]) 
+def test_clip_phoenix_spectra_on_invalid_input(
+        make_fake_spectra: fixture[float],
+    ) -> None:
+    """
+    Does phoenix.clip_phoenix_spectra break silently on bad input?
 
-    # Assert
-    assert (out[0] >= FILTER_MIN_WAVELENGTH).all()
-    assert (out[0] <= FILTER_MAX_WAVELENGTH).all()
-
-def test_clip_phoenix_spectra_on_invalid_input():
-    # Arrange
-    spectra: float = get_spectra(0.0, FILTER_MIN_WAVELENGTH) 
-
-    # Act
-    out: float = phoenix.clip_phoenix_spectra(spectra)
-
-    # Assert
+    Fixtures
+    --------
+    make_fake_spectra: fixture[None],
+        Generate a simplified and fake spectrum.
+    
+    Parameters
+    ----------
+    min_: float, meters
+        The shortest wavelength. Indirectly parametrizes make_fake_spectra.
+    max_: float, meters
+        The longest wavelength. Indirectly parametrizes make_fake_spectra.
+    """
+    out: float = phoenix.clip_phoenix_spectra(make_fake_spectra)
     assert out.shape[1] == 0
 
-# TODO: The way the clipping happens will be a problem for smaller arrays
-# TODO: Implement a get_spectra fixture
-def test_resample_phoenix_spectra_produces_correct_shape():
-    spectra: float = get_spectra(FILTER_MIN_WAVELENGTH, FILTER_MAX_WAVELENGTH)
+@pytest.mark.parametrize("min_", [FILTER_MIN])
+@pytest.mark.parametrize("max_", [FILTER_MAX])
+def test_resample_phoenix_spectra_produces_correct_shape(
+        make_fake_spectra: fixture[float],
+    ) -> None:
+    """
+    Does resample spectra change the shape?
+
+    Fixtures
+    --------
+    make_phoenix_spectra: fixture[float],
+        Generated a simplified and fake spectrum.
+
+    Parameters
+    ----------
+    min_: float, meters
+        The shortest wavelength. Indirectly parametrizes make_fake_spectra.
+    max_: float, meters
+        The longest wavelength. Indirectly parametrizes make_fake_spectra.
+    """
     out_shape: int = 10
-
-    # Act
-    out: float = phoenix.resample_phoenix_spectra(spectra, out_shape)
-
-    # Assert
+    out: float = phoenix.resample_phoenix_spectra(make_fake_spectra, out_shape)
     assert out.shape == (3, out_shape)
     
-def test_save_phoenix_spectra_makes_file():
-    # Arrange
-    spectra: float = get_spectra(FILTER_MIN_WAVELENGTH, FILTER_MAX_WAVELENGTH)
+@pytest.mark.parametrize("min_", [FILTER_MIN])
+@pytest.mark.parametrize("max_", [FILTER_MAX])
+@pytest.mark.parametrize("root", [ROOT])
+def test_save_phoenix_spectra_makes_file(
+        root: str,
+        remove_installation: fixture[None],
+        make_fake_spectra: fixture[float],
+    ) -> None:
+    """
+    Does phoenix.save_phoenix_spectra create a file?
 
-    if os.path.isdir(ROOT): 
-        shutil.rmtree(ROOT)
-     
-    os.mkdir(ROOT)
+    Fixtures
+    --------
+    make_phoenix_spectra: fixture[float],
+        Generated a simplified and fake spectrum.
+    remove_installation: fixture[None],
+        Ensures there is no installation before and after the test.
 
-    # Act
-    phoenix.save_phoenix_spectra("tmp", spectra)
+    Parameters
+    ----------
+    min_: float, meters
+        The shortest wavelength. Indirectly parametrizes make_fake_spectra.
+    max_: float, meters
+        The longest wavelength. Indirectly parametrizes make_fake_spectra.
+    root: str = ROOT
+        Where to save the file. 
+    """
+    phoenix.save_phoenix_spectra(root, make_fake_spectra)
+    assert os.path.isfile("{}/spectra.csv".format(root))
 
-    # Assert
-    assert os.path.isfile("tmp/spectra.csv")
+@pytest.mark.parametrize("min_", [FILTER_MIN])
+@pytest.mark.parametrize("max_", [FILTER_MAX])
+@pytest.mark.parametrize("root", [ROOT])
+def test_save_phoenix_spectra_has_headings(
+        root: str,
+        remove_installation: fixture[None],
+        make_fake_spectra: fixture[float],
+    ) -> None:
+    """
+    Are the correct headings in phoenix.save_phoenix_spectra?
 
-def test_save_phoenix_spectra_has_headings():
-    # Arrange
-    spectra: float = get_spectra(FILTER_MIN_WAVELENGTH, FILTER_MAX_WAVELENGTH)
+    Fixtures
+    --------
+    make_phoenix_spectra: fixture[float],
+        Generated a simplified and fake spectrum.
+    remove_installation: fixture[None],
+        Ensures there is no installation before and after the test.
 
-    if os.path.isdir(ROOT): 
-        shutil.rmtree(ROOT)
-     
-    os.mkdir(ROOT)
-
-    # Act
-    phoenix.save_phoenix_spectra("tmp", spectra)
-
-    # Assert
-    with open("tmp/spectra.csv", "r") as file:
+    Parameters
+    ----------
+    min_: float, meters
+        The shortest wavelength. Indirectly parametrizes make_fake_spectra.
+    max_: float, meters
+        The longest wavelength. Indirectly parametrizes make_fake_spectra.
+    root: str = ROOT
+        Where to save the file. 
+    """
+    phoenix.save_phoenix_spectra(root, make_fake_spectra)
+    with open("{}/spectra.csv".format(root), "r") as file:
         header: str = next(file)
         titles: list = header.strip().split(",")
-
         assert titles[0].strip() == "alpha cen a waves (m)"
         assert titles[1].strip() == "alpha cen a flux (W/m/m)"
         assert titles[2].strip() == "alpha cen b flux (W/m/m)"
 
-def test_save_phoenix_spectra_has_correct_lines():
-    # Arrange
-    spectra: float = get_spectra(FILTER_MIN_WAVELENGTH, FILTER_MAX_WAVELENGTH)
+@pytest.mark.parametrize("min_", [FILTER_MIN])
+@pytest.mark.parametrize("max_", [FILTER_MAX])
+@pytest.mark.parametrize("root", [ROOT])
+def test_save_phoenix_spectra_has_correct_lines(
+        root: str,
+        remove_installation: fixture[None],
+        make_fake_spectra: fixture[None],
+    ) -> None:
+    """
+    Is the correct amount of information in phoenix.save_phoenix_spectra? 
 
-    if os.path.isdir(ROOT): 
-        shutil.rmtree(ROOT)
-     
-    os.mkdir(ROOT)
+    Fixtures
+    --------
+    make_phoenix_spectra: fixture[float],
+        Generated a simplified and fake spectrum.
+    remove_installation: fixture[None],
+        Ensures there is no installation before and after the test.
 
-    # Act
-    phoenix.save_phoenix_spectra("tmp", spectra)
-
-    # Assert
-    with open("tmp/spectra.csv", "r") as file:
+    Parameters
+    ----------
+    min_: float, meters
+        The shortest wavelength. Indirectly parametrizes make_fake_spectra.
+    max_: float, meters
+        The longest wavelength. Indirectly parametrizes make_fake_spectra.
+    root: str = ROOT
+        Where to save the file. 
+    """
+    phoenix.save_phoenix_spectra(root, make_fake_spectra)
+    with open("{}/spectra.csv".format(root), "r") as file:
         num_lines: int = len(file.readlines())
         assert num_lines == 101
