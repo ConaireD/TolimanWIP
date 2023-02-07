@@ -558,6 +558,8 @@ class AlphaCentauri(dl.BinarySource):
             that the convinience method `_simulate_alpha_cen_spectrum`
             can be used to simulate the spectrum.
         """
+        SPECTRUM_DIR: str = const.get_const_as_type("SPECTRUM_DIR", str) 
+
         if not spectrum:
             _spectrum: float = io.read_csv_to_jax_array(SPECTRUM_DIR) 
 
