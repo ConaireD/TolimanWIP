@@ -1,0 +1,4 @@
+https://brew.sh/
+bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" 
+
+conda create toliman python=3.10.8
