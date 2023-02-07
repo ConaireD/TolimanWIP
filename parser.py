@@ -4,77 +4,68 @@ NUMBER: int = 2
 COMMA: int = 3
 DOT: int = 4
 
-# So what do we have?
-#
-# P := E
-# E := [E]
-#   | [L, E]
-# L := [T] 
-# T := N, T
-#   | N
-# N := F
-#   | I
-# N := I.I
+class Token(object):
+    token: int
+    value: str
+
+    def __init__(self, token: int, value: str = ""):
+        self.token = token
+        self.value = value
+
+"""
+Grammar
+
+P := E
+E := [E,   
+"""
 
 def parse_program(tokens: list):
-    parse_expression(tokens)
-    print("\n", end="")
+    array: list = []
+    parse_expression(tokens, array)
+    return array
 
-def parse_expression(tokens: list): 
-    # print("E: ", tokens)
-    if not (tokens[0] == LPAREN and tokens[-1] == RPAREN):
-        raise ValueError("Mismatched []!")
-    
-    print("[", end="")
-    if tokens[1] == LPAREN and tokens[-2] == RPAREN:
-        parse_expression(tokens[1:-1])
+def parse_expression(tokens: list, array: list) -> list: 
+    if not (tokens[0].token == LPAREN and tokens[-1].token == RPAREN):
+        raise ValueError("Mismatched []!")    
+
+    if tokens[1].token == LPAREN and tokens[-2].token == RPAREN:
+        inner: list = parse_expression(tokens[1:-1], [])
+        array.append(inner)
     else:
-        parse_terms(tokens[1:-1])
-    print("]", end="")
+        parse_terms(tokens[1:-1], array)
+        return array
 
-def parse_terms(tokens: list):
-    # print("T: ", tokens)
-    tokens: list = parse_number(tokens)
+def parse_terms(tokens: list, array: list):
+    tokens: list = parse_number(tokens, array)
     if len(tokens) > 1:
-        if tokens[0] == COMMA:
-            print(",", end="")
-            parse_terms(tokens[1:])
+        if tokens[0].token == COMMA:
+            parse_terms(tokens[1:], array)
 
-def parse_number(tokens: list):
-    # print("N: ", tokens)
-    if not (tokens[0] == NUMBER):
+def parse_number(tokens: list, array: list):
+    if not (tokens[0].token == NUMBER):
         raise ValueError("Not a number!")
     
     if len(tokens) > 1:
-        if tokens[1] == DOT:
-            return parse_float(tokens)
+        if tokens[1].token == DOT:
+            return parse_float(tokens, array)
         else:
-            return parse_int(tokens)
-    return parse_int(tokens)
+            return parse_int(tokens, array)
+    return parse_int(tokens, array)
 
-def parse_float(tokens: list):
-    # print("F: ", tokens)
+def parse_float(tokens: list, array: list):
     if len(tokens) < 3:
         raise ValueError("Invalid float!")
 
-    if not (tokens[0] == NUMBER and tokens[1] == DOT and tokens[2] == NUMBER):
+    if not (tokens[0].token == NUMBER and tokens[1].token == DOT and tokens[2].token == NUMBER):
         raise ValueError("Invalid float")
 
-    print("FLOAT", end="")
+    number: float = float(tokens[0].value + "." + tokens[2].value)
+    array.append(number)
     return tokens[3:]
 
-def parse_int(tokens: list):
-    # print("I: ", tokens)
-    print("INT", end="")
+def parse_int(tokens: list, array: list):
+    array.append(int(tokens[0].value))
     return tokens[1:]
-
-def tokenize_number(string: str) -> int:
-    if len(string) == 0:
-        return string
-    elif string[0].isnumeric():
-        return tokenize_number(string[1:])
-    else:
-        return string
 
 def tokenize_program(string: str, tokens: list = []) -> list:
     if len(string) == 0:
@@ -84,23 +75,28 @@ def tokenize_program(string: str, tokens: list = []) -> list:
 
         if char == "[":
             string: str = string[1:]
-            tokens: list = tokens + [LPAREN]
+            tokens: list = tokens + [Token(LPAREN)]
             return tokenize_program(string, tokens)
         elif char == "]":
             string: str = string[1:]
-            tokens: list = tokens + [RPAREN]
+            tokens: list = tokens + [Token(RPAREN)]
             return tokenize_program(string, tokens)
         elif char == ",":
             string: str = string[1:] 
-            tokens: list = tokens + [COMMA]
+            tokens: list = tokens + [Token(COMMA)]
             return tokenize_program(string, tokens)
         elif char == ".":
             string: str = string[1:]
-            tokens: list = tokens + [DOT]
+            tokens: list = tokens + [Token(DOT)]
             return tokenize_program(string, tokens)
         elif char.isnumeric():
-            string: str = tokenize_number(string)
-            tokens: list = tokens + [NUMBER]
+            number: str = ""
+            for digit in string:
+                if not digit.isnumeric():
+                    break
+                number: str = number + digit
+            string: str = string[len(number):]
+            tokens: list = tokens + [Token(NUMBER, number)]
             return tokenize_program(string, tokens)
         elif char.isspace():
             string: str = string[1:]
@@ -109,13 +105,10 @@ def tokenize_program(string: str, tokens: list = []) -> list:
             raise ValueError("Invalid character!")
         
 string: str = "[[1, 2, 3]]"
-print(tokenize_program(string))
-parse_program(tokenize_program(string))
+print(parse_program(tokenize_program(string)))
 
 string: str = "[[1.0, 2.00, 300.0]]"
-print(tokenize_program(string))
-parse_program(tokenize_program(string))
+print(parse_program(tokenize_program(string)))
 
 string: str = "[[1, 2.00, 300.0]]"
-print(tokenize_program(string))
-parse_program(tokenize_program(string))
+print(parse_program(tokenize_program(string)))
