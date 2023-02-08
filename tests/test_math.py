@@ -1,5 +1,6 @@
 import toliman.math as math
 import jax.numpy as np
+import jax.random as jr
 import pytest 
 
 def test_normalise_in_range():
@@ -9,15 +10,23 @@ def test_normalise_in_range():
 
 @pytest.mark.parametrize("shape", [100, 256])
 @pytest.mark.parametrize("m", [1, 2, 5, 10])
-def test_downsample_on_square_grid_has_correct_shape_when_valid(
+def test_downsample_square_grid_has_correct_shape_when_valid(
         m: int,
         shape: int
     ) -> None:
     """
+    Does math.downsample_on_square_grid downsample?
+
+    Parameters
+    ----------
+    m: int
+        The amount to downsample the array by.
+    shape: int
+        The initial shape size of the array.
     """
     array: float = np.zeros((shape, shape), dtype = float)
-    resampled: float = math.downsample_on_square_grid(array, m)
-    assert resample.shape = (shape // m, shape // m)
+    resampled: float = math.downsample_square_grid(array, m)
+    assert resampled.shape == (shape // m, shape // m)
 
 
 #def test_downsample_along_axis
