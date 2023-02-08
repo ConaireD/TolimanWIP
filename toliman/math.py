@@ -13,9 +13,10 @@ __all__ = [
     "pixel_response",
     "photon_noise",
     "latent_detector_noise",
+    "normalise",
 ]
 
-def downsample_square_grid(arr: float, m: int) -> float:
+def downsample_square_grid(arr: float, resample_by: int) -> float:
     """
     Resample a square array by a factor of `m`.
 
@@ -37,13 +38,20 @@ def downsample_square_grid(arr: float, m: int) -> float:
     (256, 256)
     ```
     """
-    n: int = arr.shape[0]
-    out: int = n // m
+    shape_in: int = arr.shape[0]
+    shape_out: int = shape_in // resample_by
+    keep_from_left: int = shape_in - shape_in % resample_by
+    kept_array: float = arr[:keep_from_left, :keep_from_left]
+    kept_shape: int = kept_array.shape[0]
 
-    dim_one: float = arr.reshape((n * out, m)).sum(1).reshape(n, out).T
-    dim_two: float = dim_one.reshape((out * out, m)).sum(1).reshape(out, out).T
+    shape_for_first_sum: tuple = (kept_shape * shape_out, resample_by)
+    shape_for_second_sum: tuple = (shape_out * shape_out, resample_by) 
+    sum_on_first_ax: float = kept_array.reshape(shape_for_first_sum).sum(1)
+    one_ax_summed: float = sum_on_first_ax.reshape(kept_shape, shape_out).T
+    sum_on_second_ax: float = one_ax_summed.reshape(shape_for_second_sum).sum(1)
+    summed: float = sum_on_second_ax.reshape(shape_out, shape_out).T
 
-    return dim_two / m / m
+    return summed / resample_by / resample_by
 
 def downsample_along_axis(arr: float, m: int, axis: int = 0) -> float:
     """
