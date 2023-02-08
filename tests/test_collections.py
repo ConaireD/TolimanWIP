@@ -22,6 +22,14 @@ def test_contains_instance_when_type_present(
         collection: list
     ) -> None:
     """
+    Does collections.contains_instance detect instances?
+
+    Parameters
+    ----------
+    instance_of: type
+        The type to search for in collection.
+    collection: list
+        The collection to search.
     """
     assert collections.contains_instance(collection, instance_of)
 
@@ -43,5 +51,13 @@ def test_contains_instance_when_type_is_not_present(
         collection: list,
     ) -> None:
     """
+    Does collections.contains_instance fail if the type is absent?
+
+    Parameters
+    ----------
+    instance_of: type
+        The type to search for in collection.
+    collection: list
+        The collection to search.
     """
     assert not collections.contains_instance(collection, instance_of)
