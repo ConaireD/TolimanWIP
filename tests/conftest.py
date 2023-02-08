@@ -6,8 +6,14 @@ rm: callable = lambda root: shutil.rmtree(root) if os.path.isdir(root) else pass
 mkdir: callable = lambda root: os.makedirs(root) if not os.path.isdir(root) else pass 
 
 @pytest.fixture
-def remove_installation(root: str) -> None:
+def rmdir(root: str) -> None:
     """
+    Ensures that tests are independent by deleting files before and after.
+
+    Parameters
+    ----------
+    root: str
+        The directories that contain the test files.
     """
     rm(root)
     yield
