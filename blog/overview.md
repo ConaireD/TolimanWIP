@@ -34,12 +34,15 @@ prefer a GUI, `gh` is not recommended.
     ```
 
 Throughout this blog I am going to adopt some conventions when it comes to 
-terminal demonstrations.
+terminal demonstrations. Each command will be prefaced by 
+`(home) user@Users-HP ~path/to/pwd$`. `(home)` refers to the active virtual
+environment. `user@Users-HP` is just some standard meta-information that 
+can be ignored and `~path/to/pwd$` indicates the current directory.
 Assuming you have a package manager the installation should be as simple as:
 ```
 (home) user@Users-HP ~$ sudo apt install git
 (home) user@Users-HP ~$ git --version
 git version 2.34.1
 (home) user@Users-HP ~$ sudo apt install poetry 
-(home)
+```
 
