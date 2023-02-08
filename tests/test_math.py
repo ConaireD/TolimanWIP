@@ -53,7 +53,26 @@ def test_downsample_square_grid_in_range(
     array_min: float = array.min()
     assert (array_max >= resampled).all() and (array_min <= resampled).all()
 
-#def test_downsample_along_axis
+@pytest.mark.parametrize("shape", [100, 256])
+@pytest.mark.parametrize("m", [1, 2, 5, 10])
+def test_downsample_along_axis_has_correct_shape_when_valid(
+        m: int,
+        shape: int
+    ) -> None:
+    """
+    Does math.downsample_on_square_grid downsample?
+
+    Parameters
+    ----------
+    m: int
+        The amount to downsample the array by.
+    shape: int
+        The initial shape size of the array.
+    """
+    array: float = np.zeros((shape, 2), dtype = float)
+    resampled: float = math.downsample_along_axis(array, m, axis = 0)
+    assert resampled.shape == (shape // m, 2)
+
 #def test_photon_noise
 #def test_latent_detector_noise
 #def test_simulate_data
