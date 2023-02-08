@@ -28,6 +28,30 @@ def test_downsample_square_grid_has_correct_shape_when_valid(
     resampled: float = math.downsample_square_grid(array, m)
     assert resampled.shape == (shape // m, shape // m)
 
+@pytest.mark.parametrize("shape", [100, 256])
+@pytest.mark.parametrize("m", [1, 2, 5, 10])
+def test_downsample_square_grid_in_range(
+        m: int,
+        shape: int
+    ) -> None:
+    """
+    Does math.downsample_on_square_grid average?
+
+    The average should be less than or equal to the largest value and
+    greater than or equal to the smallest value. 
+
+    Parameters
+    ----------
+    m: int
+        The amount to downsample the array by.
+    shape: int
+        The initial shape size of the array.
+    """
+    array: float = jr.normal(jr.PRNGKey(0), (shape, shape), dtype = float)
+    resampled: float = math.downsample_square_grid(array, m)
+    array_max: float = array.max()
+    array_min: float = array.min()
+    assert (array_max >= resampled).all() and (array_min <= resampled).all()
 
 #def test_downsample_along_axis
 #def test_photon_noise
