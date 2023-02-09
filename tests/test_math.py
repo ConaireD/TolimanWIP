@@ -203,6 +203,20 @@ def test_latent_detector_noise_is_uniform(
         coordinates: fixture[float],
     ) -> None:
     """
+    Is the latent detector noise uniform?
+
+    Fixtures
+    --------
+    coordinates: fixture[float]
+        The coordinates of the psf.
+
+    Parameters
+    ----------
+    shape: int
+        The number of pixels along each side. Indirectly parametrizes
+        coordinates.
+    scale: float
+        The scaling factor of the detector noise.
     """
     noise: float = np.abs(math.latent_detector_noise(scale, (shape, shape)))
     quadrants: int = np.array([
