@@ -231,5 +231,40 @@ def test_latent_detector_noise_is_uniform(
     average_power: float = np.sum(noise) / 4.0
 
     assert ((np.abs(power_in_quadrants - average_power) / average_power) < 0.2).all()
-# def test_latent_detector_noise_scales
-# def test_pixel_response
+
+@pytest.mark.parametrize("threshold", [0.1, 0.05])
+@pytest.mark.parametrize("shape", [64, 128, 256])
+def test_pixel_response_is_uniform(
+        shape: int, 
+        threshold: float,
+        coordinates: fixture[float],
+    ) -> None:
+    """
+    Is the pixel response uniform?
+
+    Fixtures
+    --------
+    coordinates: fixture[float]
+        The coordinates of the psf.
+
+    Parameters
+    ----------
+    shape: int
+        The number of pixels along each side. Indirectly parametrizes
+        coordinates.
+    scale: float
+        The scaling factor of the detector noise.
+    """
+    noise: float = np.abs(math.pixel_response((shape, shape), threshold))
+    quadrants: int = np.array([
+            (coordinates[0] > 0.0) & (coordinates[1] > 0.0),
+            (coordinates[0] < 0.0) & (coordinates[1] > 0.0),
+            (coordinates[0] < 0.0) & (coordinates[1] < 0.0),
+            (coordinates[0] > 0.0) & (coordinates[1] < 0.0),
+        ], dtype = int)
+    
+    noise_in_quadrants: float = np.where(quadrants, noise, 0.)
+    power_in_quadrants: float = np.sum(noise_in_quadrants, axis = (1, 2))
+    average_power: float = np.sum(noise) / 4.0
+
+    assert ((np.abs(power_in_quadrants - average_power) / average_power) < 0.2).all()
