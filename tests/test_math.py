@@ -100,7 +100,7 @@ def test_downsample_along_axis_in_range(
     minimums: float = np.min(array, axis = 0)
     assert (maximums >= resampled).all() and (minimums <= resampled).all()
 
-@pytest.mark.parametrize("pixels", [64, 128])
+@pytest.mark.parametrize("shape", [64, 128])
 def test_photon_noise_is_integer(
         make_airy_psf: fixture[float],
     ) -> None:
@@ -112,15 +112,17 @@ def test_photon_noise_is_integer(
     make_airy_psf: fixture[None]
         Generate an airy pattern.
 
-    Parameters
+    Parameters    plt.imshow(edge)
+    plt.colorbar()
+    plt.show()
     ----------
-    pixels: int
+    shape: int
         Pixels in the psf. Indirectly parametrizes make_airy_psf.
     """
     noisy_psf: int = math.photon_noise(make_airy_psf)
     assert (noisy_psf.dtype == np.int32) or (noisy_psf.dtype == np.int64) 
 
-@pytest.mark.parametrize("pixels", [64, 128])
+@pytest.mark.parametrize("shape", [64, 128])
 def test_photon_noise_is_correct_shape(
         make_airy_psf: fixture[float]
     ) -> None:
@@ -134,14 +136,14 @@ def test_photon_noise_is_correct_shape(
 
     Parameters
     ----------
-    pixels: int
+    shape: int
         Pixels in the psf. Indirectly parametrizes make_airy_psf.
     """
     noisy_psf: int = math.photon_noise(make_airy_psf)
     assert noisy_psf.shape == make_airy_psf.shape
 
 @pytest.mark.parametrize("factor", [2, 5, 10])
-@pytest.mark.parametrize("pixels", [64])
+@pytest.mark.parametrize("shape", [64])
 def test_photon_noise_scales_with_psf(
         factor: float,
         make_airy_psf: fixture[float],
@@ -156,7 +158,7 @@ def test_photon_noise_scales_with_psf(
 
     Parameters
     ----------
-    pixels: int
+    shape: int
         Pixels in the psf. Indirectly parametrizes make_airy_psf.
     factor: float
         Multiply the psf by this.
@@ -165,9 +167,9 @@ def test_photon_noise_scales_with_psf(
     sum_of_noisy_psf: float = np.sum(math.photon_noise(factor * make_airy_psf))
     assert sum_of_noisy_psf > sum_of_psf
 
-@pytest.mark.parametrize("pixels", [64])
+@pytest.mark.parametrize("shape", [64])
 def test_airy_photon_noise_on_disk(
-        pixels: int,
+        shape: int,
         coordinates: fixture[float],
         make_airy_psf: fixture[float],
     ) -> None:
@@ -183,16 +185,37 @@ def test_airy_photon_noise_on_disk(
 
     Parameters
     ----------
-    pixels: int
+    shape: int
         Pixels in the psf. Indirectly parametrizes make_airy_psf.
     """
     psf: float = math.photon_noise(make_airy_psf)
     power: float = np.sum(psf)
-    centre: float = jl.lt(jl.abs(coordinates), pixels / 8.)
+    centre: float = jl.lt(jl.abs(coordinates), shape / 8.)
     peak: float = np.where(centre, psf, 0.)
     peak_power: float = np.sum(peak)
     assert peak_power > 0.8 * power
 
-#def test_latent_detector_noise
-#def test_simulate_data
-#def test_pixel_response
+@pytest.mark.parametrize("scale", [1.0, 2.0])
+@pytest.mark.parametrize("shape", [64, 128, 256])
+def test_latent_detector_noise_is_uniform(
+        shape: int, 
+        scale: float,
+        coordinates: fixture[float],
+    ) -> None:
+    """
+    """
+    noise: float = np.abs(math.latent_detector_noise(scale, (shape, shape)))
+    quadrants: int = np.array([
+            (coordinates[0] > 0.0) & (coordinates[1] > 0.0),
+            (coordinates[0] < 0.0) & (coordinates[1] > 0.0),
+            (coordinates[0] < 0.0) & (coordinates[1] < 0.0),
+            (coordinates[0] > 0.0) & (coordinates[1] < 0.0),
+        ], dtype = int)
+    
+    noise_in_quadrants: float = np.where(quadrants, noise, 0.)
+    power_in_quadrants: float = np.sum(noise_in_quadrants, axis = (1, 2))
+    average_power: float = np.sum(noise) / 4.0
+
+    assert ((np.abs(power_in_quadrants - average_power) / average_power) < 0.2).all()
+# def test_latent_detector_noise_scales
+# def test_pixel_response
