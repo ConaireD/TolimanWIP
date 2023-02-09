@@ -69,7 +69,7 @@ def make_fake_csv(
     return file_name            
 
 @pytest.fixture
-def coordinates(pixels: int) -> float:
+def coordinates(shape: int) -> float:
     """
     Generate pixel coordinates. 
 
@@ -79,16 +79,16 @@ def coordinates(pixels: int) -> float:
 
     Parameters
     ----------
-    pixels: int
-        The psf will be (pixels, pixels) in size.
+    shape: int
+        The psf will be (shape, shape) in size.
     """
-    translation: float = (pixels - 1) / 2.
-    x: float = jl.broadcasted_iota(float, (1, pixels, pixels), 1)
-    y: float = jl.broadcasted_iota(float, (1, pixels, pixels), 2)
+    translation: float = (shape - 1) / 2.
+    x: float = jl.broadcasted_iota(float, (1, shape, shape), 1)
+    y: float = jl.broadcasted_iota(float, (1, shape, shape), 2)
     return jl.concatenate([x, y], 0) - translation
 
 @pytest.fixture
-def make_airy_psf(pixels: int, coordinates: fixture[float]) -> float:
+def make_airy_psf(shape: int, coordinates: fixture[float]) -> float:
     """
     Generate an airy pattern.
 
@@ -103,13 +103,13 @@ def make_airy_psf(pixels: int, coordinates: fixture[float]) -> float:
 
     Parameters
     ----------
-    pixels: int
-        The psf will be (pixels, pixels) in size. Indirectly parametrizes 
+    shape: int
+        The psf will be (shape, shape) in size. Indirectly parametrizes 
         coordinates.
     """
     pythag: float = jl.integer_pow(coordinates, 2)
     radii: float = jl.sqrt(jl.reduce(pythag, 0., jl.add, (0,)))
-    radius: float = pixels / 8.
+    radius: float = shape / 8.
     aperture: float =  jl.lt(radii, radius).astype(float)
     edge_zero_psf: float = jl.abs(jl.fft(aperture, "FFT", aperture.shape))
-    return np.roll(edge_zero_psf, (pixels / 2, pixels / 2), axis=(0, 1))
+    return np.roll(edge_zero_psf, (shape / 2, shape / 2), axis=(0, 1))
