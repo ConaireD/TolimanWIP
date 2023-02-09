@@ -119,9 +119,26 @@ def test_photon_noise_is_integer(
     noisy_psf: int = math.photon_noise(make_airy_psf)
     assert (noisy_psf.dtype == np.int32) or (noisy_psf.dtype == np.int64) 
 
-#def test_photon_noise_is_correct_shape(
-#
-#    ):
+@pytest.mark.parametrize("pixels", [64, 128])
+def test_photon_noise_is_correct_shape(
+        make_airy_psf: fixture[float]
+    ) -> None:
+    """
+    Does the noisy psf have the same shape as the psf?
+
+    Fixtures
+    --------
+    make_airy_psf: fixture[None]
+        Generate an airy pattern.
+
+    Parameters
+    ----------
+    pixels: int
+        Pixels in the psf. Indirectly parametrizes make_airy_psf.
+    """
+    noisy_psf: int = math.photon_noise(make_airy_psf)
+    assert noisy_psf.shape == make_airy_psf.shape
+
 #def test_photon_noise_scales_with_psf(
 #
 #    ):
