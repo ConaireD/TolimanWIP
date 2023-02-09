@@ -1,6 +1,7 @@
 import toliman.math as math
 import jax.numpy as np
 import jax.random as jr
+import jax.lax as jl
 import pytest 
 import typing
 
@@ -139,12 +140,59 @@ def test_photon_noise_is_correct_shape(
     noisy_psf: int = math.photon_noise(make_airy_psf)
     assert noisy_psf.shape == make_airy_psf.shape
 
-#def test_photon_noise_scales_with_psf(
-#
-#    ):
-#def test_airy_photon_noise_on_disk(
-#
-#    ):
+@pytest.mark.parametrize("factor", [2, 5, 10])
+@pytest.mark.parametrize("pixels", [64])
+def test_photon_noise_scales_with_psf(
+        factor: float,
+        make_airy_psf: fixture[float],
+    ) -> None:
+    """
+    Does the amount of photon noise scale with the psf?
+
+    Fixtures
+    --------
+    make_airy_psf: fixture[None]
+        Generate an airy pattern.
+
+    Parameters
+    ----------
+    pixels: int
+        Pixels in the psf. Indirectly parametrizes make_airy_psf.
+    factor: float
+        Multiply the psf by this.
+    """
+    sum_of_psf: float = np.sum(math.photon_noise(make_airy_psf))
+    sum_of_noisy_psf: float = np.sum(math.photon_noise(factor * make_airy_psf))
+    assert sum_of_noisy_psf > sum_of_psf
+
+@pytest.mark.parametrize("pixels", [64])
+def test_airy_photon_noise_on_disk(
+        pixels: int,
+        coordinates: fixture[float],
+        make_airy_psf: fixture[float],
+    ) -> None:
+    """
+    Does math.photon_noise approximately retain the power distribution?
+
+    Fixtures
+    --------
+    coordinates: fixture[float]
+        The coordinates of the psf.
+    make_airy_psf: fixture[None]
+        Generate an airy pattern.
+
+    Parameters
+    ----------
+    pixels: int
+        Pixels in the psf. Indirectly parametrizes make_airy_psf.
+    """
+    psf: float = math.photon_noise(make_airy_psf)
+    power: float = np.sum(psf)
+    centre: float = jl.lt(jl.abs(coordinates), pixels / 8.)
+    peak: float = np.where(centre, psf, 0.)
+    peak_power: float = np.sum(peak)
+    assert peak_power > 0.8 * power
+
 #def test_latent_detector_noise
 #def test_simulate_data
 #def test_pixel_response
