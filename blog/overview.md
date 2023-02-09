@@ -39,10 +39,63 @@ terminal demonstrations. Each command will be prefaced by
 environment. `user@Users-HP` is just some standard meta-information that 
 can be ignored and `~path/to/pwd$` indicates the current directory.
 Assuming you have a package manager the installation should be as simple as:
-```
+```bash
+(home) user@Users-HP ~$ sudo apt install python
 (home) user@Users-HP ~$ sudo apt install git
-(home) user@Users-HP ~$ git --version
-git version 2.34.1
 (home) user@Users-HP ~$ sudo apt install poetry 
 ```
 
+!!! tip 
+    You can check *often* if a package has installed using the `--version` tag. 
+    For example, `git --version`. 
+
+Once you have `git` installed, you can clone the source code for the `toliman` 
+forwards model. 
+```
+(home) user@Users-HP ~$ git clone https://github.com/ConaireD/TolimanWIP.git
+```
+This will clone the repository into `TolimanWIP`, if you want to use a 
+different name, pass the desired name as a second argument. For example,
+```
+(home) user@Users-HP ~$ git clone https://github.com/ConaireD/TolimanWIP.git toliman-fw
+```
+
+!!! tip
+    Depending on how you plan to use `toliman`, it may not make sense for you 
+    to waste disk space keeping the entrie `git` history. Passing the `--depth`
+    tag, allows you to specify the number of commits to clone. If space is a 
+    problem, I recommend using `--depth 1`, as this will just keep the current 
+    state.
+
+Now that the `toliman` source code is installed, we can install the package. 
+Making sure that `poetry` is installed it is as simple as `poetry install`. 
+This will some time to finish running, because the model has a very large 
+number of dependencies. 
+
+!!! note
+    Normally, I like to try keep the number of dependencies that my projects 
+    have as small as possible. However, `dLux` requires `matplotlib` and 
+    `jupyter`, which both come with a vast number of dependencies. In the 
+    end the large number of dependencies is why we use `poetry`.
+
+## Using `conda`
+Anaconda is a popular distibution of `python` that comes equipped with 
+a virtual environment manager. If you wish to install `toliman` using 
+Anaconda there are a few extra steps.
+```bash
+(home) user@Users-HP ~$ brew install python
+(home) user@Users-HP ~$ brew install git
+(home) user@Users-HP ~$ brew install poetry 
+(home) user@Users-HP ~$ brew install anaconda 
+```
+We will want to create a new virtual environment for `toliman`. This can 
+be done using:
+```bash
+(home) user@Users-HP ~$ conda create --name tlmn python==3.10.8
+(home) user@Users-HP ~$ conda activate tlmn
+(tlmn) user@Users-HP ~$
+```
+From here everything proceeds the same. 
+
+## `python==3.11`
+If you want to use `python==3.11` there are some extra steps again. 
