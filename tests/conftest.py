@@ -69,7 +69,26 @@ def make_fake_csv(
     return file_name            
 
 @pytest.fixture
-def make_airy_psf(pixels: int) -> float:
+def coordinates(pixels: int) -> float:
+    """
+    Generate pixel coordinates. 
+
+    The implementation was optimised fairly severly for an intel machine 
+    CPU instruction set. This was to ensure that the F in F.I.R.S.T was 
+    met.This fixture is not compiled because the is not known at runtime.
+
+    Parameters
+    ----------
+    pixels: int
+        The psf will be (pixels, pixels) in size.
+    """
+    translation: float = (pixels - 1) / 2.
+    x: float = jl.broadcasted_iota(float, (1, pixels, pixels), 1)
+    y: float = jl.broadcasted_iota(float, (1, pixels, pixels), 2)
+    return jl.concatenate([x, y], 0) - translation
+
+@pytest.fixture
+def make_airy_psf(pixels: int, coordinates: fixture[float]) -> float:
     """
     Generate an airy pattern.
 
@@ -77,18 +96,20 @@ def make_airy_psf(pixels: int) -> float:
     CPU instruction set. This was to ensure that the F in F.I.R.S.T was 
     met.This fixture is not compiled because the is not known at runtime.
    
+    Fixtures
+    --------
+    coordinates: fixture[float]
+        Create a set of para-axial image coordinates.
+
     Parameters
     ----------
     pixels: int
-        The psf will be (pixels, pixels) in size.
+        The psf will be (pixels, pixels) in size. Indirectly parametrizes 
+        coordinates.
     """
-    translation: float = (pixels - 1) / 2.
-    coordinates: float = jl.concatenate([
-            jl.broadcasted_iota(float, (1, pixels, pixels), 1),
-            jl.broadcasted_iota(float, (1, pixels, pixels), 2),       
-        ], 0) - translation
     pythag: float = jl.integer_pow(coordinates, 2)
     radii: float = jl.sqrt(jl.reduce(pythag, 0., jl.add, (0,)))
+    radius: float = pixels / 8.
     aperture: float =  jl.lt(radii, radius).astype(float)
     edge_zero_psf: float = jl.abs(jl.fft(aperture, "FFT", aperture.shape))
     return np.roll(edge_zero_psf, (pixels / 2, pixels / 2), axis=(0, 1))
