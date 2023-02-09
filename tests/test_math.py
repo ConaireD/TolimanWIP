@@ -2,7 +2,12 @@ import toliman.math as math
 import jax.numpy as np
 import jax.random as jr
 import pytest 
+import typing
 
+class fixture(typing.Generic[typing.TypeVar("T")]): pass
+
+# TODO: Paramatrize by shape.
+# TODO: Use jax.random
 def test_normalise_in_range():
     array: float = np.arange(10)
     narray: float = math.normalise(array)
@@ -94,7 +99,35 @@ def test_downsample_along_axis_in_range(
     minimums: float = np.min(array, axis = 0)
     assert (maximums >= resampled).all() and (minimums <= resampled).all()
 
-#def test_photon_noise
+@pytest.mark.parametrize("pixels", [64, 128])
+def test_photon_noise_is_integer(
+        make_airy_psf: fixture[float],
+    ) -> None:
+    """
+    Does math.photon_noise have an integer ouput?
+
+    Fixtures
+    --------
+    make_airy_psf: fixture[None]
+        Generate an airy pattern.
+
+    Parameters
+    ----------
+    pixels: int
+        Pixels in the psf. Indirectly parametrizes make_airy_psf.
+    """
+    noisy_psf: int = math.photon_noise(make_airy_psf)
+    assert (noisy_psf.dtype == np.int32) or (noisy_psf.dtype == np.int64) 
+
+#def test_photon_noise_is_correct_shape(
+#
+#    ):
+#def test_photon_noise_scales_with_psf(
+#
+#    ):
+#def test_airy_photon_noise_on_disk(
+#
+#    ):
 #def test_latent_detector_noise
 #def test_simulate_data
 #def test_pixel_response
