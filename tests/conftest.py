@@ -69,7 +69,19 @@ def make_fake_csv(
     return file_name            
 
 @pytest.fixture
-def make_fake_psf(pixels: int) -> float:
+def make_airy_psf(pixels: int) -> float:
+    """
+    Generate an airy pattern.
+
+    The implementation was optimised fairly severly for an intel machine 
+    CPU instruction set. This was to ensure that the F in F.I.R.S.T was 
+    met.This fixture is not compiled because the is not known at runtime.
+   
+    Parameters
+    ----------
+    pixels: int
+        The psf will be (pixels, pixels) in size.
+    """
     translation: float = (pixels - 1) / 2.
     coordinates: float = jl.concatenate([
             jl.broadcasted_iota(float, (1, pixels, pixels), 1),
