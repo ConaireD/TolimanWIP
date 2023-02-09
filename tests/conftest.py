@@ -2,6 +2,8 @@ import pytest
 import os
 import shutil
 import typing
+import jax.lax as jl
+import jax.numpy as np
 
 class fixture(typing.Generic[typing.TypeVar("T")]): pass 
 
@@ -65,33 +67,16 @@ def make_fake_csv(
             )
         )
     return file_name            
-    
+
 @pytest.fixture
-import jax.lax as jl
-import jax.numpy as np
-import functools as ft
-import jax
-import matplotlib as mpl
-import matplotlib.pyplot as plt
-
-def get_cartesian_pixel_coordinates(pixels: int) -> float:
-    translation: float = (pixels - 1) / 2.
-    return jl.concatenate([
-        jl.broadcasted_iota(float, (1, pixels, pixels), 1),
-        jl.broadcasted_iota(float, (1, pixels, pixels), 2),       
-    ], 0) - translation
-
-def circular_aperture(cartesian_coordinates: float, radius: int) -> float:
-    pythag: float = jl.integer_pow(cartesian_coordinates, 2)
-    radii: float = jl.sqrt(jl.reduce(pythag, 0., jl.add, (0,)))
-    return jl.lt(radii, radius).astype(float)
-
-def make_fake_aperture(pixels: int) -> float:
-    cartesian_coordinates: float = get_cartesian_pixel_coordinates(128)
-    radius: float = pixels / 8.
-    return circular_aperture(cartesian_coordinates, radius)
-
 def make_fake_psf(pixels: int) -> float:
-    aperture: float = make_fake_aperture(pixels)
+    translation: float = (pixels - 1) / 2.
+    coordinates: float = jl.concatenate([
+            jl.broadcasted_iota(float, (1, pixels, pixels), 1),
+            jl.broadcasted_iota(float, (1, pixels, pixels), 2),       
+        ], 0) - translation
+    pythag: float = jl.integer_pow(coordinates, 2)
+    radii: float = jl.sqrt(jl.reduce(pythag, 0., jl.add, (0,)))
+    aperture: float =  jl.lt(radii, radius).astype(float)
     edge_zero_psf: float = jl.abs(jl.fft(aperture, "FFT", aperture.shape))
     return np.roll(edge_zero_psf, (pixels / 2, pixels / 2), axis=(0, 1))
