@@ -12,13 +12,15 @@ packages = [{include = "toliman"}]
 
 
 [tool.poetry.dependencies]
-python = ">=3.10,<3.11"
+python = ">=3.10,<4.0"
 jax = ">=0.4.1"
-dLux = ">=0.9"
 pysynphot = ">=2.0.0"
 opt-einsum = "^3.3.0"
 astroquery = "^0.4.6"
-pyfakefs = "^5.1.0"
+
+
+#[tool.poetry.group.dLux.dependencies]
+#dLux = ">=0.9"
 
 
 [tool.poetry.group.tests.dependencies]
