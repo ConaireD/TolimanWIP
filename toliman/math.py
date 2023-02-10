@@ -84,7 +84,7 @@ def downsample_along_axis(arr: float, resample_by: int, axis: int = 0) -> float:
     shape_for_sum: tuple = shape[:axis] + (shape_along_ax_out,) + shape[axis + 1:] + (resample_by,)
     return kept_array.reshape(shape_for_sum).sum(-1) / resample_by
 
-def simulate_data(model: object, scale: float) -> float:
+def simulate_data(psf: float, scale: float) -> float:
     """
     Simulate some fake sata for comparison.
 
@@ -101,7 +101,6 @@ def simulate_data(model: object, scale: float) -> float:
     data: float, photons
         A noisy psf.
     """
-    psf: float = model.model()
     noisy_psf: float = photon_noise(psf)
     noisy_image: float = noisy_psf + latent_detector_noise(scale, psf.shape)
     return noisy_image
