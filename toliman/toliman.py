@@ -640,7 +640,8 @@ class Background(dl.MultiPointSource):
         _background: float = io.read_csv_to_jax_array(BACKGROUND_DIR)
 
         if number_of_bg_stars:
-            _background: float = _background[:number_of_bg_stars]
+            select_by: int = _background.shape[0] // number_of_bg_stars
+            _background: float = _background[::select_by, :]
 
         position: float = _background[:, (0, 1)]
         flux: float = _background[:, 2]
