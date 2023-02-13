@@ -7,11 +7,20 @@ This file porvides an API for generating a typical sample of background
 stars using the Gaia database. 
 
 ## API
-??? note "`load_background_stars`"
-    ::: toliman.build.background.load_background_stars
+??? note `load_background_stars`
+    ::: toliman.build.background
 
-??? note "`window_background_stars`"
-    ::: toliman.build.background.window_background_stars
+??? note `window_background_stars`
+    ::: toliman.build.background
+
+??? note `flux_relative_to_alpha_cen`
+    ::: toliman.build.background
+
+??? note `save_background_stars`
+    ::: toliman.build.background
+
+??? note `simulate_background_stars`
+    ::: toliman.build.background
 """
 
 import os
