@@ -560,8 +560,6 @@ class AlphaCentauri(dl.BinarySource):
         """
         SPECTRUM_DIR: str = const.get_const_as_type("SPECTRUM_DIR", str) 
 
-        print(SPECTRUM_DIR)
-
         if not spectrum:
             _spectrum: float = io.read_csv_to_jax_array(SPECTRUM_DIR) 
 
