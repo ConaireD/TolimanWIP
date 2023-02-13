@@ -6,7 +6,6 @@ def read_lines(file_name: str) -> list:
         lines: list = file.readlines()
     return lines
 
-
 def harvest_api(lines: list) -> list:
     try:
         lines_iter: iter = iter(lines)
@@ -29,9 +28,22 @@ def harvest_api(lines: list) -> list:
 
     return api
 
-def write_api_header(file_name: str, api: list) -> None:
+def get_mkdocs_path(file_name: str) -> str:
+    return ".".join(file_name.split("/"))
 
-    
+def write_api_header(file_name: str) -> None:
+    lines: list = read_lines(file_name)
+    apis: list = harvest_api(lines)
+    mkdocs_path: str = get_mkdocs_path(file_name)
+
+    with open(file_name, "w") as file:
+        file.write('"""md')
+        file.write("## API")
+        for api in apis:
+            file.write("??? note `{}`".format(api))
+            file.write("    ::: {}".format(mkdocs_path))
+        file.write('"""')
+
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         raise ValueError("Please provide the name of the file to document.")
