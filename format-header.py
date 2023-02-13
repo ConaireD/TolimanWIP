@@ -29,7 +29,7 @@ def harvest_api(lines: list) -> list:
     return api
 
 def get_mkdocs_path(file_name: str) -> str:
-    return ".".join(file_name.split("/"))
+    return ".".join(file_name.strip(".py").split("/"))
 
 def write_api_header(file_name: str) -> None:
     lines: list = read_lines(file_name)
@@ -37,12 +37,13 @@ def write_api_header(file_name: str) -> None:
     mkdocs_path: str = get_mkdocs_path(file_name)
 
     with open(file_name, "w") as file:
-        file.write('"""md')
-        file.write("## API")
+        file.write('"""md' + os.linesep)
+        file.write("## API" + os.linesep)
         for api in apis:
-            file.write("??? note `{}`".format(api))
-            file.write("    ::: {}".format(mkdocs_path))
-        file.write('"""')
+            file.write("??? note `{}`".format(api) + os.linesep)
+            file.write("    ::: {}".format(mkdocs_path) + os.linesep)
+        file.write('"""' + os.linesep + os.linesep)
+        file.writelines(lines)
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
@@ -56,8 +57,8 @@ if __name__ == "__main__":
             fnames: list = item[2]
             files: list = [dirname + "/" + fname for fname in fnames]
             for file in files:
-                harvest_api(file)
+                write_api_header(file)
     elif os.path.isfile(file_name):
-        harvest_api(file_name)
+        write_api_header(file_name)
     else:
         raise ValueError("Please provide a file or directory.")
