@@ -2,19 +2,24 @@ site_name: TOLIMAN
 docs_dir: .
 
 plugins:
-    - search
-    - same-dir
-    - simple
-    - mkdocstrings
+  - search
+  - same-dir
+  - simple
+  - mkdocstrings:
+      default_handler: python
+      handlers:
+        python:
+          options:
+            docstring_style: "numpy"
 
 markdown_extensions:
-    - admonition
-    - pymdownx.details
-    - pymdownx.superfences
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
 
 theme: 
-    name: material 
-    palette:
-        scheme: default
-        primary: blue
-        accent: light blue
+  name: material 
+  palette:
+    scheme: default
+    primary: blue
+    accent: light blue
