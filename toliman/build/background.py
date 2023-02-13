@@ -1,17 +1,29 @@
 """md
+## API
+??? note `load_background_stars`
+    ::: toliman.build.background.load_background_stars
+
+??? note `window_background_stars`
+    ::: toliman.build.background.window_background_stars
+
+??? note `flux_relative_to_alpha_cen`
+    ::: toliman.build.background.flux_relative_to_alpha_cen
+
+??? note `save_background_stars`
+    ::: toliman.build.background.save_background_stars
+
+??? note `simulate_background_stars`
+    ::: toliman.build.background.simulate_background_stars
+
+"""
+
+"""md
 ## Overview
 Due to the nature of the PSF background stars have a good chance of 
 affecting the science signal. In particular we are interested in the 
 sidelobes although we haven't decided how to deal with these yet.
 This file porvides an API for generating a typical sample of background 
 stars using the Gaia database. 
-
-## API
-??? note "`load_background_stars`"
-    ::: toliman.build.background.load_background_stars
-
-??? note "`window_background_stars`"
-    ::: toliman.build.background.window_background_stars
 """
 
 import os

@@ -1,10 +1,13 @@
 """md
 ## API
-??? note `"accumulate"`
-    ::: toliman.build.paths
-??? note `"concat"`
-    ::: toliman.build.paths
+??? note `accumulate`
+    ::: toliman.build.paths.accumulate
+
+??? note `concat`
+    ::: toliman.build.paths.concat
+
 """
+
 import os 
 
 __author__ = "Jordan Dennis"
