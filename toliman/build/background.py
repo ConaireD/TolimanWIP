@@ -1,3 +1,19 @@
+"""md
+## Overview
+Due to the nature of the PSF background stars have a good chance of 
+affecting the science signal. In particular we are interested in the 
+sidelobes although we haven't decided how to deal with these yet.
+This file porvides an API for generating a typical sample of background 
+stars using the Gaia database. 
+
+## API
+??? note "`load_background_stars`"
+    ::: toliman.build.background.load_background_stars
+
+??? note "`window_background_stars`"
+    ::: toliman.build.background.window_background_stars
+"""
+
 import os
 import jax.numpy as np
 import toliman.constants as const
@@ -41,25 +57,20 @@ def load_background_stars(ra: float, dec: float, rad: float) -> float:
     causes things to break when recentering. This is not checked 
     programmatically, but is a painful experience.
 
-    Parameters
-    ----------
-    ra: float, deg
-        The right ascension of section of sky to survey.
-    dec: float, deg 
-        The declination of the section of sky to survey.
-    rad: float, deg
-        The radius of the conical region to survey. 
+    Args:
+        ra (float): The right ascension of section of sky to survey (deg).
+        dec (float): The declination of the section of sky to survey (deg).
+        rad (float): The radius of the conical region to survey (deg)
 
     Returns
-    -------
-    background: float
-        A sample of positions (ra, dec), and fluxes of a preselected 
-        background region of sky. The convention is RA along 0, DEC 
-        along 1 and FLUX along 2.
+        float: A sample of positions (ra, dec), and fluxes of a preselected 
+            background region of sky. The convention is RA along 0, DEC 
+            along 1 and FLUX along 2.
 
-    Examples
-    --------
-    >>> load_background_stars(3.0, 3.0, 2.0)
+    Example:
+        ```python 
+        >>> load_background_stars(3.0, 3.0, 2.0)
+        ```
     """
     if ra <= rad:
         warnings.warn("`ra <= rad`. Coordinate wrapping may occur.")
@@ -220,6 +231,7 @@ def are_background_stars_installed(root: str) -> bool:
 
     Examples
     --------
+    ```python 
     >>> import os
     >>> os.mkdir("tmp")
     >>> are_background_stars_installed("tmp")
@@ -227,6 +239,7 @@ def are_background_stars_installed(root: str) -> bool:
     >>> open("tmp/background.csv", "w").close()
     >>> are_background_stars_installed("tmp")
     ::: True
+    ```
     """
     if not os.path.isdir(root):
         return False
