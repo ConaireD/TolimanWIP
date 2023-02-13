@@ -21,7 +21,7 @@ def harvest_api(lines: list) -> list:
         api: list = []
         line: str = next(lines_iter)
         while not line.strip().startswith("]"):
-            api: list = api + [line.strip().strip(",")]
+            api: list = api + [line.strip().strip(",").strip('"')]
             line: str = next(lines_iter)
     else:
         api: list = [line.strip() for line in inline.strip("]").split(",")]
@@ -36,13 +36,16 @@ def write_api_header(file_name: str) -> None:
     apis: list = harvest_api(lines)
     mkdocs_path: str = get_mkdocs_path(file_name)
 
+    if not apis:
+        return
+
     with open(file_name, "w") as file:
         file.write('"""md' + os.linesep)
         file.write("## API" + os.linesep)
         for api in apis:
             file.write("??? note `{}`".format(api) + os.linesep)
-            file.write("    ::: {}".format(mkdocs_path) + os.linesep)
-        file.write('"""' + os.linesep + os.linesep)
+            file.write("    ::: {}.{}".format(mkdocs_path, api) + os.linesep * 2)
+        file.write('"""' + os.linesep * 2)
         file.writelines(lines)
 
 if __name__ == "__main__":
