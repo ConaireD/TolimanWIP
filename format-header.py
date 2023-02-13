@@ -1,10 +1,13 @@
 import os
 import sys 
 
-def create_header(file_name: str) -> None:
+def read_lines(file_name: str) -> list:
     with open(file_name) as file:
         lines: list = file.readlines()
+    return lines
 
+
+def harvest_api(lines: list) -> list:
     try:
         lines_iter: iter = iter(lines)
         line: str = next(lines_iter)
@@ -24,7 +27,10 @@ def create_header(file_name: str) -> None:
     else:
         api: list = [line.strip() for line in inline.strip("]").split(",")]
 
-    print(api)
+    return api
+
+def write_api_header(file_name: str, api: list) -> None:
+
     
 if __name__ == "__main__":
     if len(sys.argv) < 2:
@@ -38,8 +44,8 @@ if __name__ == "__main__":
             fnames: list = item[2]
             files: list = [dirname + "/" + fname for fname in fnames]
             for file in files:
-                create_header(file)
+                harvest_api(file)
     elif os.path.isfile(file_name):
-        create_header(file_name)
+        harvest_api(file_name)
     else:
         raise ValueError("Please provide a file or directory.")
