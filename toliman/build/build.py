@@ -1,13 +1,3 @@
-"""md
-## API
-??? note `is_toliman_installed`
-    ::: toliman.build.build
-
-??? note `install_toliman", # TODO: force`
-    ::: toliman.build.build
-
-"""
-
 import os
 import warnings
 import termcolor
