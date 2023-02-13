@@ -1,16 +1,3 @@
-"""md
-## API
-??? note `get_https_stream`
-    ::: toliman.build.https
-
-??? note `download_file_from_https`
-    ::: toliman.build.https
-
-??? note `download_byte_from_https`
-    ::: toliman.build.https
-
-"""
-
 import requests
 import os
 import warnings
