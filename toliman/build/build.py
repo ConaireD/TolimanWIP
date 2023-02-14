@@ -1,11 +1,31 @@
 """md
+## Overview
+The build module is divided into a porcelain API and a plumbing API. The 
+procelain API is only two commands and will completely setup the toliman 
+data files. The plumbing commands on the other hand can be used to controll
+each data file individually, so are more useful for updatting the model 
+than the porcelain commands. The terminology porcelain and plumbing is 
+stolen from `git`.
+
+This is the simplest (porcelain) interface for setting up the data files 
+associated with the forwards model. It consists of just two commands 
+`is_toliman_installed` and `install_toliman`. The first will check for 
+an existing installation and the second will download and save the 
+data files from the internet. Depending on the speed of your connection 
+this can take a considerable amount of time because a lot of the files 
+are megabytes in size. 
+
+There is some nuance to using this code. Firstly, when running in a 
+default setting `install_toliman` will check at the plumbing level 
+for installed files and only install no installation is detected. To 
+override this behaviour use the `force` argument.
+
 ## API
 ??? note "`is_toliman_installed`"
-    ::: toliman.build.build.is_toliman_installed
+    ::: toliman.build.is_toliman_installed
 
-??? note "`install_toliman", # TODO: force`"
-    ::: toliman.build.build.install_toliman", # TODO: force
-
+??? note "`install_toliman`"
+    ::: toliman.build.install_toliman
 """
 
 import os
@@ -19,7 +39,7 @@ import toliman.constants as const
 __author__ = "Jordan Dennis"
 __all__ = [
     "is_toliman_installed",
-    "install_toliman", # TODO: force
+    "install_toliman",
 ]
 
 TOLIMAN_HOME: str = const.get_const_as_type("TOLIMAN_HOME", str) 
@@ -42,6 +62,7 @@ def is_toliman_installed(root: str = TOLIMAN_HOME) -> bool:
 
     Examples
     --------
+    ```python
     >>> import toliman.build as build
     >>> import toliman.build.mask as mask
     >>> import toliman.build.phoenix as phoenix
@@ -64,6 +85,7 @@ def is_toliman_installed(root: str = TOLIMAN_HOME) -> bool:
     >>> bg.install_background_stars("tmp")
     >>> build.is_toliman_installed("tmp")
     ::: True
+    ```
     """
     component_installations: list = [
         phoenix.is_phoenix_installed(),
@@ -122,6 +144,7 @@ def install_toliman(
 
     Examples
     --------
+    ```python
     >>> import toliman.build as build
     >>> build.get_toliman_home()
     ::: .assets
@@ -130,6 +153,7 @@ def install_toliman(
     >>> build.install_toliman()
     >>> build.is_toliman_installed()
     ::: True
+    ```
     """
     print(color_str_as_code("Building `toliman`!"))
 
