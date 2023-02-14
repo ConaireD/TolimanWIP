@@ -43,7 +43,7 @@ def write_api_header(file_name: str) -> None:
         file.write('"""md' + os.linesep)
         file.write("## API" + os.linesep)
         for api in apis:
-            file.write("??? note `{}`".format(api) + os.linesep)
+            file.write('??? note "`{}`"'.format(api) + os.linesep)
             file.write("    ::: {}.{}".format(mkdocs_path, api) + os.linesep * 2)
         file.write('"""' + os.linesep * 2)
         file.writelines(lines)

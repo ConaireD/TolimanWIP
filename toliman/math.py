@@ -1,3 +1,28 @@
+"""md
+## API
+??? note "`downsample_square_grid`"
+    ::: toliman.math.downsample_square_grid
+
+??? note "`downsample_along_axis`"
+    ::: toliman.math.downsample_along_axis
+
+??? note "`simulate_data`"
+    ::: toliman.math.simulate_data
+
+??? note "`pixel_response`"
+    ::: toliman.math.pixel_response
+
+??? note "`photon_noise`"
+    ::: toliman.math.photon_noise
+
+??? note "`latent_detector_noise`"
+    ::: toliman.math.latent_detector_noise
+
+??? note "`normalise`"
+    ::: toliman.math.normalise
+
+"""
+
 import jax.numpy as np
 import jax
 

@@ -1,3 +1,19 @@
+"""md
+## API
+??? note "`TolimanDetector`"
+    ::: toliman.toliman.TolimanDetector
+
+??? note "`TolimanOptics`"
+    ::: toliman.toliman.TolimanOptics
+
+??? note "`AlphaCentauri`"
+    ::: toliman.toliman.AlphaCentauri
+
+??? note "`Background`"
+    ::: toliman.toliman.Background
+
+"""
+
 import jax.numpy as np
 import jax
 import dLux as dl

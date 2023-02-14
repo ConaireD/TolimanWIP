@@ -1,3 +1,13 @@
+"""md
+## API
+??? note "`"contains_instance"`"
+    ::: toliman.collections."contains_instance"
+
+??? note "`"CollectionInterface"`"
+    ::: toliman.collections."CollectionInterface"
+
+"""
+
 import abc
 
 __author__ = "Jordan Dennis"
