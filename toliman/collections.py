@@ -1,4 +1,11 @@
 """md
+## Overview
+This file contains helpful functions for dealing with collections. You 
+will notice that I use `list` in the type annotations, although often 
+this can be relaxed to `iter`. This is of no significance to `python` and 
+any iterable collection may be used. The `CollectionInterface` is used
+to make it easier to deal with the optical systems defined in other files.
+
 ## API
 ??? note "`contains_instance`"
     ::: toliman.collections.contains_instance
