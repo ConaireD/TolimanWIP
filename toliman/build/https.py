@@ -1,4 +1,27 @@
 """md
+## Overview
+Unfortunately, the toliman forwards model is not completely self contained,
+since the datafiles need to be shared and it is inefficient to do so using 
+`git`. We automated this process so that it was easy for the user, writing 
+code to download the files from the interent. Unfortunately some of the 
+files are very large so it takes a long time to download them (slower or 
+faster depending on your connection). 
+
+A focus of the early forwards model development was ensuring that it was 
+rigorously tested so that later users could more easily extend and debug. 
+However, unit tests have to be faster and completely downloading all of
+the dependencies meant that the tests would take hours to run, rendering 
+them useless. As a result, for testing purposes this submodule also 
+provides functionality to download a single byte instead of an entire 
+file. This is mostly used for testing.
+
+!!! note
+    Good tests are repeatable i.e. deterministic. While we speant some time
+    making sure that the tests were fast, the internet is the interent and 
+    connections can fail. This means that the tests are not completely 
+    deterministic, but, if your connection is good, then they are effectively
+    deterministic.
+
 ## API
 ??? note "`get_https_stream`"
     ::: toliman.build.https.get_https_stream
