@@ -1,7 +1,7 @@
 """md
 ## API
-??? note "`"read_csv_to_jax_array"`"
-    ::: toliman.io."read_csv_to_jax_array"
+??? note "`read_csv_to_jax_array`"
+    ::: toliman.io.read_csv_to_jax_array
 
 """
 

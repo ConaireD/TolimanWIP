@@ -1,10 +1,10 @@
 """md
 ## API
-??? note "`"contains_instance"`"
-    ::: toliman.collections."contains_instance"
+??? note "`contains_instance`"
+    ::: toliman.collections.contains_instance
 
-??? note "`"CollectionInterface"`"
-    ::: toliman.collections."CollectionInterface"
+??? note "`CollectionInterface`"
+    ::: toliman.collections.CollectionInterface
 
 """
 
