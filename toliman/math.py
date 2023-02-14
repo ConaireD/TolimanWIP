@@ -1,4 +1,13 @@
 """md
+## Overview
+This module contains a number of general functions that are useful in the 
+context of the toliman forwards model. Both `downsample` functions can 
+be used with mismatched shapes, but to do so removes the appropriate 
+amount from the left hand side of the image. Because, both functions 
+may be used in a `jit`ed context, side-effects i.e. warnings and errors
+are not used. Therefore, it is up to the user to ensure that they are 
+used correctly in contexts where they are information destroying. 
+
 ## API
 ??? note "`downsample_square_grid`"
     ::: toliman.math.downsample_square_grid
