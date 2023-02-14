@@ -1,13 +1,3 @@
-"""md
-## API
-??? note `is_mask_installed`
-    ::: toliman.build.mask.is_mask_installed
-
-??? note `install_mask`
-    ::: toliman.build.mask.install_mask
-
-"""
-
 import os
 import toliman.build.paths as paths
 import toliman.build.https as https

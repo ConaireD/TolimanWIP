@@ -1,28 +1,3 @@
-"""md
-## API
-??? note `is_phoenix_installed`
-    ::: toliman.build.phoenix.is_phoenix_installed
-
-??? note `install_phoenix`
-    ::: toliman.build.phoenix.install_phoenix
-
-??? note `make_phoenix_dirs`
-    ::: toliman.build.phoenix.make_phoenix_dirs
-
-??? note `make_phoenix_spectra`
-    ::: toliman.build.phoenix.make_phoenix_spectra
-
-??? note `save_phoenix_spectra`
-    ::: toliman.build.phoenix.save_phoenix_spectra
-
-??? note `clip_phoenix_spectra`
-    ::: toliman.build.phoenix.clip_phoenix_spectra
-
-??? note `resample_phoenix_spectra`
-    ::: toliman.build.phoenix.resample_phoenix_spectra
-
-"""
-
 import os
 import toliman.build.paths as paths
 import toliman.build.https as https
