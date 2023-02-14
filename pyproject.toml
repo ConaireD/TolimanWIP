@@ -32,13 +32,12 @@ pytest-cov = "^4.0.0"
 
 
 [tool.poetry.group.docs.dependencies]
-pytkdocs = {version = ">=0.5.1", extras = ["numpy-style"]}
 mkdocs = "^1.4.2"
 mkdocs-simple-plugin = "2.1.2"
+mkdocstrings-python = "^0.8.3"
 mkdocs-same-dir = "^0.1.2"
 mkdocs-material = "^9.0.5"
 mkdocstrings = "^0.19.1"
-mkdocstrings-python-legacy = "^0.2.3"
 symspellpy = "^6.7.7"
 codespell = "^2.2.2"
 
