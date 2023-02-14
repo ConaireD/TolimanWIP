@@ -465,30 +465,51 @@ class TestTolimanDetector(object):
     @pytest.mark.xdist_group("2")
     @pytest.mark.software
     def test_constructor_when_jittered(self: object) -> None:
-        # Arrange/Act
+        """
+        Is jitter included on request?
+
+        Marks
+        -----
+        xdist_group: str
+            The named process to run the test on.
+        software: None
+            Tests an implementation detail not physics.
+        """
         detector: object = TolimanDetector(simulate_jitter=True)
         optics: list = detector.to_optics_list()
-
-        # Assert
         assert contains_instance(optics, ApplyJitter)
 
     @pytest.mark.xdist_group("3")
     @pytest.mark.software
     def test_constructor_when_not_jittered(self: object) -> None:
-        # Arrange/Act
+        """
+        Is jitter excluded when not requested?
+
+        Marks
+        -----
+        xdist_group: str
+            The named process to run the test on.
+        software: None
+            Tests an implementation detail not physics.
+        """
         detector: object = TolimanDetector(simulate_jitter=False)
         optics: list = detector.to_optics_list()
-
-        # Assert
         assert not contains_instance(optics, ApplyJitter)
 
     @pytest.mark.xdist_group("4")
     @pytest.mark.software
     def test_constructor_when_jitter_is_repeated(self: object) -> None:
-        # Arrange
-        jitter: object = ApplyJitter(2.0)
+        """
+        Does adding jitter twice raise an error?
 
-        # Act/Assert
+        Marks
+        -----
+        xdist_group: str
+            The named process to run the test on.
+        software: None
+            Tests an implementation detail not physics.
+        """
+        jitter: object = ApplyJitter(2.0)
         with pytest.raises(ValueError):
             detector: object = TolimanDetector(
                 simulate_jitter=True, extra_detector_layers=[jitter]
@@ -497,30 +518,51 @@ class TestTolimanDetector(object):
     @pytest.mark.xdist_group("1")
     @pytest.mark.software
     def test_constructor_when_saturated(self: object) -> None:
-        # Arrange/Act
+        """
+        Is saturation included when requested?
+
+        Marks
+        -----
+        xdist_group: str
+            The named process to run the test on.
+        software: None
+            Tests an implementation detail not physics.
+        """
         detector: object = TolimanDetector(simulate_saturation=True)
         optics: list = detector.to_optics_list()
-
-        # Assert
         assert contains_instance(optics, ApplySaturation)
 
     @pytest.mark.xdist_group("2")
     @pytest.mark.software
     def test_constructor_when_not_saturated(self: object) -> None:
-        # Arrange/Act
+        """
+        Is saturation excluded when not requested?
+
+        Marks
+        -----
+        xdist_group: str
+            The named process to run the test on.
+        software: None
+            Tests an implementation detail not physics.
+        """
         detector: object = TolimanDetector(simulate_saturation=False)
         optics: list = detector.to_optics_list()
-
-        # Assert
         assert not contains_instance(optics, ApplySaturation)
 
     @pytest.mark.xdist_group("3")
     @pytest.mark.software
     def test_constructor_when_saturation_is_repeated(self: object) -> None:
-        # Arrange
-        saturation: object = ApplySaturation(2)
+        """
+        Does repetition of saturation cause an error?
 
-        # Act/Assert
+        Marks
+        -----
+        xdist_group: str
+            The named process to run the test on.
+        software: None
+            Tests an implementation detail not physics.
+        """
+        saturation: object = ApplySaturation(2)
         with pytest.raises(ValueError):
             detector: object = TolimanDetector(
                 simulate_saturation=True, extra_detector_layers=[saturation]
@@ -529,30 +571,51 @@ class TestTolimanDetector(object):
     @pytest.mark.xdist_group("4")
     @pytest.mark.software
     def test_constructor_when_pixels_respond(self: object) -> None:
-        # Arrange/Act
+        """
+        Is pixel response included on request?
+
+        Marks
+        -----
+        xdist_group: str
+            The named process to run the test on.
+        software: None
+            Tests an implementation detail not physics.
+        """
         detector: object = TolimanDetector(simulate_pixel_response=True)
         optics: list = detector.to_optics_list()
-
-        # Assert
         assert contains_instance(optics, ApplyPixelResponse)
 
     @pytest.mark.xdist_group("1")
     @pytest.mark.software
     def test_constructor_when_pixels_dont_respond(self: object) -> None:
-        # Arrange/Act
+        """
+        Is pixel response excluded on request.
+
+        Marks
+        -----
+        xdist_group: str
+            The named process to run the test on.
+        software: None
+            Tests an implementation detail not physics.
+        """
         detector: object = TolimanDetector(simulate_pixel_response=False)
         optics: list = detector.to_optics_list()
-
-        # Assert
         assert not contains_instance(optics, ApplyPixelResponse)
 
     @pytest.mark.xdist_group("2")
     @pytest.mark.software
     def test_constructor_when_pixel_response_is_repeated(self: object) -> None:
-        # Arrange
-        pixel_response: object = ApplySaturation(2)
+        """
+        Does repetition of pixel response raise and error?
 
-        # Act/Assert
+        Marks
+        -----
+        xdist_group: str
+            The named process to run the test on.
+        software: None
+            Tests an implementation detail not physics.
+        """
+        pixel_response: object = ApplySaturation(2)
         with pytest.raises(ValueError):
             detector: object = TolimanDetector(
                 simulate_pixel_response=True, extra_detector_layers=[pixel_response]
@@ -561,11 +624,18 @@ class TestTolimanDetector(object):
     @pytest.mark.xdist_group("3")
     @pytest.mark.software
     def test_constructor_when_correct(self: object) -> None:
-        # Arrange/Act
+        """
+        Does the default constructor work?
+
+        Marks
+        -----
+        xdist_group: str
+            The named process to run the test on.
+        software: None
+            Tests an implementation detail not physics.
+        """
         detector: object = TolimanDetector()
         optics: list = detector.to_optics_list()
-
-        # Assert
         assert contains_instance(optics, ApplyJitter)
         assert contains_instance(optics, ApplySaturation)
         assert contains_instance(optics, ApplyPixelResponse)
@@ -573,7 +643,16 @@ class TestTolimanDetector(object):
     @pytest.mark.xdist_group("4")
     @pytest.mark.software
     def test_constructor_when_empty(self: object) -> None:
-        # Arrange/Act/Assert
+        """
+        Does an empty detector raise an error?
+
+        Marks
+        -----
+        xdist_group: str
+            The named process to run the test on.
+        software: None
+            Tests an implementation detail not physics.
+        """
         with pytest.raises(ValueError):
             detector: object = TolimanDetector(
                 simulate_jitter=False,
@@ -584,125 +663,185 @@ class TestTolimanDetector(object):
     @pytest.mark.xdist_group("1")
     @pytest.mark.software
     def test_insert_when_type_is_incorrect(self: object) -> None:
-        # Arrange
-        detector: object = TolimanDetector()
+        """
+        Does insert only work for DetectorLayers?
 
-        # Act/Assert
+        Marks
+        -----
+        xdist_group: str
+            The named process to run the test on.
+        software: None
+            Tests an implementation detail not physics.
+        """
+        detector: object = TolimanDetector()
         with pytest.raises(ValueError):
             detector.insert(0, 1)
 
     @pytest.mark.xdist_group("2")
     @pytest.mark.software
     def test_insert_when_index_is_too_long(self: object) -> None:
-        # Arrange
+        """
+        Does insert fail beyond the list?
+
+        Marks
+        -----
+        xdist_group: str
+            The named process to run the test on.
+        software: None
+            Tests an implementation detail not physics.
+        """
         detector: object = TolimanDetector()
         optics: object = detector.to_optics_list()
         length: int = len(optics)
         too_long: int = length + 1
         element_to_insert: object = AddConstant(1.0)
-
-        # Act/Assert
         with pytest.raises(ValueError):
             detector.insert(too_long, element_to_insert)
 
     @pytest.mark.xdist_group("3")
     @pytest.mark.software
     def test_insert_when_index_is_negative(self: object) -> None:
-        # Arrange
+        """
+        Does insert fail on negative indices?
+
+        Marks
+        -----
+        xdist_group: str
+            The named process to run the test on.
+        software: None
+            Tests an implementation detail not physics.
+        """
         detector: object = TolimanDetector()
         element_to_insert: object = AddConstant(1.0)
-
-        # Act/Assert
         with pytest.raises(ValueError):
             detector.insert(-1, element_to_insert)
 
     @pytest.mark.xdist_group("4")
     @pytest.mark.software
     def test_insert_when_correct(self: object) -> None:
-        # Arrange
+        """
+        Does insert work when the preconditions are met?
+
+        Marks
+        -----
+        xdist_group: str
+            The named process to run the test on.
+        software: None
+            Tests an implementation detail not physics.
+        """
         detector: object = TolimanDetector()
         element_to_insert: object = AddConstant(1.0)
-
-        # Act
         detector: object = detector.insert(element_to_insert, 0)
         optics: list = detector.to_optics_list()
-
-        # Assert
         assert contains_instance(optics, AddConstant)
 
     @pytest.mark.xdist_group("1")
     @pytest.mark.software
     def test_remove_when_index_is_too_long(self: object) -> None:
-        # Arrange
+        """
+        Does remove fail beyond the list?
+
+        Marks
+        -----
+        xdist_group: str
+            The named process to run the test on.
+        software: None
+            Tests an implementation detail not physics.
+        """
         detector: object = TolimanDetector()
         optics: list = detector.to_optics_list()
         length: int = len(optics)
         too_long: int = length + 1
-
-        # Act/Assert
         with pytest.raises(ValueError):
             detector.remove(too_long)
 
     @pytest.mark.xdist_group("2")
     @pytest.mark.software
     def test_remove_when_index_is_negative(self: object) -> None:
-        # Arrange
-        detector: object = TolimanDetector()
+        """
+        Does remove fail when the index is negative?
 
-        # Act
+        Marks
+        -----
+        xdist_group: str
+            The named process to run the test on.
+        software: None
+            Tests an implementation detail not physics.
+        """
+        detector: object = TolimanDetector()
         with pytest.raises(ValueError):
             detector.remove(-1)
 
     @pytest.mark.xdist_group("3")
     @pytest.mark.software
     def test_remove_when_correct(self: object) -> None:
-        # Arrange
+        """
+        Does remove succeed when the pre-conditions are met?
+    
+        Marks
+        -----
+        xdist_group: str
+            The named process to run the test on.
+        software: None
+            Tests an implementation detail not physics.
+        """
         detector: object = TolimanDetector()
-
-        # Act
         detector: object = detector.remove(0)
         optics: list = detector.to_optics_list()
-
-        # Assert
         assert not contains_instance(optics, ApplyJitter)
 
     @pytest.mark.xdist_group("4")
     @pytest.mark.software
     def test_append_when_type_is_incorrect(self: object) -> None:
-        # Arrange
-        detector: object = TolimanDetector()
+        """
+        Does append only work for DetectorLayers?
 
-        # Act/Assert
+        Marks
+        -----
+        xdist_group: str
+            The named process to run the test on.
+        software: None
+            Tests an implementation detail not physics.
+        """
+        detector: object = TolimanDetector()
         with pytest.raises(ValueError):
             detector.append(1)
 
     @pytest.mark.xdist_group("1")
     @pytest.mark.software
     def test_append_when_correct(self: object) -> None:
-        # Arrange
+        """
+        Does append work when the preconditions are met?
+
+        Marks
+        -----
+        xdist_group: str
+            The named process to run the test on.
+        software: None
+            Tests an implementation detail not physics.
+        """
         detector: object = TolimanDetector()
         element_to_insert: object = AddConstant(2.0)
-
-        # Act
         new_detector: object = detector.append(element_to_insert)
         new_optics: list = new_detector.to_optics_list()
-
-        # Assert
         assert contains_instance(new_optics, AddConstant)
 
     @pytest.mark.xdist_group("2")
     @pytest.mark.software
     def test_pop_when_correct(self: object) -> None:
-        # Arrange
-        detector: object = TolimanDetector()
+        """
+        Does pop work when the pre-conditions are met?
 
-        # Act
+        Marks
+        -----
+        xdist_group: str
+            The named process to run the test on.
+        software: None
+            Tests an implementation detail not physics.
+        """
+        detector: object = TolimanDetector()
         new_detector: object = detector.pop()
         new_optics: list = new_detector.to_optics_list()
-
-        # Assert
-        # TODO: Check that I actually have this correct and upgrade
-        #       to make it more programmatic.
         assert not contains_instance(new_optics, ApplyPixelResponse)
 
 
