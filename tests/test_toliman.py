@@ -849,17 +849,18 @@ class TestAlphaCentauri(object):
     @pytest.mark.xdist_group("3")
     @pytest.mark.software
     def test_constructor_when_not_given_spectrum(self: object) -> None:
-        # Arrange
+        """
+        Does AlphaCentauri create a default spectrum?
+
+        Marks
+        -----
+        xdist_group: str
+            The named process to run the test on.
+        software: None
+            Tests an implementation detail not physics.
+        """
         alpha_centauri: object = AlphaCentauri()
-
-        # Act/Assert
         assert isinstance(alpha_centauri.spectrum, CombinedSpectrum)
-
-#    @pytest.mark.software
-#    def test_constructor_when_csv_empty(self: object) -> None:
-#
-#    @pytest.mark.physical
-#    def test_spectrum_in_filter_range(self: object) -> None:
 
 
 # TODO: Make sure that the stars are correctly thinned randomly.
