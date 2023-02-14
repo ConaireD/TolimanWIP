@@ -1,4 +1,26 @@
 """md
+## Overview 
+This file, amongst everything else contains the core optics of the `toliman` 
+forwards model. The basic concept is that each component of the model is 
+a specialisation (this is a type of inheritance) of a more general component.
+Deciding what level of detail to include was very arbitrary. In some senses,
+jut adding the pupil and the mask to the optics made the most sense as it 
+gave the user the freedom to add other layers as they saw fit. But, in the 
+end I decided that the simplest API was probably the best and so tried to 
+include as much detail as possible. This is something that might change as
+the model is used. The current model of the detector is a placeholder, since 
+the actual physical detector has not been selected. As a result we cannot 
+work with real values yet or include too much detail. 
+
+There is a lot that can still be done with the forwards model, such as Fresnel
+calculations, secondary mirror polish and sidelobes. Unfortunately, I never
+got a chance to look into the sidelobes although it was high on my priority 
+list. The problem is that acurrately simulating the diffraction grating 
+requires very high sampling. In order to reduce the computation cost it was 
+proposed that we avoid as many layers as possible when simulating the sidelobes
+including only the aberrations. This then leads to complexity when considering 
+how to make sure that the aberrations are shared between the models. 
+
 ## API
 ??? note "`TolimanDetector`"
     ::: toliman.toliman.TolimanDetector
@@ -11,7 +33,6 @@
 
 ??? note "`Background`"
     ::: toliman.toliman.Background
-
 """
 
 import jax.numpy as np

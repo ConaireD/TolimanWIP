@@ -17,15 +17,14 @@ changes to the constants need to be made from within `python` using the
     ::: toliman.constants.set_const
 
 ??? note "`is_const_defined`"
-    ::: toliman.constants.is_constant_defined
+    ::: toliman.constants.is_const_defined
 
 ??? note "`get_const_as_type`"
     ::: toliman.constants.get_const_as_type
 
 ## Constants
--------------------------------------------------------------------------------------------------
 | Name                                  | Value                         | Type      | Units     |
--------------------------------------------------------------------------------------------------
+|---------------------------------------|-------------------------------|-----------|-----------|
 | `DEFAULT_PUPIL_NPIX`                  | 256                           | `int`     | no.       |
 | `DEFAULT_DETECTOR_NPIX`               | 128                           | `int`     | no.       |
 | `DEFAULT_NUMBER_OF_ZERNIKES`          | 5                             | `int`     | no.       |
@@ -54,8 +53,8 @@ changes to the constants need to be made from within `python` using the
 | `FILTER_MIN_WAVELENGTH`               | 595e-09                       | `float`   | meters    |
 | `FILTER_MAX_WAVELENGTH`               | 695e-09                       | `float`   | meters    |
 | `FILTER_DEFAULT_RES`                  | 24                            | `int`     | no.       |
--------------------------------------------------------------------------------------------------
 """
+
 import os
 import dLux as dl
 import jax.numpy as np
