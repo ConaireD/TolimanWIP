@@ -863,28 +863,35 @@ class TestAlphaCentauri(object):
         assert isinstance(alpha_centauri.spectrum, CombinedSpectrum)
 
 
-# TODO: Make sure that the stars are correctly thinned randomly.
 class TestBackground(object):
     @pytest.mark.xdist_group("4")
     @pytest.mark.software
     def test_constructor_when_all_used(self: object) -> None:
-        # Arrange/Act
+        """
+        Does the constructor generate a high resolution backround?
+
+        Marks
+        -----
+        xdist_group: str
+            The named process to run the test on.
+        software: None
+            Tests an implementation detail not physics.
+        """
         background: object = Background()
-
-        # TODO: Get the length of the csv and check against that.
-
-        # Assert
         assert background.flux.size > 10
-
-#    @pytest.mark.software
-#    def test_constructor_when_csv_empty(self: object) -> None:
-#        # TODO: Make an empty csv and read it in. 
 
     @pytest.mark.xdist_group("1")
     @pytest.mark.software
     def test_constructor_when_thinned(self: object) -> None:
-        # Arrange/Act
-        background: object = Background(number_of_bg_stars=10)
+        """
+        Is the background appropriately thinned?
 
-        # Assert
+        Marks
+        -----
+        xdist_group: str
+            The named process to run the test on.
+        software: None
+            Tests an implementation detail not physics.
+        """
+        background: object = Background(number_of_bg_stars=10)
         assert background.flux.size == 10
