@@ -62,20 +62,27 @@ def load_background_stars(ra: float, dec: float, rad: float) -> float:
     causes things to break when recentering. This is not checked 
     programmatically, but is a painful experience.
 
-    Args:
-        ra (float): The right ascension of section of sky to survey (deg).
-        dec (float): The declination of the section of sky to survey (deg).
-        rad (float): The radius of the conical region to survey (deg)
+    Parameters
+    ----------
+    ra: float, deg 
+        The right ascension of section of sky to survey.
+    dec: float, deg 
+        The declination of the section of sky to survey.
+    rad: float, deg 
+        The radius of the conical region to survey.
 
     Returns
-        float: A sample of positions (ra, dec), and fluxes of a preselected 
-            background region of sky. The convention is RA along 0, DEC 
-            along 1 and FLUX along 2.
+    -------
+    background: float 
+        A sample of positions (ra, dec), and fluxes of a preselected 
+        background region of sky. The convention is RA along 0, DEC 
+        along 1 and FLUX along 2.
 
-    Example:
-        ```python 
-        >>> load_background_stars(3.0, 3.0, 2.0)
-        ```
+    Examples
+    --------
+    ```python 
+    >>> load_background_stars(3.0, 3.0, 2.0)
+    ```
     """
     if ra <= rad:
         warnings.warn("`ra <= rad`. Coordinate wrapping may occur.")
