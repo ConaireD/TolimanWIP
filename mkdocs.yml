@@ -4,7 +4,12 @@ docs_dir: .
 plugins:
   - search
   - same-dir
-  - simple
+  - simple:
+      include_folders: 
+        - toliman
+        - examples
+      ignore_folders:
+        - tests
   - mkdocstrings:
       default_handler: python
       handlers:
