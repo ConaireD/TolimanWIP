@@ -62,9 +62,9 @@ import warnings
 
 __author__: str = "Jordan Dennis"
 __all__: list = [
-    set_const,
-    is_const_defined,
-    get_const_as_type,
+    "set_const",
+    "is_const_defined",
+    "get_const_as_type",
 ]
 
 def set_const(const: str, value: object) -> None:
@@ -165,3 +165,4 @@ set_const("ALPHA_CEN_B_SURFACE_GRAV", 4.37)
 set_const("FILTER_MIN_WAVELENGTH", 595e-09)
 set_const("FILTER_MAX_WAVELENGTH", 695e-09)
 set_const("FILTER_DEFAULT_RES", 24)
+set_const("BACKGROUND_STAR_SPEC_RES", 2)
