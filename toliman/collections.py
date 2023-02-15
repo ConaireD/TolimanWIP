@@ -1,17 +1,34 @@
+"""md
+## Overview
+This file contains helpful functions for dealing with collections. You 
+will notice that I use `list` in the type annotations, although often 
+this can be relaxed to `iter`. This is of no significance to `python` and 
+any iterable collection may be used. The `CollectionInterface` is used
+to make it easier to deal with the optical systems defined in other files.
+
+## API
+??? note "`contains_instance`"
+    ::: toliman.collections.contains_instance
+
+??? note "`CollectionInterface`"
+    ::: toliman.collections.CollectionInterface
+
+"""
+
 import abc
 
 __author__ = "Jordan Dennis"
 __all__ = ["contains_instance", "CollectionInterface"]
 
-def contains_instance(_list: list, _type: type) -> bool:
+def contains_instance(collection: list, instance_of: type) -> bool:
     """
     Check to see if a list constains an element of a certain type.
 
     Parameters
     ----------
-    _list: list
+    collection: list
         The list to search.
-    _type: type
+    instance_of: type
         The type to check for.
 
     Returns
@@ -19,9 +36,9 @@ def contains_instance(_list: list, _type: type) -> bool:
     contains: bool
         True if _type was found else False.
     """
-    if _list:
-        for _elem in _list:
-            if isinstance(_elem, _type):
+    if collection:
+        for element in collection:
+            if isinstance(element, instance_of):
                 return True
     return False
 

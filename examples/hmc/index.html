@@ -1,0 +1,964 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../../LICENSE/">
+      
+      
+        <link rel="next" href="../../toliman/collections/">
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.0.12">
+    
+    
+      
+        <title>Hmc - TOLIMAN</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.0d440cfe.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.2505c338.min.css">
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="light-blue">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#hamiltonian-markov-chain-monte-carlo-hmc" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="TOLIMAN" class="md-header__button md-logo" aria-label="TOLIMAN" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            TOLIMAN
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Hmc
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="TOLIMAN" class="md-nav__button md-logo" aria-label="TOLIMAN" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    TOLIMAN
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTRIBUTING/" class="md-nav__link">
+        CONTRIBUTING
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../INSTALLATION/" class="md-nav__link">
+        INSTALLATION
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../LICENSE/" class="md-nav__link">
+        LICENSE
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+          Examples
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+        <label class="md-nav__title" for="__nav_5">
+          <span class="md-nav__icon md-icon"></span>
+          Examples
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Hmc
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Hmc
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#hamiltonian-markov-chain-monte-carlo-hmc" class="md-nav__link">
+    Hamiltonian Markov-Chain-Monte-Carlo (HMC)
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+          Toliman
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_6">
+          <span class="md-nav__icon md-icon"></span>
+          Toliman
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../toliman/collections/" class="md-nav__link">
+        Collections
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../toliman/constants/" class="md-nav__link">
+        Constants
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../toliman/io/" class="md-nav__link">
+        Io
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../toliman/math/" class="md-nav__link">
+        Math
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../toliman/toliman/" class="md-nav__link">
+        Toliman
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_6" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_6_6" id="__nav_6_6_label" tabindex="0">
+          Build
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_6_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_6_6">
+          <span class="md-nav__icon md-icon"></span>
+          Build
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../toliman/build/background/" class="md-nav__link">
+        Background
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../toliman/build/build/" class="md-nav__link">
+        Build
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../toliman/build/https/" class="md-nav__link">
+        Https
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../toliman/build/mask/" class="md-nav__link">
+        Mask
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../toliman/build/paths/" class="md-nav__link">
+        Paths
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../toliman/build/phoenix/" class="md-nav__link">
+        Phoenix
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#hamiltonian-markov-chain-monte-carlo-hmc" class="md-nav__link">
+    Hamiltonian Markov-Chain-Monte-Carlo (HMC)
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+  <h1>Hmc</h1>
+
+<h2 id="hamiltonian-markov-chain-monte-carlo-hmc">Hamiltonian Markov-Chain-Monte-Carlo (HMC)</h2>
+<p>In this example, we use the <code>toliman</code> forwards model to learn the posterior 
+distributions of some of the parameters of the Alpha Centauri pair. The example,
+neglects aberrations and other such sources of error since it was not 
+feesible to run more complex simulations on a standard laptop. </p>
+<p>The first thing that you might notice is that we use a lot of packages. 
+Firstly, its not as bad as it looks as we import submodules from each 
+package under their own names. This is an insignificant detail and we 
+really don't care how you chose to do your imports.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">toliman</span>
+<span class="kn">import</span> <span class="nn">toliman.math</span> <span class="k">as</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">toliman.constants</span> <span class="k">as</span> <span class="nn">const</span>
+<span class="kn">import</span> <span class="nn">jax</span>
+<span class="kn">import</span> <span class="nn">jax.numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">jax.random</span> <span class="k">as</span> <span class="nn">jr</span>
+<span class="kn">import</span> <span class="nn">jax.lax</span> <span class="k">as</span> <span class="nn">jl</span>
+<span class="kn">import</span> <span class="nn">matplotlib</span> <span class="k">as</span> <span class="nn">mpl</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpyro</span> <span class="k">as</span> <span class="nn">npy</span>
+<span class="kn">import</span> <span class="nn">numpyro.distributions</span> <span class="k">as</span> <span class="nn">dist</span>
+<span class="kn">import</span> <span class="nn">dLux</span> 
+<span class="kn">import</span> <span class="nn">equinox</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">chainconsumer</span> <span class="k">as</span> <span class="nn">cc</span>
+</code></pre></div>
+<p>Let's adjust some of the global <code>matplotlib</code> parameters. We want to use
+LaTeX to render our axis ticks and titles so we will set <code>text.usetex</code> to 
+<code>True</code>. We also want large titles so we will increase <code>axes.titlesize</code>.
+There is a huge list of parameters that can be set customising most of the 
+aspects of a plot. These are just the ones we have chosen.</p>
+<div class="highlight"><pre><span></span><code><span class="n">mpl</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;text.usetex&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">mpl</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;axes.titlesize&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">20</span>
+<span class="n">mpl</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;image.cmap&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;inferno&quot;</span>
+</code></pre></div>
+<p>The next line simply makes sure that the code is running in <code>TOLIMAN_HOME</code>.
+This is something that you will need to do to make sure that toliman can 
+find the necessary data files. It shouldn't be too painful. </p>
+<p><code>os.chdir</code> stands for <code>change_dir</code>, but for legacy reasons a lot of the 
+standard library doesn't use modern naming conventions. This is the function 
+that changes the working directory. I have programatically generated 
+<code>TOLIMAN_HOME</code> from the current directory (<code>os.getcwd</code>), but you could 
+just retrieve the constant. </p>
+<div class="highlight"><pre><span></span><code><span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s2">&quot;toliman&quot;</span><span class="p">)[:</span><span class="mi">2</span><span class="p">]))</span>
+</code></pre></div>
+<p>Five lines and we have generated the forwards model. We are using mostly 
+the default settings so no aberrations. We have set the pupil to be static 
+since it is unlikely to be a major source of error/noise that we need to 
+account for and static apertures are much faster. </p>
+<p>As I described in the overview for <code>toliman/toliman.py</code>, the default 
+detector is currently a stub since a physical detector has not yet been 
+selected. We are just using the default noise sources, which are jitter,
+saturation and pixel responses. </p>
+<p>We are also accounting for some background stars in our simulation although 
+they are very faint. The main concern with the background stars is that the 
+sidelobes will obscure neighbouring central PSFs. Unfortunately, this suspicion 
+is yet to be confirmed or refuted. The model is linear with the number of 
+stars so be careful not to simulate too many. In my case five was doable. </p>
+<p>There is a careful tradeoff to be had between the number of stars, which 
+are simulated mono-chromatically and the resolution of the Alpha Centauri 
+spectrum. The model is linear with respect to both parameters, so you will 
+find that when operating near the memory limit of your machine, if you 
+increase one, you will need to decrease the other. </p>
+<div class="highlight"><pre><span></span><code><span class="n">model</span><span class="p">:</span> <span class="nb">object</span> <span class="o">=</span> <span class="n">dLux</span><span class="o">.</span><span class="n">Instrument</span><span class="p">(</span>
+    <span class="n">optics</span> <span class="o">=</span> <span class="n">toliman</span><span class="o">.</span><span class="n">TolimanOptics</span><span class="p">(</span><span class="n">operate_in_static_mode</span> <span class="o">=</span> <span class="kc">True</span><span class="p">),</span>
+    <span class="n">detector</span> <span class="o">=</span> <span class="n">toliman</span><span class="o">.</span><span class="n">TolimanDetector</span><span class="p">(),</span>
+    <span class="n">sources</span> <span class="o">=</span> <span class="p">[</span><span class="n">toliman</span><span class="o">.</span><span class="n">AlphaCentauri</span><span class="p">(),</span> <span class="n">toliman</span><span class="o">.</span><span class="n">Background</span><span class="p">(</span><span class="n">number_of_bg_stars</span> <span class="o">=</span> <span class="mi">5</span><span class="p">)]</span>
+<span class="p">)</span>
+</code></pre></div>
+<p>Let's generate some pretend data and try and recover the parameters of 
+Alpha Centauri. The <code>toliman.math</code> module provides a <code>simulate_data</code> 
+function, which applies poisson noise and gaussian white noise to the 
+data. The magnitude of the gaussian noise is controlled by the scale 
+parameter. For realistic values I would recommend representing it as 
+a fraction of the maximum or the norm as I have done here. </p>
+<p>You'll notice that we then <em>flatten</em> the data. This is so that it plays 
+nicely with <code>numpyro</code>. <code>numpyro</code> has by far the worst API I can imagine
+and it consistently manages to confuse my stupid ass. This is of course 
+a personal rant, since <code>numpyro</code> is more targetted torwards experts and 
+statisticians for whom this is bread and butter.</p>
+<div class="highlight"><pre><span></span><code><span class="n">psf</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">model</span><span class="p">()</span>
+<span class="n">data</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">simulate_data</span><span class="p">(</span><span class="n">psf</span><span class="p">,</span> <span class="mf">0.001</span><span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">psf</span><span class="p">))</span>
+<span class="n">fdata</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+</code></pre></div>
+<p>Let's examine our glorious PSF, pretend data and the residuals. If you 
+haven't used <code>matplotlib</code> before then this is a good opportunity to 
+learn a few tricks. I've recorded an explanation of what is happening 
+in the admonition (collapsible window).</p>
+<details class="note">
+<summary>Note</summary>
+<p><code>matplotlib</code> is a very ... complex package. There are about a million 
+ways to do anything, generally trading simplicity for control. A big 
+reason for this is that <code>matplotlib</code> tends to expose certain functionality 
+at multiple levels in the API. For example, <code>plt.subplots</code> vs 
+<code>figure.subplots</code>. I do not claim to be a <code>matplotlib</code> guru but I 
+have find interacting with <code>matplotlib</code> as hierachically as possible 
+tends to produce the best results. </p>
+<p>First we generate a <code>figure</code> using <code>plt.figure</code>. Since, I want to have 
+two rows of figures with two in the top row and a single, central figure 
+in the second row I will create divide the figure into two subfigures 
+stacked atop one another using <code>figure.subfigures(2, 1)</code>. To get the 
+images I want to display to have the right size and dimensions I can 
+add axes to the subfigures. I do this using the <code>figure.add_axes</code>
+command. </p>
+<p>I like to create a specific set of axes for the colobar, as otherwise it 
+can be quite hard to get it to sit correctly with respect to the figure. 
+I create a tall, narrow set of axes for this purpose and sit it flush 
+against the axes for the figure. I then direct <code>matplotlib</code> to draw the 
+colobar on these axes. </p>
+</details>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">plot_image_with_cbar</span><span class="p">(</span>
+        <span class="n">figure</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
+        <span class="n">image</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> 
+        <span class="n">corner</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> 
+        <span class="n">width</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> 
+        <span class="n">height</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">object</span><span class="p">:</span>
+    <span class="n">x</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">corner</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">y</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">corner</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">im_axes</span><span class="p">:</span> <span class="nb">object</span> <span class="o">=</span> <span class="n">figure</span><span class="o">.</span><span class="n">add_axes</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">])</span>
+    <span class="n">cbar_ax</span><span class="p">:</span> <span class="nb">object</span> <span class="o">=</span> <span class="n">figure</span><span class="o">.</span><span class="n">add_axes</span><span class="p">([</span><span class="n">x</span> <span class="o">+</span> <span class="n">width</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">,</span> <span class="n">height</span><span class="p">])</span>
+    <span class="n">im_cmap</span><span class="p">:</span> <span class="nb">object</span> <span class="o">=</span> <span class="n">im_axes</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+    <span class="n">im_cbar</span><span class="p">:</span> <span class="nb">object</span> <span class="o">=</span> <span class="n">figure</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">im_cmap</span><span class="p">,</span> <span class="n">cax</span> <span class="o">=</span> <span class="n">cbar_ax</span><span class="p">)</span>
+    <span class="n">im_ticks</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="n">im_axes</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">&quot;off&quot;</span><span class="p">)</span>
+    <span class="n">im_frame</span><span class="p">:</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">im_axes</span><span class="o">.</span><span class="n">set_frame_on</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">im_title</span><span class="p">:</span> <span class="nb">object</span> <span class="o">=</span> <span class="n">im_axes</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">title</span><span class="p">)</span> 
+    <span class="k">return</span> <span class="n">figure</span>
+
+<span class="n">size</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">5.0</span>
+<span class="n">figure</span><span class="p">:</span> <span class="nb">object</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">size</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">size</span><span class="p">))</span>
+<span class="n">subfigures</span><span class="p">:</span> <span class="nb">object</span> <span class="o">=</span> <span class="n">figure</span><span class="o">.</span><span class="n">subfigures</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="n">psf_fig</span><span class="p">:</span> <span class="nb">object</span> <span class="o">=</span> <span class="n">plot_image_with_cbar</span><span class="p">(</span>
+    <span class="n">subfigures</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">cbrt</span><span class="p">(</span><span class="n">psf</span><span class="p">),</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">],</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="s2">&quot;Model&quot;</span>
+<span class="p">)</span>
+<span class="n">psf_fig</span><span class="p">:</span> <span class="nb">object</span> <span class="o">=</span> <span class="n">plot_image_with_cbar</span><span class="p">(</span>
+    <span class="n">psf_fig</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">cbrt</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="p">[</span><span class="mf">0.55</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">],</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="s2">&quot;Data&quot;</span>
+<span class="p">)</span>
+<span class="n">res_fig</span><span class="p">:</span> <span class="nb">object</span> <span class="o">=</span> <span class="n">plot_image_with_cbar</span><span class="p">(</span>
+    <span class="n">subfigures</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">cbrt</span><span class="p">(</span><span class="n">psf</span> <span class="o">-</span> <span class="n">data</span><span class="p">),</span> <span class="p">[</span><span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">],</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="s2">&quot;Residuals&quot;</span>
+<span class="p">)</span>
+</code></pre></div>
+<p><img alt="Figure 1: The PSF." src="../assets/psf.png" /></p>
+<p>Now that we know what the model and data look like let's do some HMC. 
+You may recall that earlier I made a reference to flattening the data 
+for <code>numpyro</code>. We did this because <code>numpyro</code> supports a very unusual form
+of loop syntax, presumably so that it was easier to interact with the 
+<code>jax</code> vectorisation magic in the <code>google</code> dimension. Simply said, when you 
+want to make an observation over a set, for example the pixels in an image
+you must do so within the <code>plate</code> context manager. </p>
+<p>A wiser individual than I will link the name <code>plate</code> to a PGM, which presumably 
+stands for something; I wouldn't know. I simply think of it as a vectorised 
+for loop allowing the data output to be non-scalar. Thus one deals with the 
+problem of <code>jax.grad</code> requiring scalar outputs. There are of course other 
+autodiff functions that allow non-scalar outputs, but this is a solution that 
+works.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>I feal required to tell you that my explanation is largely speculative. 
+I haven't really analysed the <code>numpyro</code> source code in a large amount 
+of detail. Like most large codebases, seeing how all the pieces fit 
+together is very difficult.</p>
+</div>
+<p>Let's now examine the sampling in more detail. For each posterior that 
+we want to learn we <code>sample</code> the corresponding parameter, based on some 
+prior. In my example I use ignorant priors, which are uniform or uniform 
+in log space for magnitude parameters. A strange and unfriendly feature 
+of <code>numpyro</code> is that it likes to sample near 1. It always seems to be best
+to indulge <code>numpyro</code> and transform a value sampled around 1 into the actual
+value using the <code>numpyo.deterministic</code> function.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>I have no idea why <code>numpyro</code> is like this. I wish it wasn't. The best 
+justification that I can give, is that it ensures numerical stability.</p>
+</div>
+<p>You will notice that the first argument to the so called <code>numpyro.primitives</code>
+is a string, in our case just a repeat of the variable name. Once again this 
+has to do with how <code>numpyro</code> handles the information, associating these names 
+with the array of samples. It would make more sense (possibly) to use names 
+that you wish to plot for these parameters, saving you some time later. </p>
+<p>The penultimate line in the <code>hmc_model</code> function is where the magic happens:
+Louis's one line <code>model.update_and_model</code> method. This takes the values we 
+sampled from our prior and injects them into the model, before running it 
+to generate a PSF. We pass the <code>flatten=True</code> argument so that the shape 
+of the PSF matches the flattened data. We also have to tell the model what 
+parameters to update and what values to update them to. This is achieved 
+through the twin lists: paths and values. This taps into the <code>zodiax</code> interface
+for pytrees so if you are confused look there.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>We could of course flatten the PSF manually using
+<code>model.update_and_model(*args).flatten()</code>, but it is a common enough 
+occurance that it was included as an argument. </p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You may notice that before comparing the model to the data we use it to 
+generate a poisson sample. This is because photon noise is <strong>likely</strong> to 
+be the largest noise source. </p>
+</div>
+<div class="highlight"><pre><span></span><code><span class="n">true_pixel_scale</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">const</span><span class="o">.</span><span class="n">get_const_as_type</span><span class="p">(</span><span class="s2">&quot;TOLIMAN_DETECTOR_PIXEL_SIZE&quot;</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
+<span class="n">true_separation</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">const</span><span class="o">.</span><span class="n">get_const_as_type</span><span class="p">(</span><span class="s2">&quot;ALPHA_CENTAURI_SEPARATION&quot;</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">hmc_model</span><span class="p">(</span><span class="n">model</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">position_in_pixels</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">npy</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span>
+        <span class="s2">&quot;position_in_pixels&quot;</span><span class="p">,</span> 
+        <span class="n">dist</span><span class="o">.</span><span class="n">Uniform</span><span class="p">(</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> 
+        <span class="n">sample_shape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="p">,)</span>
+    <span class="p">)</span> 
+    <span class="n">position</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">npy</span><span class="o">.</span><span class="n">deterministic</span><span class="p">(</span>
+        <span class="s2">&quot;position&quot;</span><span class="p">,</span> 
+        <span class="n">position_in_pixels</span> <span class="o">*</span> <span class="n">true_pixel_scale</span>
+    <span class="p">)</span>
+
+    <span class="n">logarithmic_separation</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">npy</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span>
+        <span class="s2">&quot;logarithmic_separation&quot;</span><span class="p">,</span> 
+        <span class="n">dist</span><span class="o">.</span><span class="n">Uniform</span><span class="p">(</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="o">-</span><span class="mi">4</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">separation</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">npy</span><span class="o">.</span><span class="n">deterministic</span><span class="p">(</span>
+        <span class="s2">&quot;separation&quot;</span><span class="p">,</span> 
+        <span class="mi">10</span> <span class="o">**</span> <span class="p">(</span><span class="n">logarithmic_separation</span><span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="n">logarithmic_flux</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">npy</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s2">&quot;logarithmic_flux&quot;</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Uniform</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+    <span class="n">flux</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">npy</span><span class="o">.</span><span class="n">deterministic</span><span class="p">(</span><span class="s2">&quot;flux&quot;</span><span class="p">,</span> <span class="mi">10</span> <span class="o">**</span> <span class="n">logarithmic_flux</span><span class="p">)</span>
+
+    <span class="n">logarithmic_contrast</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">npy</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s2">&quot;logarithmic_contrast&quot;</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Uniform</span><span class="p">(</span><span class="o">-</span><span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+    <span class="n">contrast</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">npy</span><span class="o">.</span><span class="n">deterministic</span><span class="p">(</span><span class="s2">&quot;contrast&quot;</span><span class="p">,</span> <span class="mi">10</span> <span class="o">**</span> <span class="n">logarithmic_contrast</span><span class="p">)</span>
+
+    <span class="n">paths</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;BinarySource.position&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;BinarySource.separation&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;BinarySource.flux&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;BinarySource.contrast&quot;</span><span class="p">,</span>
+    <span class="p">]</span>
+
+    <span class="n">values</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">position</span><span class="p">,</span>
+        <span class="n">separation</span><span class="p">,</span>
+        <span class="n">flux</span><span class="p">,</span>
+        <span class="n">contrast</span><span class="p">,</span>
+    <span class="p">]</span>
+
+    <span class="k">with</span> <span class="n">npy</span><span class="o">.</span><span class="n">plate</span><span class="p">(</span><span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">fdata</span><span class="p">)):</span>
+        <span class="n">poisson_model</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">dist</span><span class="o">.</span><span class="n">Poisson</span><span class="p">(</span>
+            <span class="n">model</span><span class="o">.</span><span class="n">update_and_model</span><span class="p">(</span><span class="s2">&quot;model&quot;</span><span class="p">,</span> <span class="n">paths</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">flatten</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">npy</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s2">&quot;psf&quot;</span><span class="p">,</span> <span class="n">poisson_model</span><span class="p">,</span> <span class="n">obs</span><span class="o">=</span><span class="n">fdata</span><span class="p">)</span>
+</code></pre></div>
+<p>The function that we just designed is called the potential function by 
+<code>numpyro</code>. We can use this potential function to run various different 
+algorithms (MCMC mostly). In this case we want to use No-U-Turn Sampling (NUTS)
+since it is the best. We also get to chose how many chains (independent sets
+of samples) to run and how many samples should be in each chain. We get to 
+tune the number of warmup samples and the number of samples independently.
+The numbers I chose were mainly influenced by how long things took to run 
+rather than any careful analyses of the chains. </p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>I am not a statistician. I will, however, blithely claim that NUTS is 
+the best because it seems to be a popular opinion. I am vaguely aware 
+that it works very well on complex "potentials", but I will leave the 
+complex justification to others.</p>
+</div>
+<div class="highlight"><pre><span></span><code><span class="n">sampler</span> <span class="o">=</span> <span class="n">npy</span><span class="o">.</span><span class="n">infer</span><span class="o">.</span><span class="n">MCMC</span><span class="p">(</span>
+    <span class="n">npy</span><span class="o">.</span><span class="n">infer</span><span class="o">.</span><span class="n">NUTS</span><span class="p">(</span><span class="n">hmc_model</span><span class="p">),</span>    
+    <span class="n">num_warmup</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span>
+    <span class="n">num_samples</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span>
+    <span class="n">num_chains</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">progress_bar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+</code></pre></div>
+<p>Now that everything about our model and analysis is nailed down we can 
+run the HMC. Running HMC <strong>will</strong> cause you to die inside. It takes a 
+long time and when it finally finishes there are a million ways things 
+can go wrong. Not the least of which, is unconstrained chains. Often these
+issues need to be addressed by changing the priors which means waiting 
+another 20min+ for the HMC to run, only to find out that you are still 
+not right.</p>
+<p>By passing in initial parameters near the global/local minima we can 
+make our lives easier. This is done by an appropriate selection of 
+<code>init_params</code>. While this is very useful for situations like this where 
+you already know the global minima, it is less useful in the field where 
+these things are unkown. I hear that a common pattern is to first use 
+gradient descent and them HMC starting from the local minima identified 
+by the gradient descent.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>My final piece of advice is to start the priors wide on purpose and slowly
+refine them until the chains converge.</p>
+</div>
+<div class="highlight"><pre><span></span><code><span class="n">sampler</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">jr</span><span class="o">.</span><span class="n">PRNGKey</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">model</span><span class="p">,</span> <span class="n">init_params</span> <span class="o">=</span> <span class="n">model</span><span class="p">)</span>
+<span class="n">samples</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">sampler</span><span class="o">.</span><span class="n">get_samples</span><span class="p">()</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>I copied the samples (<code>.copy</code>) because otherwise operations performed 
+on the samples would irrevocably destroy the original set of samples.
+This can mean that you have to re-run the algorthim just to visual 
+a new set of plots, which is really very inefficient.</p>
+</div>
+<p>If you recall, we sampled our parameters in a roughly normalised space 
+first. We don't care about most of these normalised(ish) spaces and 
+certainly don't want to plot them. As a result we will remove them from 
+the <code>samples</code> dictionary using <code>pop</code>. Moreover, we are using <code>chainconsumer</code>
+for the plotting, which requires flat arrays. This means that position needs
+to be cast to <code>x</code> and <code>y</code> manually.</p>
+<div class="highlight"><pre><span></span><code><span class="n">logarithmic_contrast_samples</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">samples</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;logarithmic_contrast&quot;</span><span class="p">)</span>
+<span class="n">logarithmic_flux_samples</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">samples</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;logarithmic_flux&quot;</span><span class="p">)</span>
+<span class="n">logarithmic_separation_samples</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">samples</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;logarithmic_separation&quot;</span><span class="p">)</span>
+<span class="n">position_in_pixels_samples</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">samples</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;position_in_pixels&quot;</span><span class="p">)</span>
+<span class="n">samples</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">samples</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;position&quot;</span><span class="p">)[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="n">samples</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;position&quot;</span><span class="p">)[:,</span> <span class="mi">1</span><span class="p">]})</span>
+<span class="n">position</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">samples</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;position&quot;</span><span class="p">)</span>
+
+<span class="n">out</span><span class="p">:</span> <span class="nb">object</span> <span class="o">=</span> <span class="n">cc</span><span class="o">.</span><span class="n">ChainConsumer</span><span class="p">()</span><span class="o">.</span><span class="n">add_chain</span><span class="p">(</span><span class="n">samples</span><span class="p">)</span><span class="o">.</span><span class="n">plotter</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</code></pre></div>
+<p><img alt="Figure 2: Corner plots of the parameters" src="../assets/hmc_corner_plot.png" /></p>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.db81ec45.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.4b2c34cd.min.js"></script>
+      
+    
+  </body>
+</html>

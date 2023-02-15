@@ -1,3 +1,19 @@
+"""md
+## Overview
+This file likely does not need to exist. It was created before I discovered
+`os.makedirs` so it can be used to essentially achieve the same functionality.
+However, correcting this mistake would require a time investment and it simply
+isn't worth it since the code is not performance critical. `concat` on the 
+other hand is to make sure that the DRY principle is obeyed in the code.
+
+## API
+??? note "`accumulate`"
+    ::: toliman.build.paths.accumulate
+
+??? note "`concat`"
+    ::: toliman.build.paths.concat
+"""
+
 import os 
 
 __author__ = "Jordan Dennis"

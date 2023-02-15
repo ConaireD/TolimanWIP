@@ -1,3 +1,25 @@
+"""md
+## Overview
+Due to the nature of the PSF background stars have a good chance of 
+affecting the science signal. In particular we are interested in the 
+sidelobes although we haven't decided how to deal with these yet.
+This file porvides an API for generating a typical sample of background 
+stars using the Gaia database. 
+
+## API
+??? note "`load_background_stars`"
+    ::: toliman.build.background.load_background_stars
+
+??? note "`window_background_stars`"
+    ::: toliman.build.background.window_background_stars
+
+??? note "`flux_relative_to_alpha_cen`"
+    ::: toliman.build.background.flux_relative_to_alpha_cen
+
+??? note "`save_background_stars`"
+    ::: toliman.build.background.save_background_stars
+"""
+
 import os
 import jax.numpy as np
 import toliman.constants as const
@@ -9,7 +31,6 @@ __all__ = [
     "window_background_stars",
     "flux_relative_to_alpha_cen",
     "save_background_stars",
-    "simulate_background_stars",
 ]
 
 RA: int = 0
@@ -43,23 +64,25 @@ def load_background_stars(ra: float, dec: float, rad: float) -> float:
 
     Parameters
     ----------
-    ra: float, deg
+    ra: float, deg 
         The right ascension of section of sky to survey.
     dec: float, deg 
         The declination of the section of sky to survey.
-    rad: float, deg
-        The radius of the conical region to survey. 
+    rad: float, deg 
+        The radius of the conical region to survey.
 
     Returns
     -------
-    background: float
+    background: float 
         A sample of positions (ra, dec), and fluxes of a preselected 
         background region of sky. The convention is RA along 0, DEC 
         along 1 and FLUX along 2.
 
     Examples
     --------
+    ```python 
     >>> load_background_stars(3.0, 3.0, 2.0)
+    ```
     """
     if ra <= rad:
         warnings.warn("`ra <= rad`. Coordinate wrapping may occur.")
@@ -156,6 +179,8 @@ def save_background_stars(background: float, root: str) -> None:
     """
     if background.shape[0] != 3:
         raise ValueError("Invalid background stars.")
+    if not os.path.isdir(root):
+        os.mkdir(root)
     with open(paths.concat([root, "background.csv"]), "w") as sheet:
         sheet.write("ra,dec,rel_flux\n")
         for row in np.arange(background[RA].size):
@@ -200,7 +225,7 @@ def install_background_stars(
     bgstars: float = load_background_stars(ra, dec, width / np.sqrt(2))
     win_stars: float = window_background_stars(bgstars, width)
     rel_stars: float = flux_relative_to_alpha_cen(win_stars)
-    save_background_stars(rel_stars)
+    save_background_stars(rel_stars, root)
 
 def are_background_stars_installed(root: str) -> bool:
     """
@@ -218,6 +243,7 @@ def are_background_stars_installed(root: str) -> bool:
 
     Examples
     --------
+    ```python 
     >>> import os
     >>> os.mkdir("tmp")
     >>> are_background_stars_installed("tmp")
@@ -225,6 +251,7 @@ def are_background_stars_installed(root: str) -> bool:
     >>> open("tmp/background.csv", "w").close()
     >>> are_background_stars_installed("tmp")
     ::: True
+    ```
     """
     if not os.path.isdir(root):
         return False

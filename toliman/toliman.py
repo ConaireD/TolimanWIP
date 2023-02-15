@@ -1,3 +1,40 @@
+"""md
+## Overview 
+This file, amongst everything else contains the core optics of the `toliman` 
+forwards model. The basic concept is that each component of the model is 
+a specialisation (this is a type of inheritance) of a more general component.
+Deciding what level of detail to include was very arbitrary. In some senses,
+jut adding the pupil and the mask to the optics made the most sense as it 
+gave the user the freedom to add other layers as they saw fit. But, in the 
+end I decided that the simplest API was probably the best and so tried to 
+include as much detail as possible. This is something that might change as
+the model is used. The current model of the detector is a placeholder, since 
+the actual physical detector has not been selected. As a result we cannot 
+work with real values yet or include too much detail. 
+
+There is a lot that can still be done with the forwards model, such as Fresnel
+calculations, secondary mirror polish and sidelobes. Unfortunately, I never
+got a chance to look into the sidelobes although it was high on my priority 
+list. The problem is that acurrately simulating the diffraction grating 
+requires very high sampling. In order to reduce the computation cost it was 
+proposed that we avoid as many layers as possible when simulating the sidelobes
+including only the aberrations. This then leads to complexity when considering 
+how to make sure that the aberrations are shared between the models. 
+
+## API
+??? note "`TolimanDetector`"
+    ::: toliman.toliman.TolimanDetector
+
+??? note "`TolimanOptics`"
+    ::: toliman.toliman.TolimanOptics
+
+??? note "`AlphaCentauri`"
+    ::: toliman.toliman.AlphaCentauri
+
+??? note "`Background`"
+    ::: toliman.toliman.Background
+"""
+
 import jax.numpy as np
 import jax
 import dLux as dl
@@ -16,10 +53,6 @@ __all__ = [
     "Background",
 ]
 
-
-
-# TODO: I need to work out how to do the regularisation internally so
-#       that the values which are returned are always correct.
 class TolimanOptics(dl.Optics, collections.CollectionInterface):
     """
     Simulates the optical system of the TOLIMAN telescope.
@@ -91,12 +124,12 @@ class TolimanOptics(dl.Optics, collections.CollectionInterface):
         NUMBER_OF_STRUTS: int = const.get_const_as_type("TOLIMAN_NUMBER_OF_STRUTS", int)
         WIDTH_OF_STRUTS: float = const.get_const_as_type("TOLIMAN_WIDTH_OF_STRUTS", float)
         SECONDARY_MIRROR_DIAMETER: float = const.get_const_as_type("TOLIMAN_SECONDARY_MIRROR_DIAMETER", float)
-        DETECTOR_PIXEL_SIZE: int = const.get_const_as_type("TOLIMAN_DETECTOR_PIXEL_SIZE", int)
+        DETECTOR_PIXEL_SIZE: int = const.get_const_as_type("TOLIMAN_DETECTOR_PIXEL_SIZE", float)
 
         toliman_layers: list = [
             dl.CreateWavefront(
                 pixels_in_pupil,
-                TOLIMAN_PRIMARY_APERTURE_DIAMETER,
+                PRIMARY_APERTURE_DIAMETER,
                 wavefront_type="Angular",
             )
         ]
@@ -104,10 +137,10 @@ class TolimanOptics(dl.Optics, collections.CollectionInterface):
         # Adding the pupil
         dyn_toliman_pupil: object = dl.CompoundAperture(
             [
-                dl.UniformSpider(TOLIMAN_NUMBER_OF_STRUTS, TOLIMAN_WIDTH_OF_STRUTS),
+                dl.UniformSpider(NUMBER_OF_STRUTS, WIDTH_OF_STRUTS),
                 dl.AnnularAperture(
-                    TOLIMAN_PRIMARY_APERTURE_DIAMETER / 2.0,
-                    TOLIMAN_SECONDARY_MIRROR_DIAMETER / 2.0,
+                    PRIMARY_APERTURE_DIAMETER / 2.0,
+                    SECONDARY_MIRROR_DIAMETER / 2.0,
                 ),
             ]
         )
@@ -116,7 +149,7 @@ class TolimanOptics(dl.Optics, collections.CollectionInterface):
             static_toliman_pupil: object = dl.StaticAperture(
                 dyn_toliman_pupil,
                 npixels=pixels_in_pupil,
-                diameter=TOLIMAN_PRIMARY_APERTURE_DIAMETER,
+                diameter=PRIMARY_APERTURE_DIAMETER,
             )
 
             toliman_layers.append(static_toliman_pupil)
@@ -140,7 +173,7 @@ class TolimanOptics(dl.Optics, collections.CollectionInterface):
                     )
                 if loaded_width % pixels_in_pupil == 0:
                     downsample_by: int = loaded_width // pixels_in_pupil
-                    mask: float = _downsample_square_grid(loaded_mask, downsample_by)
+                    mask: float = math.downsample_square_grid(loaded_mask, downsample_by)
                 else:
                     raise ValueError(
                         "The mask you have loaded could not be downsampled " +\
@@ -177,11 +210,11 @@ class TolimanOptics(dl.Optics, collections.CollectionInterface):
                     noll_inds=nolls,
                     coefficients=coeffs,
                     aperture=dl.CircularAperture(
-                        TOLIMAN_PRIMARY_APERTURE_DIAMETER / 2.0
+                        PRIMARY_APERTURE_DIAMETER / 2.0
                     ),
                 ),
                 npixels=pixels_in_pupil,
-                diameter=TOLIMAN_PRIMARY_APERTURE_DIAMETER,
+                diameter=PRIMARY_APERTURE_DIAMETER,
             )
 
             toliman_layers.append(toliman_aberrations)
@@ -199,7 +232,7 @@ class TolimanOptics(dl.Optics, collections.CollectionInterface):
         toliman_body: object
         if not operate_in_fresnel_mode:
             toliman_body: object = dl.AngularMFT(
-                pixels_on_detector, TOLIMAN_DETECTOR_PIXEL_SIZE
+                pixels_on_detector, DETECTOR_PIXEL_SIZE
             )
         else:
             raise NotImplementedError(
@@ -390,26 +423,26 @@ class TolimanDetector(dl.Detector, collections.CollectionInterface):
             detector_layers.append(dl.ApplyJitter(DEFAULT_DETECTOR_JITTER))
 
             # TODO: Make a contains instance function
-            if _contains_instance(extra_detector_layers, dl.ApplyJitter):
+            if collections.contains_instance(extra_detector_layers, dl.ApplyJitter):
                 raise ValueError(DETECTOR_REPEATED_ERR_MSG)
 
         if simulate_saturation:
             detector_layers.append(dl.ApplySaturation(DEFAULT_DETECTOR_SATURATION))
 
-            if _contains_instance(extra_detector_layers, dl.ApplySaturation):
+            if collections.contains_instance(extra_detector_layers, dl.ApplySaturation):
                 raise ValueError(DETECTOR_REPEATED_ERR_MSG)
 
         if simulate_pixel_response:
             detector_layers.append(
                 dl.ApplyPixelResponse(
-                    pixel_response(
+                    math.pixel_response(
                         (DEFAULT_DETECTOR_NPIX, DEFAULT_DETECTOR_NPIX),
                         DEFAULT_DETECTOR_THRESHOLD,
                     )
                 )
             )
 
-            if _contains_instance(extra_detector_layers, dl.ApplyPixelResponse):
+            if collections.contains_instance(extra_detector_layers, dl.ApplyPixelResponse):
                 raise ValueError(DETECTOR_REPEATED_ERR_MSG)
 
         detector_layers.extend(extra_detector_layers)
@@ -562,8 +595,10 @@ class AlphaCentauri(dl.BinarySource):
             that the convinience method `_simulate_alpha_cen_spectrum`
             can be used to simulate the spectrum.
         """
+        SPECTRUM_DIR: str = const.get_const_as_type("SPECTRUM_DIR", str) 
+
         if not spectrum:
-            _spectrum: float = _read_csv_to_jax_array(SPECTRUM_DIR) 
+            _spectrum: float = io.read_csv_to_jax_array(SPECTRUM_DIR) 
 
             alpha_cen_a_waves: float = _spectrum[:, 0]
             alpha_cen_b_waves: float = _spectrum[:, 2]
@@ -625,24 +660,25 @@ class Background(dl.MultiPointSource):
         """
         FILTER_MIN_WAVELENGTH: float = const.get_const_as_type("FILTER_MIN_WAVELENGTH", float)
         FILTER_MAX_WAVELENGTH: float = const.get_const_as_type("FILTER_MAX_WAVELENGTH", float)
-        FILTER_DEFAULT_RES: int = const.get_const_as_type("FILTER_DEFAULT_RES", int)
-        
+        BG_DEF_SPEC_RES: int = const.get_const_as_type("BACKGROUND_STAR_SPEC_RES", int)
+        BACKGROUND_DIR: str = const.get_const_as_type("BACKGROUND_DIR", str) 
 
         if not spectrum:
             spectrum: object = dl.ArraySpectrum(
                 wavelengths=np.linspace(
-                    FILTER_MIN_WAVELENGTH, FILTER_MAX_WAVELENGTH, FILTER_DEFAULT_RES
+                    FILTER_MIN_WAVELENGTH, FILTER_MAX_WAVELENGTH, BG_DEF_SPEC_RES
                 ),
-                weights=np.ones((FILTER_DEFAULT_RES,), dtype=float),
+                weights=np.ones((BG_DEF_SPEC_RES,), dtype=float),
             )
 
         # TODO: Better error handling if BACKGROUND_DIR is not valid
-        _background: float = _read_csv_to_jax_array(BACKGROUND_DIR)
+        _background: float = io.read_csv_to_jax_array(BACKGROUND_DIR)
 
         if number_of_bg_stars:
-            _background: float = _background[:number_of_bg_stars]
+            select_by: int = _background.shape[0] // number_of_bg_stars
+            _background: float = _background[::select_by, :]
 
-        position: float = _background[:, (0, 1)]
-        flux: float = _background[:, 2]
+        position: float = np.pi / 180 * _background[:, (0, 1)]
+        flux: float = 1e5 * _background[:, 2]
 
         super().__init__(position=position, flux=flux, spectrum=spectrum)
