@@ -660,15 +660,15 @@ class Background(dl.MultiPointSource):
         """
         FILTER_MIN_WAVELENGTH: float = const.get_const_as_type("FILTER_MIN_WAVELENGTH", float)
         FILTER_MAX_WAVELENGTH: float = const.get_const_as_type("FILTER_MAX_WAVELENGTH", float)
-        FILTER_DEFAULT_RES: int = const.get_const_as_type("FILTER_DEFAULT_RES", int)
+        BG_DEF_SPEC_RES: int = const.get_const_as_type("BACKGROUND_STAR_SPEC_RES", int)
         BACKGROUND_DIR: str = const.get_const_as_type("BACKGROUND_DIR", str) 
 
         if not spectrum:
             spectrum: object = dl.ArraySpectrum(
                 wavelengths=np.linspace(
-                    FILTER_MIN_WAVELENGTH, FILTER_MAX_WAVELENGTH, FILTER_DEFAULT_RES
+                    FILTER_MIN_WAVELENGTH, FILTER_MAX_WAVELENGTH, BG_DEF_SPEC_RES
                 ),
-                weights=np.ones((FILTER_DEFAULT_RES,), dtype=float),
+                weights=np.ones((BG_DEF_SPEC_RES,), dtype=float),
             )
 
         # TODO: Better error handling if BACKGROUND_DIR is not valid
@@ -678,7 +678,7 @@ class Background(dl.MultiPointSource):
             select_by: int = _background.shape[0] // number_of_bg_stars
             _background: float = _background[::select_by, :]
 
-        position: float = _background[:, (0, 1)]
-        flux: float = _background[:, 2]
+        position: float = np.pi / 180 * _background[:, (0, 1)]
+        flux: float = 1e5 * _background[:, 2]
 
         super().__init__(position=position, flux=flux, spectrum=spectrum)
