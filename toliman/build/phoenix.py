@@ -41,7 +41,7 @@ functionality.
     ::: toliman.build.phoenix.is_spectra_installed
 
 ??? note "`install_spectra`"
-    ::: toliman.build.install_spectra
+    ::: toliman.build.phoenix.install_spectra
 """
 
 import os
