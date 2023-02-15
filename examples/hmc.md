@@ -35,7 +35,8 @@ aspects of a plot. These are just the ones we have chosen.
 
 ```python 
 mpl.rcParams["text.usetex"] = True
-mpl.rcParams['axes.titlesize'] = 20
+mpl.rcParams["axes.titlesize"] = 20
+mpl.rcParams["image.cmap"] = "inferno"
 ```
 
 The next line simply makes sure that the code is running in `TOLIMAN_HOME`.
@@ -144,7 +145,7 @@ def plot_image_with_cbar(
     cbar_ax: object = figure.add_axes([x + width, y, 0.05, height])
     im_cmap: object = im_axes.imshow(image)
     im_cbar: object = figure.colorbar(im_cmap, cax = cbar_ax)
-    im_ticks: list = im_axes.axes("off")
+    im_ticks: list = im_axes.axis("off")
     im_frame: None = im_axes.set_frame_on(False)
     im_title: object = im_axes.set_title(title) 
     return figure
@@ -163,6 +164,8 @@ res_fig: object = plot_image_with_cbar(
     subfigures[1], np.cbrt(psf - data), [0.25, 0.1], 0.4, 0.8, "Residuals"
 )
 ```
+
+![Figure 1: The PSF.](assets/psf.png)
 
 Now that we know what the model and data look like let's do some HMC. 
 You may recall that earlier I made a reference to flattening the data 
@@ -346,3 +349,5 @@ position: float = samples.pop("position")
 
 out: object = cc.ChainConsumer().add_chain(samples).plotter.plot()
 ```
+
+![Figure 2: Corner plots of the parameters](assets/hmc_corner_plot.png)
